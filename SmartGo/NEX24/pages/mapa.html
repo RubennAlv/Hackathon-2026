@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Mapa Lens IA | NEX24</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%97%BA%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/panel.css">
+  <link rel="stylesheet" href="../css/mapa.css">
+</head>
+<body>
+<header class="nav">
+  <a class="logo" href="../index.html">NEX<span>24</span></a>
+  <nav>
+    <a href="../index.html">Inicio</a>
+    <a href="tienda.html">Tienda</a>
+    <a href="emprendedores.html">Emprendedores</a>
+    <a href="lens.html">Lens IA</a>
+    <a class="active" href="mapa.html">Mapa IA</a>
+  </nav>
+  <b class="status">● ABIERTO 24/7</b>
+</header>
+
+<main class="wrap mapa-wrap">
+  <section class="mapa-hero">
+    <div>
+      <small>LENS LOCAL · MAPA IA</small>
+      <h1>Lo local,<br><em>en el mapa.</em></h1>
+      <p>Los productores que reconoce la IA, geolocalizados en Durango. Busca por categoría, mira precios y escríbeles por WhatsApp.</p>
+    </div>
+    <div class="mapa-hero-side">
+      <span id="apiStatus" class="api-status"><span class="dot"></span> Comprobando API…</span>
+      <span id="mapCount" class="mapa-pill">Cargando…</span>
+    </div>
+  </section>
+
+  <section class="mapa-card" aria-labelledby="mapaTitle">
+    <div class="results-head">
+      <h2 id="mapaTitle">Mapa de productores</h2>
+      <span class="mapa-hint">Datos del mismo catálogo que usa Lens IA</span>
+    </div>
+
+    <div class="mapa-toolbar">
+      <label class="buscar">
+        <span aria-hidden="true">🔎</span>
+        <input id="filterSearch" type="search" placeholder="Productor, producto o zona…" aria-label="Buscar productores">
+      </label>
+      <label class="categoria">
+        <small>Categoría IA</small>
+        <select id="filterCategoria" aria-label="Filtrar por categoría">
+          <option value="">Todas</option>
+        </select>
+      </label>
+      <button type="button" id="useLocation" class="btn ghost">⌖ Mi ubicación</button>
+      <button type="button" id="resetMap" class="btn ghost">↺ Ver Durango</button>
+    </div>
+
+    <div id="filterInfo" class="filter-info" aria-live="polite">Cargando catálogo…</div>
+    <div id="mapaError" class="notice error" hidden role="alert"></div>
+
+    <div id="map" class="mapa-canvas" role="application" aria-label="Mapa interactivo de productores de Durango"></div>
+    <div id="leyenda" class="mapa-leyenda" aria-label="Filtros por categoría"></div>
+  </section>
+
+  <section class="mapa-lista-wrap" aria-labelledby="listaTitle">
+    <div class="section-heading"><h2 id="listaTitle">Productores visibles</h2><span id="listaCount"></span></div>
+    <div id="mapaLista" class="mapa-lista"></div>
+  </section>
+
+  <p class="mapa-footnote">Catálogo ficticio de 14 productores de Durango, creado para el hackatón. Mapa base: OpenStreetMap.</p>
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="../js/mapa.js"></script>
+</body>
+</html>
