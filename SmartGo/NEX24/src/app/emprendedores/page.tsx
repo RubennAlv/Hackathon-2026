@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { products } from "@/lib/data";
@@ -20,57 +21,89 @@ export default function EntrepreneursPage() {
   return (
     <>
       <Header panel />
-      <main className="wrap">
-        <small>Panel administrativo</small>
-        <h1>Control de tu negocio.</h1>
-        <p>Consulta inventario y ventas actualizadas desde el autoservicio.</p>
-        <section className="stats">
-          <article>
-            <span>Productos registrados</span>
-            <strong>{String(products.length).padStart(2, "0")}</strong>
-          </article>
-          <article>
-            <span>Ventas acumuladas</span>
-            <strong>{money(sales)}</strong>
-          </article>
-          <article>
-            <span>Alertas de inventario</span>
-            <strong>{String(low).padStart(2, "0")}</strong>
-          </article>
-        </section>
-        <section className="tablebox">
-          <div className="section-heading">
-            <h2>Inventario</h2>
-            <span>{orders ? `${orders} compra${orders === 1 ? "" : "s"} registrada${orders === 1 ? "" : "s"}` : "Sin ventas aún"}</span>
+      <main className="dashboard-shell">
+        <aside className="dashboard-sidebar">
+          <div><span>ABASTO DGO</span><b>Panel de negocio</b></div>
+          <nav aria-label="Panel">
+            <Link className="active" href="/emprendedores"><b>▦</b>Resumen</Link>
+            <Link href="/registro"><b>＋</b>Registrar productor</Link>
+            <Link href="/solicitudes"><b>↗</b>Solicitudes</Link>
+            <Link href="/alianzas"><b>⌁</b>Alianzas</Link>
+            <Link href="/"><b>⌂</b>Ir al inicio</Link>
+          </nav>
+        </aside>
+        <section className="dashboard-content">
+          <div className="dashboard-heading">
+            <div>
+              <span>Resumen general</span>
+              <h1>Buen día, emprendedor.</h1>
+            </div>
+            <Link href="/registro">Añadir productor</Link>
           </div>
-          <div className="table-scroll">
-            <table>
-              <thead>
-                <tr>
-                  <th>Producto</th>
-                  <th>Tipo</th>
-                  <th>Existencia</th>
-                  <th>Unidad</th>
-                  <th>Estado</th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.map((p) => {
-                  const stock = inventory[p.id];
-                  const warning = stock <= 5;
-                  return (
-                    <tr key={p.id}>
-                      <td>{p.emoji} {p.name}</td>
-                      <td>{p.bulk ? "A granel" : "Empaquetado"}</td>
-                      <td>{stock.toFixed(p.bulk ? 2 : 0)}</td>
-                      <td>{p.unit}</td>
-                      <td><span className={`status-pill ${warning ? "warning" : "available"}`}>{warning ? "Stock bajo" : "Disponible"}</span></td>
+          <section className="dashboard-metrics">
+            <article>
+              <span>Productos registrados</span>
+              <strong>{String(products.length).padStart(2, "0")}</strong>
+              <small>Catálogo de demostración</small>
+            </article>
+            <article>
+              <span>Ventas acumuladas</span>
+              <strong>{money(sales)}</strong>
+              <small>Ventas registradas localmente</small>
+            </article>
+            <article>
+              <span>Alertas de inventario</span>
+              <strong>{String(low).padStart(2, "0")}</strong>
+              <small>{low ? "Productos requieren atención" : "Inventario sin alertas"}</small>
+            </article>
+          </section>
+          <section className="dashboard-grid">
+            <article className="dashboard-card inventory-card">
+              <div className="dashboard-card-heading">
+                <div>
+                  <span>Inventario</span>
+                  <h2>Existencias actuales</h2>
+                </div>
+                <span>{orders ? `${orders} compra${orders === 1 ? "" : "s"} registrada${orders === 1 ? "" : "s"}` : "Sin ventas aún"}</span>
+              </div>
+              <div className="table-scroll">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Producto</th>
+                      <th>Tipo</th>
+                      <th>Existencia</th>
+                      <th>Unidad</th>
+                      <th>Estado</th>
                     </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                  </thead>
+                  <tbody>
+                    {products.map((p) => {
+                      const stock = inventory[p.id];
+                      const warning = stock <= 5;
+                      return (
+                        <tr key={p.id}>
+                          <td>{p.emoji} {p.name}</td>
+                          <td>{p.bulk ? "A granel" : "Empaquetado"}</td>
+                          <td>{stock.toFixed(p.bulk ? 2 : 0)}</td>
+                          <td>{p.unit}</td>
+                          <td><span className={`status-pill ${warning ? "warning" : "available"}`}>{warning ? "Stock bajo" : "Disponible"}</span></td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </article>
+            <aside className="dashboard-card quick-card">
+              <span>Acciones rápidas</span>
+              <h2>Gestiona tu operación</h2>
+              <Link href="/registro">Registrar nuevo productor</Link>
+              <Link href="/solicitudes">Consultar solicitudes</Link>
+              <Link href="/alianzas">Ver alianzas</Link>
+              <Link href="/tienda">Abrir tienda Lens Local</Link>
+            </aside>
+          </section>
         </section>
       </main>
       <Footer />
