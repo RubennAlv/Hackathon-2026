@@ -272,11 +272,11 @@
 
     if (marcaSugerencia) mapa.removeLayer(marcaSugerencia);
     marcaSugerencia = L.circleMarker([p.lat, p.lng], {
-      radius: 22,
+      radius: 18,
       color: "#5b842c",
-      weight: 3,
+      weight: 2,
       fillColor: "#c6f36b",
-      fillOpacity: 0.25,
+      fillOpacity: 0.18,
       className: "lens-sugerencia",
     }).addTo(mapa);
 
