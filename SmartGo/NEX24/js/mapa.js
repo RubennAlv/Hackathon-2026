@@ -35,6 +35,9 @@
   const listaCount = $("#listaCount");
   const errorBox = $("#mapaError");
   const botonUbicacion = $("#useLocation");
+  const desdeLens = $("#desdeLens");
+  const desdeLensTexto = $("#desdeLensTexto");
+  const botonQuitarSugerencia = $("#quitarSugerencia");
 
   let mapa;
   let capa;
@@ -43,6 +46,7 @@
   let origen = { ...DEFAULT };
   let categoria = "";
   let busqueda = "";
+  let marcaSugerencia = null;
   const marcadores = new Map();
 
   const etiqueta = (cat) => ETIQUETAS[cat] || (cat ? cat[0].toUpperCase() + cat.slice(1) : "Otro");
@@ -227,6 +231,9 @@
       pintarLeyenda();
       actualizar();
       ajustarVista();
+
+      const idSugerido = new URLSearchParams(location.search).get("productor");
+      if (idSugerido) mostrarSugerencia(idSugerido);
     } catch (error) {
       errorBox.textContent = `No pude cargar el catálogo (${error.message}). ¿Está corriendo “npm start”?`;
       errorBox.hidden = false;
@@ -234,6 +241,53 @@
       filterInfo.textContent = "Sin datos";
       lista.innerHTML = '<p class="vacio">No hay datos para mostrar.</p>';
     }
+  }
+
+  function limpiarSugerencia() {
+    if (marcaSugerencia) {
+      mapa.removeLayer(marcaSugerencia);
+      marcaSugerencia = null;
+    }
+    desdeLens.hidden = true;
+    try {
+      const url = new URL(location.href);
+      url.searchParams.delete("productor");
+      history.replaceState(null, "", url);
+    } catch {
+      // file:// no siempre permite reescribir la URL; no es crítico.
+    }
+    mapa.setView([DEFAULT.lat, DEFAULT.lng], 12);
+  }
+
+  function mostrarSugerencia(id) {
+    const p = productores.find((x) => String(x.id) === String(id));
+    if (!p) return;
+
+    categoria = "";
+    busqueda = "";
+    filterCategoria.value = "";
+    filterSearch.value = "";
+    pintarLeyenda();
+    actualizar();
+
+    if (marcaSugerencia) mapa.removeLayer(marcaSugerencia);
+    marcaSugerencia = L.circleMarker([p.lat, p.lng], {
+      radius: 22,
+      color: "#5b842c",
+      weight: 3,
+      fillColor: "#c6f36b",
+      fillOpacity: 0.25,
+      className: "lens-sugerencia",
+    }).addTo(mapa);
+
+    desdeLensTexto.innerHTML = `📍 Sugerido por Lens IA: <b>${esc(p.nombre)}</b> · ${esc(p.zona_durango)} · ⌖ ${km(distanciaKm(origen, p))}`;
+    desdeLens.hidden = false;
+
+    mapa.flyTo([p.lat, p.lng], 15, { duration: 1 });
+    setTimeout(() => {
+      marcadores.get(p.id)?.openPopup();
+      resaltarLista(p.id);
+    }, 1050);
   }
 
   function initMapa() {
@@ -279,6 +333,8 @@
     evento.preventDefault();
     verEnMapa(item.dataset.id);
   });
+
+  botonQuitarSugerencia.addEventListener("click", limpiarSugerencia);
 
   botonUbicacion.addEventListener("click", () => {
     if (!navigator.geolocation) {

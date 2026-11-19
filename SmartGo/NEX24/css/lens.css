@@ -98,6 +98,9 @@
 .wa{margin-left:auto;background:#1f9d55;color:#fff;border-radius:7px;padding:6px 10px;font-size:10px;font-weight:800}
 .wa:hover{background:#178247}
 .map{color:#5b842c;font-size:10px;font-weight:800}
+.map-ext{color:#9aa79d;font-size:9px;font-weight:700}
+.match-line .map-all{margin-left:auto;background:#f8fbf2;border:1px solid var(--line);border-radius:999px;padding:5px 10px;font-size:10px;font-weight:800;color:#5b842c}
+.match-line .map-all:hover{border-color:#7fae4b;background:#eef7e2}
 .reason{display:block;margin-top:8px;font-size:10px;color:#93a096;line-height:1.4}
 
 .lens-footnote{margin-top:22px;font-size:10px;color:#93a096;text-align:center}

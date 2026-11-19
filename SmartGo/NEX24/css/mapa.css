@@ -29,6 +29,12 @@
 .mapa-wrap .btn.ghost:hover:not(:disabled){background:#f8fbf2;border-color:#7fae4b}
 .mapa-wrap .btn.ghost:disabled{opacity:.55;cursor:progress}
 .filter-info{font-size:11px;color:var(--muted);margin-bottom:12px}
+.desde-lens{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#f0f7e6;border:1px solid #dbe9c8;border-radius:9px;padding:10px 12px;margin-bottom:12px;font-size:11px;color:#3f622b}
+.desde-lens b{color:var(--ink)}
+.desde-lens button{flex:none;border:1px solid #cfdcc2;background:#fff;border-radius:999px;padding:5px 9px;font:inherit;font-size:10px;font-weight:800;color:#5b842c;cursor:pointer}
+.desde-lens button:hover{border-color:#7fae4b;background:#f8fbf2}
+.lens-sugerencia{animation:lens-pulso 1.8s ease-out infinite}
+@keyframes lens-pulso{0%{opacity:.9;transform:scale(.85)}70%{opacity:0;transform:scale(1.7)}100%{opacity:0;transform:scale(1.7)}}
 .mapa-wrap .notice.error{background:#fff0ed;border:1px solid #f0c3ba;color:#8f382b;border-radius:9px;padding:11px 13px;font-size:12px;margin-bottom:12px}
 
 .mapa-canvas{width:100%;height:560px;border-radius:12px;border:1px solid var(--line);background:#eef2e8;z-index:0}
