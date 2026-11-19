@@ -91,7 +91,7 @@ function formatear(p, score, razon, origen) {
  * match_type: "exacto" (hay coincidencia fuerte), "categoria" (solo categoría/débil)
  * o "fallback" (nada coincide: sugerimos destacados cercanos para que la demo nunca falle).
  */
-export function buscarProductores(vision, ubicacion, limite = 3) {
+export function buscarProductores(vision, ubicacion, limite = 5) {
   const origen =
     ubicacion && Number.isFinite(ubicacion.lat) && Number.isFinite(ubicacion.lng)
       ? ubicacion

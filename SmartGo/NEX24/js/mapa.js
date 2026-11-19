@@ -11,6 +11,7 @@
     cafe: "☕", queso: "🧀", miel: "🍯", mezcal: "🥃", panaderia: "🥖",
     salsas: "🌶️", cuero: "👜", cosmetica: "🧴", dulces: "🍬", botana: "🥨",
     bebidas: "🥤", carnes: "🥩", artesania: "🧶", tortillas: "🫓",
+    lacteos: "🥛", abarrotes: "🛒", frutas: "🍎", huevos: "🥚", limpieza: "🧼",
   };
 
   const ETIQUETAS = {
@@ -18,7 +19,8 @@
     panaderia: "Panadería", salsas: "Salsas", cuero: "Cuero",
     cosmetica: "Cosmética", dulces: "Dulces", botana: "Botana",
     bebidas: "Bebidas", carnes: "Carnes", artesania: "Artesanía",
-    tortillas: "Tortillas",
+    tortillas: "Tortillas", lacteos: "Lácteos", abarrotes: "Abarrotes",
+    frutas: "Frutas y verduras", huevos: "Huevos", limpieza: "Limpieza",
   };
 
   const $ = (selector, root = document) => root.querySelector(selector);

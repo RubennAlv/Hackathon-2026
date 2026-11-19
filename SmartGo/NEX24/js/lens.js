@@ -16,6 +16,10 @@
     cafe: "☕", queso: "🧀", miel: "🍯", mezcal: "🥃", panaderia: "🥖", pan: "🥖",
     salsas: "🌶️", cuero: "👜", cosmetica: "🧴", dulces: "🍬", botana: "🥨",
     bebidas: "🥤", carnes: "🥩", artesania: "🧶", tortillas: "🫓",
+    lacteos: "🥛", abarrotes: "🛒", frutas: "🍎", huevos: "🥚", limpieza: "🧼",
+    // Atajos de las demos (el icono se usa en el botón "Probar demo").
+    agua: "💧", refresco: "🥤", jugo: "🧃", leche: "🥛", huevo: "🥚",
+    papitas: "🍟", galletas: "🍪", chocolate: "🍫", aceite: "🫒",
   };
 
   const $ = (selector, root = document) => root.querySelector(selector);

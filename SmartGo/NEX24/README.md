@@ -77,7 +77,7 @@ La key vive solo en el servidor. No la pongas en el frontend ni la subas a git (
 
 ### `GET /api/productores`
 
-Devuelve el arreglo completo de los 14 productores (para el mapa y el módulo B2B).
+Devuelve el arreglo completo de los 34 productores (19 categorías) para el mapa y el módulo B2B.
 
 ### `POST /api/lens/scan`
 
@@ -91,7 +91,7 @@ Acepta `multipart/form-data` o JSON.
 | `lat`, `lng` | números (ubicación del usuario) | no |
 | `?demo=cafe` | query, fuerza detección mock | no |
 
-Demos disponibles: `cafe`, `miel`, `queso`, `pan`, `mezcal`.
+Demos disponibles: `cafe`, `miel`, `queso`, `pan`, `mezcal`, `agua`, `refresco`, `jugo`, `leche`, `huevo`, `papitas`, `galletas`, `chocolate`, `tortilla`, `aceite`.
 
 **JSON:**
 
@@ -146,7 +146,7 @@ Demos disponibles: `cafe`, `miel`, `queso`, `pan`, `mezcal`.
 ```
 
 - `modo: "fallback"` significa que había key pero Gemini falló; se respondió con detección demo para que la demo no se caiga.
-- Si `match_type` es `"fallback"`, `resultados` trae 2 productores destacados/cercanos.
+- Los matches normales devuelven hasta 5 productores; si `match_type` es `"fallback"`, `resultados` trae 2 productores destacados/cercanos.
 - Si el usuario no manda `lat`/`lng`, se usa la Plaza de Armas de Durango y `ubicacion_usuario` es `"default"`.
 
 **Errores** (`400`):
@@ -201,7 +201,7 @@ node scripts/probar-gemini.js fotos/cafe.jpg
 server.js              Express + multer + endpoints + archivos estáticos de la interfaz
 vision.js              Gemini, mock y degradación a fallback
 matcher.js             Matching contra el catálogo + haversine
-productores.json       Catálogo ficticio (14 productores)
+productores.json       Catálogo ficticio (34 productores, 19 categorías)
 pages/lens.html        Apartado Lens IA de la app (sube foto y muestra matches)
 js/lens.js             Cliente de la API desde el navegador
 scripts/test.js        Pruebas del matcher y del modo mock
