@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Lens IA | NEX24</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9C%A8%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/panel.css">
+  <link rel="stylesheet" href="../css/lens.css">
+</head>
+<body>
+<header class="nav">
+  <a class="logo" href="../index.html">NEX<span>24</span></a>
+  <nav>
+    <a href="../index.html">Inicio</a>
+    <a href="tienda.html">Tienda</a>
+    <a href="emprendedores.html">Emprendedores</a>
+    <a class="active" href="lens.html">Lens IA</a>
+  </nav>
+  <b class="status">● ABIERTO 24/7</b>
+</header>
+
+<main class="wrap lens-wrap">
+  <section class="lens-hero">
+    <div>
+      <small>NUEVO · LENS LOCAL</small>
+      <h1>Enfoca un producto.<br><em>Encuentra lo local.</em></h1>
+      <p>Sube una foto de un producto comercial y Lens te dice qué productor de Durango hace el equivalente, a qué precio y qué tan cerca está.</p>
+    </div>
+    <div class="lens-hero-side">
+      <span id="apiStatus" class="api-status"><span class="dot"></span> Comprobando API…</span>
+      <small>Foto → IA → productor local</small>
+    </div>
+  </section>
+
+  <div class="lens-grid">
+    <section class="lens-card upload-card" aria-labelledby="uploadTitle">
+      <h2 id="uploadTitle">1. Tu foto</h2>
+
+      <input id="lensFile" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" hidden>
+
+      <label class="dropzone" id="dropzone" for="lensFile">
+        <span class="drop-icon" aria-hidden="true">📷</span>
+        <strong>Toma o sube una foto</strong>
+        <small>JPG, PNG o WebP · la comprimimos antes de enviarla</small>
+      </label>
+
+      <figure class="preview" id="previewWrap" hidden>
+        <img id="preview" alt="Vista previa del producto">
+        <figcaption>
+          <span id="photoInfo"></span>
+          <button type="button" id="changePhoto" class="link-button">Cambiar foto</button>
+        </figcaption>
+      </figure>
+
+      <div class="location-row">
+        <button type="button" id="useLocation" class="btn ghost">⌖ Usar mi ubicación</button>
+        <span id="locationStatus" class="hint">Sin ubicación: Centro de Durango.</span>
+      </div>
+
+      <div class="demo-block">
+        <span class="demo-label">O prueba sin foto:</span>
+        <div class="demo-chips" role="group" aria-label="Detecciones de demostración">
+          <button type="button" data-demo="cafe">☕ Café</button>
+          <button type="button" data-demo="miel">🍯 Miel</button>
+          <button type="button" data-demo="queso">🧀 Queso</button>
+          <button type="button" data-demo="pan">🥖 Pan</button>
+          <button type="button" data-demo="mezcal">🥃 Mezcal</button>
+        </div>
+      </div>
+
+      <button type="button" id="scanButton" class="btn green scan-button" disabled>Analizar con IA →</button>
+      <p id="scanHint" class="hint" aria-live="polite">Sube una foto o elige una demo para comenzar.</p>
+    </section>
+
+    <section class="lens-card results-card" aria-labelledby="resultsTitle">
+      <div class="results-head">
+        <h2 id="resultsTitle">2. Resultados</h2>
+        <span id="modeBadge" class="pill" hidden></span>
+      </div>
+
+      <div id="lensError" class="notice error" hidden role="alert"></div>
+
+      <div id="resultsEmpty" class="empty-state">
+        <span aria-hidden="true">🔎</span>
+        <strong>Aún no hay resultados.</strong>
+        <p>Sube una foto de un producto comercial (café, miel, queso…) y te decimos qué productor de Durango lo hace.</p>
+      </div>
+
+      <div id="results" hidden aria-live="polite"></div>
+    </section>
+  </div>
+
+  <p class="lens-footnote">Catálogo ficticio de 14 productores de Durango, creado para el hackatón. La primera detección con IA puede tardar unos 10 segundos.</p>
+</main>
+
+<script src="../js/lens.js"></script>
+</body>
+</html>
