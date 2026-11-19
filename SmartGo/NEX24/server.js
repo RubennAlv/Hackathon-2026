@@ -121,8 +121,10 @@ app.post('/api/lens/scan', (req, res) => {
 
 // La interfaz NEX24 se sirve desde el mismo servidor que la API.
 // Solo se exponen las carpetas públicas: nunca RAIZ completa (ahí viven .env y la key).
-app.get('/', (_req, res) => res.sendFile(path.join(RAIZ, 'index.html')));
+app.get(['/', '/index.html'], (_req, res) => res.sendFile(path.join(RAIZ, 'index.html')));
 app.get('/lens', (_req, res) => res.redirect('/pages/lens.html'));
+app.get('/tienda', (_req, res) => res.redirect('/pages/tienda.html'));
+app.get('/emprendedores', (_req, res) => res.redirect('/pages/emprendedores.html'));
 app.use('/pages', express.static(path.join(RAIZ, 'pages')));
 app.use('/css', express.static(path.join(RAIZ, 'css')));
 app.use('/js', express.static(path.join(RAIZ, 'js')));
