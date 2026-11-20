@@ -343,6 +343,10 @@
 
   function initMapa() {
     mapa = L.map(canvas).setView([DEFAULT.lat, DEFAULT.lng], 12);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    }).addTo(mapa);
     capa = L.layerGroup().addTo(mapa);
   }
 
