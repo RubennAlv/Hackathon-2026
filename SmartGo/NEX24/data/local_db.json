@@ -1,6 +1,25 @@
 {
   "users": [
     {
+      "id": "usr_1795154336830_6q90",
+      "role": "proveedor",
+      "business_name": "prooveDan",
+      "responsible_name": "DaniVazquez",
+      "email": "dani@gmail.com",
+      "phone": "6181888022",
+      "address": "Calle Jose Maria Mora 1806",
+      "schedule": "8:00 AM - 6:00 PM",
+      "zone": "Centro",
+      "category": "cafe",
+      "products": "vendemos cosas de variedad",
+      "lat": 24.035906,
+      "lng": -104.645761,
+      "capacity": "89",
+      "status": "approved",
+      "created_at": "2026-11-20T05:58:56.830Z",
+      "password": "jonathan99"
+    },
+    {
       "id": "admin_01",
       "email": "admin@nex24.com",
       "password": "demo",
