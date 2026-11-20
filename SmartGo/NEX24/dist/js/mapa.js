@@ -95,7 +95,14 @@
   const norm = (valor) =>
     String(valor ?? "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
 
-  const dinero = (n) => (Number.isFinite(Number(n)) ? `$${Number(n).toLocaleString("es-MX")}` : "—");
+  const dinero = (n) =>
+    n === null || n === undefined || n === ""
+      ? "—"
+      : Number.isFinite(Number(n))
+        ? `$${Number(n).toLocaleString("es-MX")}`
+        : "—";
+
+  const NUEVO_LOCAL = '<span class="nlocal">Nuevo local</span>';
 
   const km = (n) => {
     const d = Number(n) || 0;
@@ -131,7 +138,7 @@
     );
     return `<article class="popup-card">
       <small>${esc(etiqueta(p.categoria))} · ${esc(p.zona_durango)} · <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.1em;"><circle cx="12" cy="12" r="10"/><line x1="22" x2="18" y1="12" y2="12"/><line x1="6" x2="2" y1="12" y2="12"/><line x1="12" x2="12" y1="6" y2="2"/><line x1="12" x2="12" y1="22" y2="18"/></svg> ${km(distanciaKm(origen, p))}</small>
-      <h3>${esc(p.nombre)} ${p.verificado ? '<span class="verif"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg></span>' : ""}</h3>
+      <h3>${esc(p.nombre)} ${p.verificado ? '<span class="verif"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg></span>' : ""}${p.es_supabase ? NUEVO_LOCAL : ""}</h3>
       <p>${esc(p.descripcion)}</p>
       <div class="popup-tags">${productos}</div>
       <div class="popup-precios">
@@ -189,7 +196,7 @@
       return `<article class="mapa-item" data-id="${esc(p.id)}" tabindex="0" role="button">
         <div class="mapa-item-head">
           <span class="mapa-item-icon">${ICONOS[p.categoria] || svgDefaultPin}</span>
-          <div><h3>${esc(p.nombre)} ${p.verificado ? '<span class="verif"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg></span>' : ""}</h3>
+          <div><h3>${esc(p.nombre)} ${p.verificado ? '<span class="verif"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg></span>' : ""}${p.es_supabase ? NUEVO_LOCAL : ""}</h3>
           <small>${esc(etiqueta(p.categoria))} · ${esc(p.zona_durango)} · <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.1em;"><circle cx="12" cy="12" r="10"/><line x1="22" x2="18" y1="12" y2="12"/><line x1="6" x2="2" y1="12" y2="12"/><line x1="12" x2="12" y1="6" y2="2"/><line x1="12" x2="12" y1="22" y2="18"/></svg> ${km(d)}</small></div>
         </div>
         <div class="mapa-item-foot">

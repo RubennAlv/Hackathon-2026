@@ -27,6 +27,44 @@ roleButtons.forEach((button) => {
   });
 });
 
+const locationButton = document.querySelector('#usarUbicacion');
+const locationStatus = document.querySelector('#ubicacionEstado');
+const latInput = document.querySelector('#lat');
+const lngInput = document.querySelector('#lng');
+
+function setLocationStatus(texto, ok) {
+  if (!locationStatus) return;
+  locationStatus.textContent = texto;
+  locationStatus.style.color = ok ? 'var(--nex-emerald)' : 'var(--nex-text-secondary)';
+}
+
+locationButton?.addEventListener('click', () => {
+  if (!navigator.geolocation) {
+    setLocationStatus('Tu navegador no soporta ubicación; usaremos la dirección.', false);
+    return;
+  }
+  locationButton.disabled = true;
+  setLocationStatus('Obteniendo tu ubicación…', false);
+  navigator.geolocation.getCurrentPosition(
+    ({ coords }) => {
+      latInput.value = coords.latitude.toFixed(6);
+      lngInput.value = coords.longitude.toFixed(6);
+      setLocationStatus('✓ Ubicación capturada. Tu local aparecerá en el mapa.', true);
+      locationButton.disabled = false;
+    },
+    (error) => {
+      setLocationStatus(
+        error.code === 1
+          ? 'Permiso denegado. Usaremos la dirección para ubicarte.'
+          : 'No pudimos obtener tu ubicación. Usaremos la dirección.',
+        false
+      );
+      locationButton.disabled = false;
+    },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+  );
+});
+
 form.addEventListener('submit', async (event) => {
   event.preventEvent?.();
   event.preventDefault();

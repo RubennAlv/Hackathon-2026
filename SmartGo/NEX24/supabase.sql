@@ -43,3 +43,7 @@ create policy "Users update their own profile"
 
 -- Permite que la API con service_role cree perfiles desde el servidor.
 -- No otorgues service_role al navegador.
+
+-- OPCIONAL: para guardar lat/lng en columnas propias ejecuta también
+-- supabase_locations.sql (o pega su contenido aquí). Sin esa migración,
+-- el server guarda el geo dentro de products como "| @geo=lat,lng".

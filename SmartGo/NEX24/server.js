@@ -101,6 +101,168 @@ function fallo(res, status, mensaje) {
   return res.status(status).json({ ok: false, error: mensaje });
 }
 
+// --- Geolocalización de locales registrados -----------------------------------
+const COORDS_CENTRO = { lat: 24.0277, lng: -104.6532 };
+const GEO_TOKEN = /(?:\|\s*)?@geo=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/i;
+const GEO_TOKEN_GLOBAL = /(?:\|\s*)?@geo=-?\d+(?:\.\d+)?,-?\d+(?:\.\d+)?/gi;
+
+function coordsValidas(lat, lng) {
+  const a = Number(lat);
+  const b = Number(lng);
+  return Number.isFinite(a) && Number.isFinite(b) && a >= 22 && a <= 27 && b >= -108 && b <= -102;
+}
+
+function coordsPorDefecto(clave) {
+  let hash = 0;
+  for (const caracter of String(clave || "")) hash = (hash * 31 + caracter.charCodeAt(0)) | 0;
+  const positivo = Math.abs(hash);
+  return {
+    lat: COORDS_CENTRO.lat + (((positivo % 100) - 50) / 5000),
+    lng: COORDS_CENTRO.lng + (((Math.floor(positivo / 100) % 100) - 50) / 5000),
+  };
+}
+
+function extraerGeo(texto) {
+  const coincidencia = String(texto || "").match(GEO_TOKEN);
+  if (!coincidencia) return null;
+  const lat = Number(coincidencia[1]);
+  const lng = Number(coincidencia[2]);
+  return coordsValidas(lat, lng) ? { lat, lng } : null;
+}
+
+function limpiarProductos(texto) {
+  return String(texto || "")
+    .replace(GEO_TOKEN_GLOBAL, "")
+    .replace(/\|\s*$/, "")
+    .trim();
+}
+
+function productosDe(texto) {
+  return limpiarProductos(texto).split(/[;,]+/).map((s) => s.trim()).filter(Boolean);
+}
+
+async function geocodificar(direccion, zona) {
+  // Photon (datos OSM, sin key) es el proveedor principal: Nominatim suele
+  // bloquear peticiones desde IPs compartidas/servidores.
+  // Se prueban variantes porque agregar la "Zona" a veces arruina la búsqueda.
+  const variantes = [
+    [direccion, "Durango", "México"],
+    [direccion, zona, "Durango", "México"],
+    [zona, "Durango", "México"],
+  ];
+  const yaIntentadas = new Set();
+
+  for (const partes of variantes) {
+    const q = partes.filter(Boolean).join(", ");
+    if (!q || yaIntentadas.has(q)) continue;
+    yaIntentadas.add(q);
+    try {
+      const urlPhoton = new URL("https://photon.komoot.io/api/");
+      urlPhoton.searchParams.set("q", q);
+      urlPhoton.searchParams.set("limit", "1");
+      const respuestaPhoton = await fetch(urlPhoton, {
+        headers: { "User-Agent": "NEX24-Hackathon/1.0", Accept: "application/json" },
+        signal: AbortSignal.timeout(6000),
+      });
+      if (respuestaPhoton.ok) {
+        const datos = await respuestaPhoton.json();
+        const coordsPhoton = datos?.features?.[0]?.geometry?.coordinates;
+        if (coordsValidas(coordsPhoton?.[1], coordsPhoton?.[0])) {
+          return { lat: Number(coordsPhoton[1]), lng: Number(coordsPhoton[0]) };
+        }
+      }
+    } catch (_e) {}
+  }
+
+  const url = new URL("https://nominatim.openstreetmap.org/search");
+  url.searchParams.set("format", "jsonv2");
+  url.searchParams.set("limit", "1");
+  url.searchParams.set("q", [direccion, zona, "Durango", "México"].filter(Boolean).join(", "));
+  try {
+    const respuesta = await fetch(url, {
+      headers: {
+        "User-Agent": "NEX24-Hackathon/1.0 (origen-dgo@example.com)",
+        "Accept-Language": "es",
+      },
+      signal: AbortSignal.timeout(6000),
+    });
+    if (!respuesta.ok) return null;
+    const datos = await respuesta.json();
+    const punto = Array.isArray(datos) && datos[0];
+    if (!punto) return null;
+    return coordsValidas(punto.lat, punto.lon) ? { lat: Number(punto.lat), lng: Number(punto.lon) } : null;
+  } catch (_e) {
+    return null;
+  }
+}
+
+function perfilesAProductores(filas = []) {
+  return filas.map((p, indice) => {
+    const geo = extraerGeo(p.products) ||
+      (coordsValidas(p.lat, p.lng) ? { lat: Number(p.lat), lng: Number(p.lng) } : null) ||
+      coordsPorDefecto(p.email || p.business_name);
+    return {
+      id: p.id || `sp_${indice}`,
+      nombre: p.business_name || "Negocio local",
+      categoria: String(p.category || "abarrotes").toLowerCase(),
+      productos: productosDe(p.products),
+      descripcion: `Negocio local registrado: ${p.responsible_name || "NEX24"}`,
+      precio_menudeo: null,
+      precio_mayoreo: null,
+      unidad: "unidad",
+      capacidad_semanal: p.capacity || "Bajo pedido",
+      zona_durango: p.zone || "Durango",
+      lat: geo.lat,
+      lng: geo.lng,
+      whatsapp: p.phone,
+      verificado: true,
+      destacado: false,
+      es_supabase: true,
+    };
+  }).filter(Boolean);
+}
+
+function sanitizarPerfil(p) {
+  return { ...p, products: limpiarProductos(p.products) };
+}
+
+let _supabaseGeoDisponible = null;
+async function supabaseGeoDisponible() {
+  if (_supabaseGeoDisponible !== null) return _supabaseGeoDisponible;
+  if (!supabaseAdmin) return false;
+  const { error } = await supabaseAdmin.from('profiles').select('lat,lng').limit(1);
+  _supabaseGeoDisponible = !error;
+  return _supabaseGeoDisponible;
+}
+
+// Locales registrados antes de este feature no traen geo: se geocodifica su
+// dirección una sola vez y se guarda el marcador para no repetir la llamada.
+const geoIntentados = new Set();
+async function backfillGeoPerfiles(filas = []) {
+  if (!supabaseAdmin) return filas;
+  const pendientes = filas.filter((p) =>
+    !extraerGeo(p.products) && !coordsValidas(p.lat, p.lng) && p.id && !geoIntentados.has(p.id)
+  );
+  if (!pendientes.length) return filas;
+
+  const resueltos = await Promise.all(pendientes.map(async (p) => {
+    geoIntentados.add(p.id);
+    const coords = await geocodificar(p.address, p.zone);
+    if (!coords) return p;
+    const marker = `@geo=${coords.lat},${coords.lng}`;
+    const products = [limpiarProductos(p.products), marker].filter(Boolean).join(' | ');
+    const { error } = await supabaseAdmin.from('profiles').update({ products }).eq('id', p.id);
+    if (error) return p;
+    if (await supabaseGeoDisponible()) {
+      await supabaseAdmin.from('profiles').update({ lat: coords.lat, lng: coords.lng }).eq('id', p.id);
+    }
+    return { ...p, products, lat: coords.lat, lng: coords.lng };
+  }));
+
+  const porId = new Map(resueltos.map((p) => [p.id, p]));
+  return filas.map((p) => porId.get(p.id) || p);
+}
+
 function normalizarMime(mime) {
   if (!mime) return '';
   return mime === 'image/jpg' ? 'image/jpeg' : mime.toLowerCase();
@@ -135,8 +297,18 @@ app.get('/health', (_req, res) => {
   res.json({ ok: true, modo: modoConfigurado(), db: supabaseConfigurado() ? 'supabase' : 'local' });
 });
 
-app.get('/api/productores', (_req, res) => {
-  res.json(productores);
+app.get('/api/productores', async (_req, res) => {
+  let lista = productores;
+  if (supabaseConfigurado()) {
+    try {
+      const { data, error } = await supabaseAdmin.from('profiles').select('*').eq('status', 'approved');
+      if (!error && Array.isArray(data) && data.length) {
+        const locales = perfilesAProductores(await backfillGeoPerfiles(data));
+        if (locales.length) lista = [...productores, ...locales];
+      }
+    } catch (_e) {}
+  }
+  res.json(lista);
 });
 
 app.get('/api/catalogo', async (_req, res) => {
@@ -144,24 +316,7 @@ app.get('/api/catalogo', async (_req, res) => {
     let adicionales = [];
     if (supabaseConfigurado()) {
       const { data } = await supabaseAdmin.from('profiles').select('*').eq('status', 'approved');
-      if (data && data.length) {
-        adicionales = data.map((p, idx) => ({
-          id: p.id || `sp_${idx}`,
-          nombre: p.business_name,
-          categoria: (p.category || 'alimentos').toLowerCase(),
-          productos: (p.products || '').split(/[;,]+/).map(s => s.trim()).filter(Boolean),
-          descripcion: `Negocio local registrado: ${p.responsible_name}`,
-          precio_menudeo: null,
-          precio_mayoreo: null,
-          unidad: 'unidad',
-          capacidad_semanal: p.capacity || 'Bajo pedido',
-          zona_durango: p.zone || 'Durango',
-          whatsapp: p.phone,
-          verificado: true,
-          destacado: false,
-          es_supabase: true,
-        }));
-      }
+      if (data && data.length) adicionales = perfilesAProductores(await backfillGeoPerfiles(data));
     }
     const lista = [...productores, ...adicionales];
     res.json({ ok: true, total: lista.length, productores: lista });
@@ -318,7 +473,7 @@ app.get('/api/registros', async (_req, res) => {
     try {
       const { data, error } = await supabaseAdmin.from('profiles').select('*').order('created_at', { ascending: false });
       if (!error && Array.isArray(data) && data.length) {
-        registros = data;
+        registros = data.map(sanitizarPerfil);
       }
     } catch (_e) {}
   }
@@ -334,6 +489,8 @@ app.post('/api/registros', async (req, res) => {
   const email = texto(cuerpo.email).toLowerCase();
   const telefono = texto(cuerpo.telefono);
   const direccion = texto(cuerpo.direccion);
+  const zona = texto(cuerpo.zona);
+  const productos = texto(cuerpo.productos);
   const password = texto(cuerpo.password);
 
   if (!tipo || !nombre || !responsable || !email || !telefono || !direccion || password.length < 6) {
@@ -348,6 +505,13 @@ app.post('/api/registros', async (req, res) => {
     return fallo(res, 409, 'Ya existe una cuenta con ese correo');
   }
 
+  // GPS del navegador → geocodificación de la dirección → fallback determinista
+  let coords = coordsValidas(cuerpo.lat, cuerpo.lng)
+    ? { lat: Number(cuerpo.lat), lng: Number(cuerpo.lng) }
+    : null;
+  if (!coords) coords = await geocodificar(direccion, zona);
+  if (!coords) coords = coordsPorDefecto(email || nombre);
+
   const userId = `usr_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
   const profile = {
     id: userId,
@@ -358,9 +522,11 @@ app.post('/api/registros', async (req, res) => {
     phone: telefono,
     address: direccion,
     schedule: texto(cuerpo.horario) || (tipo === 'tiendita' ? '8:00 AM - 10:00 PM' : '8:00 AM - 6:00 PM'),
-    zone: texto(cuerpo.zona) || 'Centro',
+    zone: zona || 'Centro',
     category: texto(cuerpo.categoria) || (tipo === 'tiendita' ? 'Abarrotes' : 'General'),
-    products: texto(cuerpo.productos) || '',
+    products: productos || '',
+    lat: coords.lat,
+    lng: coords.lng,
     capacity: texto(cuerpo.capacidad) || '',
     status: 'approved',
     created_at: new Date().toISOString(),
@@ -381,7 +547,7 @@ app.post('/api/registros', async (req, res) => {
       });
       if (!authError && authData?.user) {
         profile.id = authData.user.id;
-        await supabaseAdmin.from('profiles').insert({
+        const filaSupabase = {
           id: authData.user.id,
           role: tipo,
           business_name: nombre,
@@ -392,10 +558,17 @@ app.post('/api/registros', async (req, res) => {
           schedule: profile.schedule,
           zone: profile.zone,
           category: profile.category,
-          products: profile.products,
+          // El geo viaja dentro de products para funcionar sin migración SQL.
+          // Al servirlo se limpia en /api/registros, /api/admin/negocios y /api/catalogo.
+          products: [productos, `@geo=${coords.lat},${coords.lng}`].filter(Boolean).join(' | '),
           capacity: profile.capacity,
           status: 'approved',
-        });
+        };
+        if (await supabaseGeoDisponible()) {
+          filaSupabase.lat = coords.lat;
+          filaSupabase.lng = coords.lng;
+        }
+        await supabaseAdmin.from('profiles').insert(filaSupabase);
       }
     } catch (_e) {}
   }
@@ -411,7 +584,7 @@ app.get('/api/admin/negocios', async (_req, res) => {
     try {
       const { data, error } = await supabaseAdmin.from('profiles').select('*').order('created_at', { ascending: false });
       if (!error && Array.isArray(data) && data.length) {
-        negocios = data;
+        negocios = data.map(sanitizarPerfil);
       }
     } catch (_e) {}
   }

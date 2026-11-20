@@ -115,6 +115,15 @@
             <label for="direccion">Dirección del establecimiento físico *</label>
             <input id="direccion" name="direccion" required placeholder="Calle, número, colonia, municipio en Durango">
           </div>
+          <input type="hidden" id="lat" name="lat">
+          <input type="hidden" id="lng" name="lng">
+          <div class="field full">
+            <button id="usarUbicacion" class="nex-btn nex-btn-ghost nex-btn-sm" type="button" style="width:100%;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.15em;margin-right:4px;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/><line x1="12" x2="12" y1="2" y2="4"/><line x1="12" x2="12" y1="20" y2="22"/><line x1="2" x2="4" y1="12" y2="12"/><line x1="20" x2="22" y1="12" y2="12"/></svg>
+              Usar mi ubicación
+            </button>
+            <small id="ubicacionEstado" style="display:block;margin-top:6px;font-size:11px;color:var(--nex-text-secondary);">Opcional: marca tu pin real en el mapa. Si no, ubicaremos tu dirección.</small>
+          </div>
 
           <div class="field conditional tiendita-fields visible">
             <label for="horario">Horario de servicio</label>
