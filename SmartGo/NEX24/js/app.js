@@ -412,7 +412,7 @@ function applyMarketFiltersAndRender() {
           <div class="nex-supplier-head">
             <span class="nex-sup-avatar c${color}" aria-hidden="true">${iniciales}</span>
             <div class="nex-supplier-meta">
-              <button type="button" class="nex-supplier-name" onclick="openSupplierProfile('${item.productorId}')">${escTexto(item.productorNombre)}</button>
+              <a class="nex-supplier-name" href="/proveedor?id=${encodeURIComponent(item.productorId)}">${escTexto(item.productorNombre)}</a>
               <span class="nex-supplier-role">${item.verificado ? appIcon('shield-check', 11, 'margin-right:3px;vertical-align:-0.15em;') + 'Proveedor verificado' : 'Proveedor local'}${item.esSupabase ? '<span class="nex-supplier-new">Nuevo local</span>' : ''}</span>
             </div>
             ${waUrl ? `<a class="nex-supplier-wa" href="${waUrl}" target="_blank" rel="noopener" title="Hablar con ${escTexto(item.productorNombre)} por WhatsApp">${appIcon('message-circle', 13, 'margin-right:4px;vertical-align:-0.15em;')}Contactar</a>` : ''}
@@ -423,7 +423,7 @@ function applyMarketFiltersAndRender() {
             <span>${appIcon('package', 12, 'margin-right:3px;vertical-align:-0.15em;')}${escTexto(item.capacidad)}</span>
             <span>${appIcon('truck', 12, 'margin-right:3px;vertical-align:-0.15em;')}${escTexto(item.rutas[0] || 'Centro')}</span>
           </div>
-          <button type="button" class="nex-supplier-link" onclick="openSupplierProfile('${item.productorId}')">Ver perfil completo ${appIcon('arrow-up-right', 12, 'margin-left:3px;vertical-align:-0.15em;')}</button>
+          <a class="nex-supplier-link" href="/proveedor?id=${encodeURIComponent(item.productorId)}">Ver perfil completo ${appIcon('arrow-up-right', 12, 'margin-left:3px;vertical-align:-0.15em;')}</a>
         </div>
 
         <div class="nex-market-pricing-box">
@@ -698,6 +698,7 @@ window.openSupplierProfile = function(productorId) {
 
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;">
       ${waUrl ? `<a href="${waUrl}" target="_blank" rel="noopener" class="nex-btn nex-btn-primary" style="flex:1;background:#1F9D55;color:#fff;border-color:#1F9D55;">${appIcon('message-circle', 14, 'margin-right:5px;vertical-align:-0.15em;')} Hablar con el proveedor</a>` : ''}
+      <a href="/proveedor?id=${encodeURIComponent(prod.id || productorId)}" class="nex-btn nex-btn-accent">Ver perfil público →</a>
       <a href="${mapsUrl}" target="_blank" rel="noopener" class="nex-btn nex-btn-secondary">${appIcon('map-pin', 14, 'margin-right:5px;vertical-align:-0.15em;')} Ver zona en mapa</a>
       <a href="/mapa" class="nex-btn nex-btn-outline">${appIcon('map', 14, 'margin-right:5px;vertical-align:-0.15em;')} Mapa NEX24</a>
     </div>
@@ -1084,7 +1085,12 @@ async function renderLanding() {
           </div>
           <h3 style="margin:4px 0 2px;font-size:15px;">${item.nombre}</h3>
           <p style="font-size:12px;color:var(--nex-text-secondary);margin:0 0 8px;">${item.descripcion}</p>
-          <strong style="color:var(--nex-emerald);font-size:12px;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sprout" style="margin-right:3px;vertical-align:-0.15em;"><path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/></svg>${item.productorNombre}</strong>
+          <a class="nex-card-supplier" href="/proveedor?id=${encodeURIComponent(item.productorId)}" title="Ver perfil de ${escTexto(item.productorNombre)}">
+            <span class="nex-sup-avatar nex-sup-avatar-sm c${colorProveedor(item.productorId || item.productorNombre)}" aria-hidden="true">${inicialesProveedor(item.productorNombre)}</span>
+            <span class="nex-card-supplier-name">${escTexto(item.productorNombre)}</span>
+            ${appIcon('arrow-up-right', 11, 'margin-left:auto;opacity:.6;')
+            }
+          </a>
           <small style="display:block;color:var(--nex-text-muted);font-size:11px;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin" style="margin-right:3px;vertical-align:-0.15em;"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>${item.zona}</small>
         </div>
         <div style="margin-top:14px;padding-top:10px;border-top:1px solid var(--nex-border);display:flex;justify-content:space-between;align-items:center;">

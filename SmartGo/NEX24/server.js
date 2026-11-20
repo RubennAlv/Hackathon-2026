@@ -701,6 +701,7 @@ app.get('/productos', (_req, res) => res.sendFile(path.join(RAIZ, 'pages/product
 app.get('/lens', (_req, res) => res.sendFile(path.join(RAIZ, 'pages/lens.html')));
 app.get('/mapa', (_req, res) => res.sendFile(path.join(RAIZ, 'pages/mapa.html')));
 app.get('/tienda', (_req, res) => res.sendFile(path.join(RAIZ, 'pages/tienda.html')));
+app.get('/proveedor', (_req, res) => res.sendFile(path.join(RAIZ, 'pages/proveedor.html')));
 app.get('/emprendedores', (_req, res) => res.sendFile(path.join(RAIZ, 'pages/emprendedores.html')));
 app.get('/registro', (_req, res) => res.sendFile(path.join(RAIZ, 'pages/registro.html')));
 app.get('/login', (_req, res) => res.sendFile(path.join(RAIZ, 'pages/login.html')));
