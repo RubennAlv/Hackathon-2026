@@ -6,8 +6,7 @@
 .lens-wrap {
   max-width: 1200px;
   margin: 0 auto;
-  padding: var(--space-8) var(--space-4) var(--space-16);
-}
+  padding: clamp(20px, 4vw, 48px) clamp(14px, 4vw, 24px) clamp(40px, 8vw, 96px);
 }
 
 .lens-hero {
@@ -678,4 +677,187 @@
   .prices {
     gap: 16px;
   }
+}
+
+/* =============================================================================
+   MEJORAS DE UI/UX Y ACCESIBILIDAD (sin tocar la lógica de Lens)
+   ============================================================================= */
+
+/* Utilidad para que el input de archivo sea focable sin ocupar espacio */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.lens-wrap :is(a, button, label, input, [role="button"]) {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Foco siempre visible: nunca depender solo del hover */
+.lens-wrap :is(a, button, label, input):focus-visible {
+  outline: 3px solid var(--nex-emerald);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+.lens-file:focus-visible + .dropzone {
+  outline: 3px solid var(--nex-emerald);
+  outline-offset: 4px;
+}
+
+.lens-eyebrow { font-weight: 700; letter-spacing: 1px; margin-bottom: 10px; }
+.lens-title {
+  color: var(--nex-forest);
+  font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+  font-weight: 800;
+  line-height: 1.2;
+  margin: 0 0 12px;
+}
+.lens-title span { color: var(--nex-emerald); }
+.lens-lead {
+  color: var(--nex-text-secondary);
+  font-size: 15px;
+  line-height: 1.65;
+  max-width: 680px;
+  margin: 0;
+}
+.lens-flow { color: var(--nex-text-muted); }
+
+.lens-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.lens-card-title { margin: 0; font-size: 17px; color: var(--nex-forest); line-height: 1.3; }
+.lens-card-tag { font-size: 11px; flex: none; }
+.lens-card-sub { margin: 2px 0 0; font-size: 12px; color: var(--nex-text-secondary); line-height: 1.5; }
+
+#lensError { margin-bottom: 14px; }
+.empty-icon { display: flex; justify-content: center; margin-bottom: 12px; color: var(--nex-text-muted); }
+
+/* Zona de carga: objetivo táctil grande y estado de foco claro */
+.dropzone { min-height: 190px; justify-content: center; }
+.dropzone-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  margin-top: 8px;
+  padding: 0 18px;
+  border: 1px solid var(--nex-border-strong, var(--nex-border));
+  border-radius: var(--radius-full);
+  background: var(--nex-surface);
+  color: var(--nex-forest);
+  font-size: 12px;
+  font-weight: 800;
+}
+.lens-location-btn { justify-content: center; border: 1px solid var(--nex-border); min-height: 44px; }
+.scan-button { width: 100%; min-height: 50px; margin-top: 16px; font-size: 16px; }
+.link-button { display: inline-flex; align-items: center; min-height: 44px; }
+
+.demo-chips button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 9px 13px;
+  font-size: 13px;
+}
+
+/* Enlaces generados en resultados también deben ser cómodos de tocar */
+.map-all,
+.producer-footer :is(.wa, .btn-catalog, .map) {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.map-all { color: var(--nex-emerald); font-size: 12px; font-weight: 700; text-decoration: none; }
+.map-all:hover { text-decoration: underline; }
+.map-ext { white-space: nowrap; }
+.lens-card,
+.lens-hero,
+.results-card { scroll-margin-top: 88px; }
+
+@media (hover: none) {
+  .dropzone:hover,
+  .producer:hover,
+  .btn-catalog:hover,
+  .wa:hover { transform: none; }
+}
+
+@media (max-width: 900px) {
+  .lens-grid { gap: 18px; }
+  .lens-hero { margin-bottom: 22px; padding-bottom: 20px; }
+  .lens-hero-side { width: 100%; }
+  .api-status { white-space: normal; }
+}
+
+@media (max-width: 600px) {
+  .lens-hero { gap: 12px; }
+  .lens-title { font-size: clamp(1.55rem, 7vw, 2rem); }
+  .lens-lead { font-size: 13.5px; line-height: 1.6; }
+  .lens-flow { font-size: 11px; }
+  .lens-card { padding: 16px; border-radius: 14px; }
+  .lens-card-title { font-size: 16px; }
+  .lens-card-sub { font-size: 11.5px; }
+  .dropzone { padding: 26px 16px; min-height: 170px; }
+  .dropzone strong { font-size: 14px; }
+  .dropzone small { font-size: 11px; }
+  .drop-icon svg { width: 32px; height: 32px; }
+  .demo-chips button { flex: 1 1 calc(50% - 8px); min-width: calc(50% - 8px); }
+
+  .results-head { align-items: flex-start; flex-wrap: wrap; }
+  .empty-state { padding: 32px 18px; }
+  .detection { padding: 14px; gap: 12px; }
+  .detection-copy h3 { font-size: 18px; }
+  .producer { padding: 14px; }
+  .producer-head { flex-wrap: wrap; }
+  .producer > p { font-size: 12.5px; }
+  .prices { gap: 10px; padding: 10px 12px; }
+  .prices > div { flex: 1 1 130px; }
+  .prices b { font-size: 17px; }
+  .logistics-info { flex-direction: column; gap: 6px; }
+
+  .producer-footer { display: grid; gap: 8px; }
+  .producer-footer :is(.distance, .wa, .btn-catalog, .map) {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+    margin-left: 0;
+  }
+  .distance { justify-content: flex-start !important; text-align: left !important; }
+  .match-line { gap: 8px; }
+  .lens-footnote { font-size: 11px; text-align: left; }
+}
+
+@media (max-width: 380px) {
+  .demo-chips button { flex-basis: 100%; min-width: 100%; }
+  .api-status { font-size: 11px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lens-wrap *,
+  .lens-wrap *::before,
+  .lens-wrap *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  html { scroll-behavior: auto !important; }
+}
+
+@media (forced-colors: active) {
+  .dropzone { border: 2px dashed CanvasText; }
+  .lens-wrap :is(a, button, label, input):focus-visible { outline: 3px solid Highlight; }
+  .pill, .verified, .match-pill { border: 1px solid CanvasText; }
 }
