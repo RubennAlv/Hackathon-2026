@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NEX24 — Plataforma de Comercio Inteligente B2B + B2C</title>
+  <meta name="description" content="Conecta proveedores, pequeños negocios y consumidores en Durango. Descubrimiento comercial inteligente, mayoreo, menudeo y Lens IA.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B8F36B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 20h10'/%3E%3Cpath d='M10 20c5.5-2.5.8-6.4 3-10'/%3E%3Cpath d='M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z'/%3E%3Cpath d='M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/design.css">
+</head>
+<body>
+
+<!-- 1. NAVBAR DINÁMICO CENTRALIZADO -->
+<header class="nav" data-nex-navigation></header>
+
+<main>
+  <!-- 2. HERO PRINCIPAL CORPORATIVO -->
+  <section class="nex-home-hero" aria-labelledby="heroHeading">
+    <div class="nex-container">
+      <div class="nex-hero-content">
+        <div>
+          <span class="nex-hero-tag">Comercio Inteligente B2B + B2C · Durango</span>
+          <h1 id="heroHeading" class="nex-hero-title">Conecta con el comercio que <em>tienes cerca.</em></h1>
+          <div class="nex-hero-subtitle">Encuentra. Conecta. Abastécete.</div>
+          <p class="nex-hero-desc">
+            Descubre productos locales auténticos, encuentra proveedores directos y abastece tu negocio desde una sola plataforma con reconocimiento visual inteligente.
+          </p>
+
+          <!-- 3. BUSCADOR PRINCIPAL INTEGRADO -->
+          <div class="nex-hero-search">
+            <form class="nex-search-form" action="/tienda" method="GET" role="search">
+              <div class="nex-search-input-wrap">
+                <span aria-hidden="true" style="display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
+                <input class="nex-search-input" type="search" name="q" placeholder="¿Qué buscas? Ej. Café de altura, queso menonita, miel..." aria-label="Buscar productos o proveedores">
+              </div>
+              <button type="submit" class="nex-btn nex-btn-accent">Buscar ahora</button>
+            </form>
+          </div>
+
+          <div class="nex-hero-actions">
+            <a class="nex-btn nex-btn-accent" href="/tienda">Explorar Mercado →</a>
+            <a class="nex-btn nex-btn-outline" style="color:#FFFFFF;border-color:rgba(255,255,255,0.3);" href="/lens">Probar Lens IA <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg></a>
+            <a class="nex-btn nex-btn-ghost" style="color:var(--nex-lime-soft);" href="/registro">Registrar mi negocio</a>
+          </div>
+        </div>
+
+        <!-- Tarjeta Visual Interactiva -->
+        <div class="nex-hero-card-side">
+          <div class="nex-preview-card">
+            <div class="nex-preview-badge">
+              <span>● RED LOCAL DURANGO</span>
+              <span class="nex-badge nex-badge-verified"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check" style="margin-right:4px;"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>Verificado</span>
+            </div>
+            <div class="nex-preview-item">
+              <div class="nex-preview-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-coffee"><path d="M10 2v2"/><path d="M14 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h12Z"/><path d="M6 2v2"/><path d="M17 10h2a3 3 0 0 1 3 3v1a3 3 0 0 1-3 3h-2"/></svg></div>
+              <div>
+                <strong style="display:block;font-size:14px;">Café Sierra Madre</strong>
+                <small style="color:var(--nex-text-muted);">Tostado en lotes semanales</small>
+              </div>
+              <div style="margin-left:auto;text-align:right;">
+                <b style="color:var(--nex-forest);display:block;font-size:15px;">$135</b>
+                <small style="color:var(--nex-b2b);font-weight:700;">Mayoreo: $108</small>
+              </div>
+            </div>
+            <div class="nex-preview-item">
+              <div class="nex-preview-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cheese"><path d="m3 13 18-5v11H3z"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="12" r="1.5"/><circle cx="12" cy="16" r="1.2"/></svg></div>
+              <div>
+                <strong style="display:block;font-size:14px;">Quesos Nuevo Ideal</strong>
+                <small style="color:var(--nex-text-muted);">Leche de rancho madurada</small>
+              </div>
+              <div style="margin-left:auto;text-align:right;">
+                <b style="color:var(--nex-forest);display:block;font-size:15px;">$190</b>
+                <small style="color:var(--nex-b2b);font-weight:700;">Mayoreo: $160</small>
+              </div>
+            </div>
+            <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--nex-border);display:flex;justify-content:space-between;align-items:center;font-size:12px;">
+              <span style="color:var(--nex-text-secondary);">Escáner Lens IA activo</span>
+              <span class="nex-badge nex-badge-lime">Listo para conectar</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. ACCESO DESTACADO A LENS IA -->
+  <section class="nex-lens-banner-section">
+    <div class="nex-container">
+      <div class="nex-lens-banner">
+        <div>
+          <span class="nex-badge nex-badge-lime" style="margin-bottom:12px;">DIFERENCIADOR TECNOLÓGICO</span>
+          <h2>Reconocimiento Inteligente Lens IA</h2>
+          <p>
+            Enfoca cualquier producto comercial con tu cámara o carga una foto. Lens IA identifica el producto con Gemini Vision y busca al productor local de Durango que ofrece el equivalente, mostrándote precios de menudeo, mayoreo y distancia exacta.
+          </p>
+          <div class="nex-demo-chips">
+            <span>Categorías frecuentes:</span>
+            <a class="nex-demo-chip" href="/lens"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-camera" style="margin-right:4px;"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>Abrir Escáner</a>
+            <a class="nex-demo-chip" href="/lens"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-coffee" style="margin-right:4px;"><path d="M10 2v2"/><path d="M14 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h12Z"/><path d="M6 2v2"/><path d="M17 10h2a3 3 0 0 1 3 3v1a3 3 0 0 1-3 3h-2"/></svg>Café comercial</a>
+            <a class="nex-demo-chip" href="/lens"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-droplet" style="margin-right:4px;"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>Miel natural</a>
+            <a class="nex-demo-chip" href="/lens"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cheese" style="margin-right:4px;"><path d="m3 13 18-5v11H3z"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="12" r="1.5"/><circle cx="12" cy="16" r="1.2"/></svg>Queso menonita</a>
+            <a class="nex-demo-chip" href="/lens"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-croissant" style="margin-right:4px;"><path d="m4.6 13.1 5-5a2.1 2.1 0 0 1 3 0l5.4 5.4a2.1 2.1 0 0 1 0 3l-5 5a2.1 2.1 0 0 1-3 0l-5.4-5.4a2.1 2.1 0 0 1 0-3Z"/><path d="m8.5 8.5 7 7"/></svg>Panadería artesanal</a>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:12px;">
+          <a class="nex-btn nex-btn-accent nex-btn-lg" href="/lens" style="width:100%;max-width:240px;">Escanear Foto <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg></a>
+          <small style="color:#C7D8CF;font-size:12px;">Detección instantánea sin costo</small>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. CATEGORÍAS COMERCIALES -->
+  <section class="nex-home-section" style="background-color:var(--nex-bg);">
+    <div class="nex-container">
+      <div class="nex-section-header">
+        <span class="nex-section-tag">Catálogo Local</span>
+        <h2>Explora por Categorías</h2>
+        <p>Encuentra insumos para tu negocio o productos de alta calidad para consumo personal elaborados en Durango.</p>
+      </div>
+
+      <div class="nex-categories-grid">
+        <a class="nex-category-card" href="/tienda?categoria=cafe">
+          <div class="nex-category-icon"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-coffee"><path d="M10 2v2"/><path d="M14 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h12Z"/><path d="M6 2v2"/><path d="M17 10h2a3 3 0 0 1 3 3v1a3 3 0 0 1-3 3h-2"/></svg></div>
+          <div class="nex-category-info">
+            <h3>Café y Bebidas</h3>
+            <span>Tostadores y artesanos</span>
+          </div>
+        </a>
+        <a class="nex-category-card" href="/tienda?categoria=queso">
+          <div class="nex-category-icon"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cheese"><path d="m3 13 18-5v11H3z"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="12" r="1.5"/><circle cx="12" cy="16" r="1.2"/></svg></div>
+          <div class="nex-category-info">
+            <h3>Lácteos y Quesos</h3>
+            <span>Menonitas y de rancho</span>
+          </div>
+        </a>
+        <a class="nex-category-card" href="/tienda?categoria=miel">
+          <div class="nex-category-icon"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-droplet"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg></div>
+          <div class="nex-category-info">
+            <h3>Miel y Derivados</h3>
+            <span>Sierra y flor silvestre</span>
+          </div>
+        </a>
+        <a class="nex-category-card" href="/tienda?categoria=mezcal">
+          <div class="nex-category-icon"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-flame"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></div>
+          <div class="nex-category-info">
+            <h3>Mezcal y Destilados</h3>
+            <span>Palenques de Nombre de Dios</span>
+          </div>
+        </a>
+        <a class="nex-category-card" href="/tienda?categoria=panaderia">
+          <div class="nex-category-icon"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-croissant"><path d="m4.6 13.1 5-5a2.1 2.1 0 0 1 3 0l5.4 5.4a2.1 2.1 0 0 1 0 3l-5 5a2.1 2.1 0 0 1-3 0l-5.4-5.4a2.1 2.1 0 0 1 0-3Z"/><path d="m8.5 8.5 7 7"/></svg></div>
+          <div class="nex-category-info">
+            <h3>Panadería y Harinas</h3>
+            <span>Horno tradicional y granos</span>
+          </div>
+        </a>
+        <a class="nex-category-card" href="/tienda?categoria=salsas">
+          <div class="nex-category-icon"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-flame"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></div>
+          <div class="nex-category-info">
+            <h3>Salsas y Chiles</h3>
+            <span>Chile de árbol y macha</span>
+          </div>
+        </a>
+        <a class="nex-category-card" href="/tienda?categoria=carnes">
+          <div class="nex-category-icon"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-beef"><circle cx="12.5" cy="8.5" r="2.5"/><path d="M12.5 2a6.5 6.5 0 0 0-6.22 4.6c-1.1 3.13-.78 3.9-3.18 6.08A3 3 0 0 0 5 18c4 0 8.4-1.8 11.4-4.3A6.5 6.5 0 0 0 12.5 2Z"/><path d="m18.5 6 2.19 4.5a6.48 6.48 0 0 1 .31 2 6.5 6.5 0 0 1-11 4.6"/></svg></div>
+          <div class="nex-category-info">
+            <h3>Carnes y Cecina</h3>
+            <span>Carne seca y machaca</span>
+          </div>
+        </a>
+        <a class="nex-category-card" href="/tienda?categoria=tortillas">
+          <div class="nex-category-icon"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-dot"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></div>
+          <div class="nex-category-info">
+            <h3>Tortillas de Harina</h3>
+            <span>Hechas a mano en Durango</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. PRODUCTOS DESTACADOS (B2C & B2B) -->
+  <section class="nex-home-section" style="background-color:var(--nex-surface);">
+    <div class="nex-container">
+      <div class="nex-section-header">
+        <span class="nex-section-tag">Oferta Comercial</span>
+        <h2>Productos Destacados</h2>
+        <p>Disponibles para compra al menudeo por consumidores o para abastecimiento al mayoreo por negocios locales.</p>
+      </div>
+
+      <div class="nex-grid nex-grid-4">
+        <!-- Producto 1 -->
+        <article class="nex-product-card">
+          <div class="nex-product-card-top">
+            <span class="nex-badge nex-badge-b2c">B2C Menudeo</span>
+            <span class="nex-badge nex-badge-b2b">B2B Mayoreo</span>
+          </div>
+          <div class="nex-product-card-body">
+            <div style="margin-bottom:12px;color:var(--nex-emerald);"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-coffee"><path d="M10 2v2"/><path d="M14 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h12Z"/><path d="M6 2v2"/><path d="M17 10h2a3 3 0 0 1 3 3v1a3 3 0 0 1-3 3h-2"/></svg></div>
+            <h3>Café tostado en grano 500g</h3>
+            <span class="nex-product-provider">Café Sierra Madre Tostadores</span>
+            <p style="font-size:13px;line-height:1.5;">Café de altura tostado en lotes pequeños cada semana en Durango.</p>
+            <div class="nex-product-pricing">
+              <div class="nex-price-col">
+                <small>Consumidor</small>
+                <b>$135</b>
+                <span style="font-size:11px;color:var(--nex-text-muted);">/ bolsa</span>
+              </div>
+              <div class="nex-price-col b2b">
+                <small>Negocio</small>
+                <b>$108</b>
+                <span style="font-size:11px;color:var(--nex-b2b);">/ mayoreo</span>
+              </div>
+            </div>
+            <a class="nex-btn nex-btn-secondary nex-btn-sm" href="/tienda" style="margin-top:14px;width:100%;">Consultar en tienda</a>
+          </div>
+        </article>
+
+        <!-- Producto 2 -->
+        <article class="nex-product-card">
+          <div class="nex-product-card-top">
+            <span class="nex-badge nex-badge-b2c">B2C Menudeo</span>
+            <span class="nex-badge nex-badge-b2b">B2B Mayoreo</span>
+          </div>
+          <div class="nex-product-card-body">
+            <div style="margin-bottom:12px;color:var(--nex-emerald);"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cheese"><path d="m3 13 18-5v11H3z"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="12" r="1.5"/><circle cx="12" cy="16" r="1.2"/></svg></div>
+            <h3>Queso menonita 1kg</h3>
+            <span class="nex-product-provider">Quesos Menonitas Nuevo Ideal</span>
+            <p style="font-size:13px;line-height:1.5;">Queso madurado de leche de rancho elaborado en Nuevo Ideal, Durango.</p>
+            <div class="nex-product-pricing">
+              <div class="nex-price-col">
+                <small>Consumidor</small>
+                <b>$190</b>
+                <span style="font-size:11px;color:var(--nex-text-muted);">/ kg</span>
+              </div>
+              <div class="nex-price-col b2b">
+                <small>Negocio</small>
+                <b>$160</b>
+                <span style="font-size:11px;color:var(--nex-b2b);">/ mayoreo</span>
+              </div>
+            </div>
+            <a class="nex-btn nex-btn-secondary nex-btn-sm" href="/tienda" style="margin-top:14px;width:100%;">Consultar en tienda</a>
+          </div>
+        </article>
+
+        <!-- Producto 3 -->
+        <article class="nex-product-card">
+          <div class="nex-product-card-top">
+            <span class="nex-badge nex-badge-b2c">B2C Menudeo</span>
+            <span class="nex-badge nex-badge-b2b">B2B Mayoreo</span>
+          </div>
+          <div class="nex-product-card-body">
+            <div style="margin-bottom:12px;color:var(--nex-emerald);"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-flame"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></div>
+            <h3>Mezcal joven 750ml</h3>
+            <span class="nex-product-provider">Mezcal Artesanal Nombre de Dios</span>
+            <p style="font-size:13px;line-height:1.5;">Destilado en palenque familiar tradicional con agaves de la región.</p>
+            <div class="nex-product-pricing">
+              <div class="nex-price-col">
+                <small>Consumidor</small>
+                <b>$520</b>
+                <span style="font-size:11px;color:var(--nex-text-muted);">/ botella</span>
+              </div>
+              <div class="nex-price-col b2b">
+                <small>Negocio</small>
+                <b>$430</b>
+                <span style="font-size:11px;color:var(--nex-b2b);">/ mayoreo</span>
+              </div>
+            </div>
+            <a class="nex-btn nex-btn-secondary nex-btn-sm" href="/tienda" style="margin-top:14px;width:100%;">Consultar en tienda</a>
+          </div>
+        </article>
+
+        <!-- Producto 4 -->
+        <article class="nex-product-card">
+          <div class="nex-product-card-top">
+            <span class="nex-badge nex-badge-b2c">B2C Menudeo</span>
+            <span class="nex-badge nex-badge-b2b">B2B Mayoreo</span>
+          </div>
+          <div class="nex-product-card-body">
+            <div style="margin-bottom:12px;color:var(--nex-emerald);"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-dot"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></div>
+            <h3>Tortillas de harina 1kg</h3>
+            <span class="nex-product-provider">Tortillas de Harina La Abuela</span>
+            <p style="font-size:13px;line-height:1.5;">Hechas a mano con receta tradicional de Durango, listas para negocio o mesa.</p>
+            <div class="nex-product-pricing">
+              <div class="nex-price-col">
+                <small>Consumidor</small>
+                <b>$42</b>
+                <span style="font-size:11px;color:var(--nex-text-muted);">/ paquete</span>
+              </div>
+              <div class="nex-price-col b2b">
+                <small>Negocio</small>
+                <b>$33</b>
+                <span style="font-size:11px;color:var(--nex-b2b);">/ mayoreo</span>
+              </div>
+            </div>
+            <a class="nex-btn nex-btn-secondary nex-btn-sm" href="/tienda" style="margin-top:14px;width:100%;">Consultar en tienda</a>
+          </div>
+        </article>
+      </div>
+
+      <div style="text-align:center;margin-top:36px;">
+        <a class="nex-btn nex-btn-primary" href="/tienda">Ver todo el catálogo en el Mercado →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 & 8. ACCESOS SEGMENTADOS PARA COMPRADORES Y PROVEEDORES -->
+  <section class="nex-home-section" style="background-color:var(--nex-bg);">
+    <div class="nex-container">
+      <div class="nex-section-header">
+        <span class="nex-section-tag">Dos Experiencias Integradas</span>
+        <h2>Diseñado para Negocios y Consumidores</h2>
+        <p>Una infraestructura comercial flexible que atiende tanto el abastecimiento empresarial como la compra local individual.</p>
+      </div>
+
+      <div class="nex-dual-cards">
+        <!-- Tarjeta B2B -->
+        <article class="nex-dual-card b2b">
+          <span class="nex-badge nex-badge-b2b" style="margin-bottom:12px;">Para Negocios · B2B</span>
+          <h3>Abastecimiento para Tienditas y Comercios</h3>
+          <p>Optimiza tus compras al por mayor directamente con los productores de Durango sin intermediarios costosos.</p>
+          <ul class="nex-feature-list">
+            <li><span><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg></span> <strong>Precios por volumen:</strong> Ahorra con escalas de mayoreo transparentes.</li>
+            <li><span><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg></span> <strong>Capacidades visibles:</strong> Conoce cuántos kilos o piezas semanales ofrece cada productor.</li>
+            <li><span><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg></span> <strong>Rutas logísticas:</strong> Identifica quién entrega en Centro, Zona Industrial o colonias.</li>
+            <li><span><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg></span> <strong>Cotizaciones rápidas:</strong> Solicita lotes y recibe respuesta directa por WhatsApp o plataforma.</li>
+          </ul>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <a class="nex-btn nex-btn-b2b" href="/registro">Registrar mi negocio B2B</a>
+            <a class="nex-btn nex-btn-secondary" href="/mapa">Ver mapa de productores</a>
+          </div>
+        </article>
+
+        <!-- Tarjeta B2C -->
+        <article class="nex-dual-card b2c">
+          <span class="nex-badge nex-badge-b2c" style="margin-bottom:12px;">Para Consumidores · B2C</span>
+          <h3>Descubre y Compra lo Hecho en Durango</h3>
+          <p>Conoce los mejores productos elaborados por manos locales, apoya a productores de la región y compra con confianza.</p>
+          <ul class="nex-feature-list">
+            <li><span><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg></span> <strong>Búsqueda visual con Lens IA:</strong> Encuentra alternativas locales de productos comerciales.</li>
+            <li><span><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg></span> <strong>Puntos cercanos:</strong> Localiza tienditas y puntos de autoservicio en tu zona.</li>
+            <li><span><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg></span> <strong>Precios de menudeo justos:</strong> Compra productos frescos sin sobreprecios de cadenas.</li>
+            <li><span><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg></span> <strong>Contacto directo:</strong> Comunícate con el vendedor para conocer disponibilidad inmediata.</li>
+          </ul>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <a class="nex-btn nex-btn-primary" href="/tienda">Entrar al Mercado</a>
+            <a class="nex-btn nex-btn-accent" href="/lens">Probar Lens IA <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg></a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. EXPLICACIÓN DEL FUNCIONAMIENTO -->
+  <section class="nex-home-section" style="background-color:var(--nex-surface);">
+    <div class="nex-container">
+      <div class="nex-section-header">
+        <span class="nex-section-tag">Flujo Comercial</span>
+        <h2>¿Cómo Funciona NEX24?</h2>
+        <p>Una experiencia de comercio inteligente en tres pasos simples y transparentes.</p>
+      </div>
+
+      <div class="nex-steps-grid">
+        <div class="nex-step-card">
+          <div class="nex-step-num">1</div>
+          <h3>Encuentra o Escanea</h3>
+          <p>Busca productos en nuestro catálogo digital o toma una fotografía a cualquier marca con <strong>Lens IA</strong> para identificar alternativas locales equivalentes.</p>
+        </div>
+        <div class="nex-step-card">
+          <div class="nex-step-num">2</div>
+          <h3>Compara y Selecciona</h3>
+          <p>Revisa precios claros de menudeo y mayoreo, condiciones de entrega, distancias geolocalizadas y capacidades de suministro semanal.</p>
+        </div>
+        <div class="nex-step-card">
+          <div class="nex-step-num">3</div>
+          <h3>Conecta y Abastécete</h3>
+          <p>Contacta directamente al productor por WhatsApp o inicia tu pedido/cotización de forma ágil, segura y sin comisiones abusivas.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 & 11. COBERTURA COMERCIAL Y BENEFICIOS -->
+  <section class="nex-home-section" style="background-color:var(--nex-bg);border-top:1px solid var(--nex-border);">
+    <div class="nex-container">
+      <div class="nex-section-header">
+        <span class="nex-section-tag">Impacto Regional</span>
+        <h2>Cobertura en Durango y Municipios</h2>
+        <p>Conectamos productores del campo y la ciudad con consumidores y comercios locales.</p>
+      </div>
+
+      <div class="nex-grid nex-grid-3">
+        <div class="nex-card">
+          <h3 style="font-size:1.1rem;display:flex;align-items:center;gap:8px;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin" style="margin-right:6px;"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>Durango Capital</h3>
+          <p style="font-size:13px;">Cobertura activa en Zona Centro, Zona Industrial, Fraccionamiento Guadalupe, Zona Norte y Zona Hotelera.</p>
+          <span class="nex-badge nex-badge-lime">Entregas semanales</span>
+        </div>
+        <div class="nex-card">
+          <h3 style="font-size:1.1rem;display:flex;align-items:center;gap:8px;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin" style="margin-right:6px;"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>Municipios Productores</h3>
+          <p style="font-size:13px;">Productores registrados de Nuevo Ideal (quesos), Nombre de Dios (mezcal), Canatlán (manzana y sidras) y El Mezquital (miel).</p>
+          <span class="nex-badge nex-badge-b2b">Rutas directas</span>
+        </div>
+        <div class="nex-card">
+          <h3 style="font-size:1.1rem;display:flex;align-items:center;gap:8px;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin" style="margin-right:6px;"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>Red de Tienditas</h3>
+          <p style="font-size:13px;">Pequeños negocios locales que ofrecen autoservicio y venta directa de productos regionales a los ciudadanos.</p>
+          <span class="nex-badge nex-badge-verified">Comercio seguro</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- 12. FOOTER EMPRESARIAL ESTRUCTURADO -->
+<footer class="nex-footer" data-nex-footer="true">
+  <div class="nex-container">
+    <div class="nex-footer-main">
+      <div class="nex-footer-col">
+        <a class="logo nex-logo nex-logo-footer" href="/" aria-label="NEX24, inicio"><img src="/public/Logo.png" alt="NEX24"></a>
+        <p style="font-size:13px;max-width:320px;line-height:1.6;color:#B4C4BC;margin-bottom:14px;">
+          Plataforma de comercio inteligente B2B + B2C que conecta directamente a productores locales de Durango, tienditas de barrio y consumidores. Comercio transparente 24/7 sin intermediarios.
+        </p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="nex-badge nex-badge-verified"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check" style="margin-right:4px;"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>14 Productores Verificados</span>
+          <span class="nex-badge nex-badge-lime"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg> Lens IA Integrado</span>
+        </div>
+      </div>
+
+      <div class="nex-footer-col">
+        <h4>Mercado & Mayoreo</h4>
+        <ul class="nex-footer-links">
+          <li><a href="/tienda">Catálogo comercial B2B / B2C</a></li>
+          <li><a href="/tienda?tipo=mayoreo">Abastecimiento al mayoreo (-20%)</a></li>
+          <li><a href="/tienda?categoria=cafe">Café artesanal de altura</a></li>
+          <li><a href="/tienda?categoria=queso">Quesos menonitas Nuevo Ideal</a></li>
+          <li><a href="/tienda?categoria=miel">Miel pura del Mezquital</a></li>
+          <li><a href="/tienda?categoria=mezcal">Mezcal tradicional de Durango</a></li>
+        </ul>
+      </div>
+
+      <div class="nex-footer-col">
+        <h4>Tecnología Comercial</h4>
+        <ul class="nex-footer-links">
+          <li><a href="/lens">Lens IA (Escáner visual inteligente)</a></li>
+          <li><a href="/mapa">Mapa interactivo de productores</a></li>
+        </ul>
+      </div>
+
+      <div class="nex-footer-col">
+        <h4>Ecosistema & Soporte</h4>
+        <ul class="nex-footer-links">
+          <li><a href="/propuesta" style="color:var(--nex-lime);font-weight:700;"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-lightbulb" style="margin-right:6px;"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>Cómo funciona la red NEX24</a></li>
+          <li><a href="/login">Portal de Acceso Comercial</a></li>
+          <li><a href="/registro">Registrar mi negocio o tiendita</a></li>
+          <li><a href="/emprendedores">Panel de gestión de pedidos</a></li>
+          <li><a href="https://wa.me/5216180000001?text=Hola%20NEX24%20solicito%20asistencia%20comercial" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle" style="margin-right:6px;"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>Soporte local por WhatsApp</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="nex-footer-bottom">
+      <div>© 2026 NEX24. Todos los derechos reservados · Durango, Dgo., México.</div>
+      <div>Impulsando el comercio local con inteligencia artificial, mayoreo directo y transparencia.</div>
+    </div>
+  </div>
+</footer>
+
+<script src="js/navigation.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

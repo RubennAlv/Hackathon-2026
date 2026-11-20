@@ -75,6 +75,8 @@ function formatear(p, score, razon, origen) {
     precio_menudeo: p.precio_menudeo,
     precio_mayoreo: p.precio_mayoreo,
     unidad: p.unidad,
+    capacidad_semanal: p.capacidad_semanal || 'Bajo pedido',
+    rutas_entrega: p.rutas_entrega || ['Centro'],
     zona_durango: p.zona_durango,
     lat: p.lat,
     lng: p.lng,

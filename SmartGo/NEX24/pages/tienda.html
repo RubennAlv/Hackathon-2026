@@ -1,17 +1,243 @@
 <!doctype html>
 <html lang="es">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tienda | NEX24</title><link rel="stylesheet" href="../css/styles.css"><link rel="stylesheet" href="../css/panel.css"></head>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mercado Inteligente | NEX24</title>
+  <meta name="description" content="Explora productos locales, compara precios de menudeo y mayoreo, y cotiza directamente con productores de Durango.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B8F36B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z'/%3E%3Cpath d='M3 6h18'/%3E%3Cpath d='M16 10a4 4 0 0 1-8 0'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/design.css">
+  <link rel="stylesheet" href="../css/panel.css">
+</head>
 <body>
-<header class="nav"><a class="logo" href="../index.html">NEX<span>24</span></a><a href="../index.html">← Volver al inicio</a><a href="lens.html">✨ Lens IA</a><a href="mapa.html">🗺️ Mapa IA</a><b class="status">● ABIERTO 24/7</b></header>
-<main class="wrap">
-  <small>AUTOSERVICIO</small><h1>Compra local, a tu medida.</h1>
-  <p>Selecciona un producto y define la cantidad. El precio se calcula automáticamente.</p>
-  <div class="notice"><strong>Modo demostración:</strong> la báscula digital se simula con el campo de peso. También puedes capturar el peso manualmente.</div>
-  <div id="purchaseMessage" class="notice success" hidden></div>
-  <div class="shop">
-    <section><div class="section-heading"><h2>Catálogo</h2><span id="stockSummary"></span></div><div class="items" id="storeItems"></div></section>
-    <aside class="cart"><h2>Tu compra <span id="cartCount" class="count">0</span></h2><div id="cartItems"><p>Tu carrito está vacío.</p></div><hr><div class="total-row"><span>Total</span><b id="cartTotal">$0.00</b></div><button id="payButton" disabled>Simular pago</button></aside>
+
+<!-- Navegación centralizada -->
+<header class="nav" data-nex-navigation></header>
+
+<!-- Cabecera del Marketplace -->
+<div class="nex-market-header">
+  <div class="nex-container">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;">
+      <div>
+        <span class="nex-section-tag">CATÁLOGO REGIONAL VERIFICADO · DURANGO</span>
+        <h1 style="margin:6px 0 10px;font-size:clamp(1.8rem,3vw,2.5rem);">Mercado Comercial y Abastecimiento B2B</h1>
+        <p style="margin:0;max-width:720px;font-size:var(--font-size-md);color:var(--nex-text-secondary);">
+          Descubre productos locales auténticos, compara precios de menudeo o mayoreo y cotiza insumos al por mayor para tu negocio.
+        </p>
+      </div>
+
+      <!-- Selector de Experiencia Comercial B2B / B2C -->
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px;">
+        <div class="nex-mode-switcher-wrap" role="radiogroup" aria-label="Modo de experiencia">
+          <button type="button" class="nex-mode-pill active" id="btnModeB2C" aria-checked="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart" style="margin-right:6px;"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>Consumidor (B2C)
+          </button>
+          <button type="button" class="nex-mode-pill" id="btnModeB2B" aria-checked="false">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-building" style="margin-right:6px;"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>Negocio / Mayoreo (B2B)
+          </button>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button type="button" class="nex-btn nex-btn-secondary nex-btn-sm" id="openSupplyListBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-list" style="margin-right:4px;"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>Mi Lista de Abasto
+          </button>
+          <button type="button" class="nex-btn nex-btn-ghost nex-btn-sm" id="openQuotesHistoryBtn" style="border:1px solid var(--nex-border);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-history" style="margin-right:4px;"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>Mis Cotizaciones
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main class="nex-container" style="padding-bottom:var(--space-16);">
+  <!-- Barra de Herramientas y Filtros -->
+  <section class="nex-market-toolbar" aria-label="Filtros de búsqueda comercial">
+    <div class="nex-toolbar-row-top">
+      <!-- Buscador por texto -->
+      <div class="nex-filter-search">
+        <span aria-hidden="true" style="display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
+        <input type="search" id="marketSearchInput" placeholder="Buscar por producto, productor o palabra clave..." aria-label="Buscar productos">
+      </div>
+
+      <!-- Filtro de Tipo de Compra / Modo Comercial -->
+      <div style="display:flex;gap:6px;align-items:center;">
+        <button type="button" class="nex-chip active" data-filter-mode="todos">Todos</button>
+        <button type="button" class="nex-chip" data-filter-mode="b2c">Menudeo (B2C)</button>
+        <button type="button" class="nex-chip chip-b2b" data-filter-mode="b2b">Mayoreo (B2B)</button>
+      </div>
+
+      <!-- Filtro por Zona -->
+      <select id="marketZoneSelect" class="nex-toolbar-select" aria-label="Filtrar por zona de Durango">
+        <option value="">Todas las zonas</option>
+        <option value="Centro">Centro</option>
+        <option value="Nuevo Ideal">Nuevo Ideal</option>
+        <option value="Nombre de Dios">Nombre de Dios</option>
+        <option value="Canatlán">Canatlán</option>
+        <option value="Zona Industrial">Zona Industrial</option>
+        <option value="Fracc. Guadalupe">Fracc. Guadalupe</option>
+        <option value="Santiago Papasquiaro">Santiago Papasquiaro</option>
+        <option value="El Mezquital">El Mezquital</option>
+      </select>
+
+      <!-- Ordenamiento -->
+      <select id="marketSortSelect" class="nex-toolbar-select" aria-label="Ordenar productos">
+        <option value="destacados">Destacados primero</option>
+        <option value="precio-asc">Precio: Menor a mayor</option>
+        <option value="precio-desc">Precio: Mayor a menor</option>
+        <option value="nombre">Nombre (A-Z)</option>
+      </select>
+    </div>
+
+    <!-- Chips de Categoría -->
+    <div class="nex-category-filter-chips" id="categoryChips">
+      <button type="button" class="nex-chip active" data-category=""><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layers" style="margin-right:4px;"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></svg>Todas las categorías</button>
+      <button type="button" class="nex-chip" data-category="cafe"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-coffee" style="margin-right:4px;"><path d="M10 2v2"/><path d="M14 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h12Z"/><path d="M6 2v2"/><path d="M17 10h2a3 3 0 0 1 3 3v1a3 3 0 0 1-3 3h-2"/></svg>Café</button>
+      <button type="button" class="nex-chip" data-category="queso"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cheese" style="margin-right:4px;"><path d="m3 13 18-5v11H3z"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="12" r="1.5"/><circle cx="12" cy="16" r="1.2"/></svg>Quesos y Lácteos</button>
+      <button type="button" class="nex-chip" data-category="miel"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-droplet" style="margin-right:4px;"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>Miel</button>
+      <button type="button" class="nex-chip" data-category="mezcal"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-flame" style="margin-right:4px;"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>Mezcal</button>
+      <button type="button" class="nex-chip" data-category="panaderia"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-croissant" style="margin-right:4px;"><path d="m4.6 13.1 5-5a2.1 2.1 0 0 1 3 0l5.4 5.4a2.1 2.1 0 0 1 0 3l-5 5a2.1 2.1 0 0 1-3 0l-5.4-5.4a2.1 2.1 0 0 1 0-3Z"/><path d="m8.5 8.5 7 7"/></svg>Panadería</button>
+      <button type="button" class="nex-chip" data-category="salsas"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-flame" style="margin-right:4px;"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>Salsas y Chiles</button>
+      <button type="button" class="nex-chip" data-category="carnes"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-beef" style="margin-right:4px;"><circle cx="12.5" cy="8.5" r="2.5"/><path d="M12.5 2a6.5 6.5 0 0 0-6.22 4.6c-1.1 3.13-.78 3.9-3.18 6.08A3 3 0 0 0 5 18c4 0 8.4-1.8 11.4-4.3A6.5 6.5 0 0 0 12.5 2Z"/><path d="m18.5 6 2.19 4.5a6.48 6.48 0 0 1 .31 2 6.5 6.5 0 0 1-11 4.6"/></svg>Carnes y Cecina</button>
+      <button type="button" class="nex-chip" data-category="tortillas"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-dot" style="margin-right:4px;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>Tortillas</button>
+      <button type="button" class="nex-chip" data-category="botana"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cookie" style="margin-right:4px;"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/><path d="M8.5 8.5v.01"/><path d="M16 15.5v.01"/><path d="M12 12v.01"/><path d="M11 17v.01"/><path d="M7 14v.01"/></svg>Botanas y Nueces</button>
+      <button type="button" class="nex-chip" data-category="bebidas"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cup-soda" style="margin-right:4px;"><path d="m6 8 1.75 12.28a2 2 0 0 0 2 1.72h4.54a2 2 0 0 0 2-1.72L18 8"/><path d="M5 8h14"/><path d="M7 15a6.47 6.47 0 0 1 5 0 6.47 6.47 0 0 0 5 0"/><path d="m12 8 1-6h2"/></svg>Bebidas y Sidras</button>
+      <button type="button" class="nex-chip" data-category="dulces"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-candy" style="margin-right:4px;"><path d="m9.5 7.5-2-2a4.95 4.95 0 1 0-7 7l2 2a4.95 4.95 0 0 0 7-7Z"/><path d="m14 16.5 2 2a4.95 4.95 0 0 0 7-7l-2-2a4.95 4.95 0 0 0-7 7Z"/><path d="m14 7.5 2.5-2.5"/><path d="m7.5 14-2.5 2.5"/><circle cx="12" cy="12" r="3"/></svg>Dulces típicos</button>
+      <button type="button" class="nex-chip" data-category="cosmetica"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles" style="margin-right:4px;"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>Cosmética natural</button>
+      <button type="button" class="nex-chip" data-category="artesania"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-palette" style="margin-right:4px;"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>Textiles y Artesanía</button>
+      <button type="button" class="nex-chip" data-category="cuero"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-briefcase" style="margin-right:4px;"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg>Talabartería</button>
+    </div>
+  </section>
+
+  <!-- Resumen de Resultados y Estado -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+    <div id="stockSummary" style="font-size:var(--font-size-sm);font-weight:var(--font-weight-bold);color:var(--nex-text-secondary);">
+      Cargando productos verificados...
+    </div>
+    <div id="activeFilterPill" style="font-size:12px;color:var(--nex-emerald);font-weight:700;"></div>
+  </div>
+
+  <div id="purchaseMessage" class="nex-alert nex-alert-success" hidden></div>
+
+  <!-- Layout Principal: Catálogo + Panel de Cotización / Carrito -->
+  <div class="nex-market-layout">
+    <!-- Listado de Productos -->
+    <section aria-label="Catálogo de productos">
+      <div id="storeItems" class="nex-market-grid">
+        <p>Cargando catálogo comercial...</p>
+      </div>
+    </section>
+
+    <!-- Sidebar: Cotizador y Abastecimiento Directo -->
+    <aside class="nex-cart-panel" aria-labelledby="cartHeading">
+      <div class="nex-cart-header">
+        <h3 id="cartHeading">Pedido / Cotización</h3>
+        <span id="cartCount" class="nex-badge nex-badge-lime">0 items</span>
+      </div>
+
+      <div id="cartItems" class="nex-cart-items-list">
+        <div class="nex-empty-state" style="padding:28px 14px;border:none;background:transparent;">
+          <span style="margin-bottom:8px;color:var(--nex-text-muted);display:flex;justify-content:center;"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg></span>
+          <strong style="display:block;font-size:13px;color:var(--nex-text-primary);">Tu lista está vacía</strong>
+          <small style="color:var(--nex-text-muted);">Agrega productos para comprar o solicitar cotización por mayoreo.</small>
+        </div>
+      </div>
+
+      <!-- Resumen Financiero y Ahorro -->
+      <div class="nex-cart-summary-box">
+        <div class="nex-cart-row">
+          <span>Subtotal estimado</span>
+          <strong id="cartSubtotal">$0.00</strong>
+        </div>
+        <div class="nex-cart-row" id="cartWholesaleRow" style="color:var(--nex-b2b);display:none;">
+          <span>Ahorro por mayoreo</span>
+          <strong id="cartSavings">-$0.00</strong>
+        </div>
+        <div class="nex-cart-row total">
+          <span>Total</span>
+          <span id="cartTotal">$0.00</span>
+        </div>
+      </div>
+
+      <!-- Botones de Acción Comercial -->
+      <div style="margin-top:18px;display:grid;gap:10px;">
+        <button id="quoteWhatsAppButton" type="button" class="nex-btn nex-btn-primary" style="width:100%;background:#1F9D55;" disabled>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle" style="margin-right:6px;"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg> Contactar y Cotizar (WhatsApp)
+        </button>
+        <button id="viewQuoteSummaryBtn" type="button" class="nex-btn nex-btn-outline" style="width:100%;font-size:12px;" disabled>
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-list" style="margin-right:6px;"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/></svg>Ver Resumen de Cotización
+        </button>
+      </div>
+      <small style="display:block;margin-top:12px;font-size:11px;color:var(--nex-text-muted);text-align:center;">
+        Trato directo con el productor · Sin cargos ocultos
+      </small>
+    </aside>
   </div>
 </main>
+
+<!-- Modal: Ficha Técnica y Comercial del Producto -->
+<div id="productDetailModal" class="nex-modal-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="modalProductTitle">
+  <div class="nex-modal-dialog">
+    <button type="button" class="nex-modal-close" id="closeProductModal" aria-label="Cerrar ventana"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+    <div id="modalProductContent">
+      <!-- Inyectado dinámicamente -->
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Resumen de Cotización Formal -->
+<div id="quoteSummaryModal" class="nex-modal-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="modalQuoteTitle">
+  <div class="nex-modal-dialog">
+    <button type="button" class="nex-modal-close" id="closeQuoteModal" aria-label="Cerrar ventana"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+    <div id="modalQuoteContent">
+      <!-- Inyectado dinámicamente -->
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Lista de Abastecimiento B2B -->
+<div id="supplyListModal" class="nex-modal-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="modalSupplyTitle">
+  <div class="nex-modal-dialog">
+    <button type="button" class="nex-modal-close" id="closeSupplyModal" aria-label="Cerrar ventana"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+    <div style="border-bottom:2px solid var(--nex-b2b);padding-bottom:10px;margin-bottom:16px;">
+      <span class="nex-badge nex-badge-b2b" style="margin-bottom:4px;">HERRAMIENTA COMERCIAL B2B</span>
+      <h2 id="modalSupplyTitle" style="margin:4px 0 0;font-size:1.4rem;">Lista de Abastecimiento Recurrente</h2>
+    </div>
+    <p style="font-size:13px;color:var(--nex-text-secondary);margin-bottom:16px;">
+      Administra tus insumos periódicos para tu tiendita o restaurante. Puedes agregar los productos a tu cotización con un solo clic.
+    </p>
+    <div id="supplyListContent" style="display:grid;gap:10px;margin-bottom:20px;">
+      <!-- Dinámico -->
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--nex-border);padding-top:14px;">
+      <button type="button" class="nex-btn nex-btn-ghost nex-btn-sm" id="clearSupplyListBtn"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2" style="margin-right:4px;"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>Vaciar lista</button>
+      <button type="button" class="nex-btn nex-btn-b2b" id="addAllSupplyToCartBtn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart" style="margin-right:6px;"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>Cargar toda la lista al pedido</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Historial de Cotizaciones -->
+<div id="quotesHistoryModal" class="nex-modal-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="modalHistoryTitle">
+  <div class="nex-modal-dialog">
+    <button type="button" class="nex-modal-close" id="closeHistoryModal" aria-label="Cerrar ventana"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+    <div style="border-bottom:2px solid var(--nex-forest);padding-bottom:10px;margin-bottom:16px;">
+      <span class="nex-badge nex-badge-verified" style="margin-bottom:4px;">NEGOCIACIONES Y PEDIDOS</span>
+      <h2 id="modalHistoryTitle" style="margin:4px 0 0;font-size:1.4rem;">Historial de Cotizaciones Emitidas</h2>
+    </div>
+    <p style="font-size:13px;color:var(--nex-text-secondary);margin-bottom:16px;">
+      Consulta las cotizaciones generadas previamente, descarga comprobantes o vuelve a contactar al proveedor.
+    </p>
+    <div id="quotesHistoryContent" style="display:grid;gap:12px;margin-bottom:16px;">
+      <!-- Dinámico -->
+    </div>
+  </div>
+</div>
+
+<footer class="nex-footer" data-nex-footer="true"></footer>
+
+<script src="../js/navigation.js"></script>
 <script src="../js/app.js"></script>
-</body></html>
+</body>
+</html>

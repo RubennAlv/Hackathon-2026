@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>¿Cómo Funciona NEX24? — Comercio Inteligente Durango</title>
+  <meta name="description" content="Descubre cómo funciona la red comercial NEX24 en Durango: conexión directa B2B y B2C, reconocimiento visual con Lens IA y mayoreo transparente.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B8F36B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5'/%3E%3Cpath d='M9 18h6'/%3E%3Cpath d='M10 22h4'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/design-system.css">
+  <link rel="stylesheet" href="../css/design.css">
+  <style>
+    .propuesta-hero {
+      background: linear-gradient(135deg, #0D261A 0%, #163826 60%, #1D4732 100%);
+      color: #FFFFFF;
+      padding: clamp(48px, 6vw, 80px) 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .propuesta-hero::before {
+      content: "";
+      position: absolute;
+      top: -30%;
+      right: -10%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(163, 230, 53, 0.12) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .propuesta-hero-content {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+    .propuesta-hero h1 {
+      font-size: clamp(2.2rem, 4vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.15;
+      margin: 14px 0 16px;
+      letter-spacing: -0.02em;
+    }
+    .propuesta-hero h1 em {
+      color: var(--nex-lime);
+      font-style: normal;
+    }
+    .propuesta-hero p {
+      font-size: clamp(1rem, 1.6vw, 1.2rem);
+      line-height: 1.6;
+      color: #C7D8CF;
+      margin: 0 auto 28px;
+      max-width: 680px;
+    }
+    .propuesta-stats-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 36px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+    }
+    .propuesta-stat-item {
+      text-align: center;
+    }
+    .propuesta-stat-number {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--nex-lime);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .propuesta-stat-label {
+      font-size: 13px;
+      color: #B4C4BC;
+      font-weight: 500;
+    }
+    .flow-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin: 40px 0;
+    }
+    .flow-card {
+      background: var(--nex-surface);
+      border: 1px solid var(--nex-border);
+      border-radius: var(--radius-lg);
+      padding: 32px 24px;
+      position: relative;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .flow-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--nex-emerald);
+    }
+    .flow-card-num {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--nex-lime-soft);
+      color: var(--nex-forest);
+      font-weight: 800;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+    }
+    .flow-card h3 {
+      font-size: 1.25rem;
+      color: var(--nex-forest);
+      margin: 0 0 10px;
+    }
+    .flow-card p {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--nex-text-secondary);
+      margin: 0 0 16px;
+      flex-grow: 1;
+    }
+    .flow-card-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--nex-emerald);
+      background: rgba(31, 157, 85, 0.08);
+      padding: 4px 10px;
+      border-radius: 20px;
+      align-self: flex-start;
+    }
+    .role-pillars {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+      margin-top: 32px;
+    }
+    .role-pillar-card {
+      background: #FFFFFF;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--nex-border);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-sm);
+    }
+    .role-pillar-head {
+      padding: 24px;
+      border-bottom: 1px solid var(--nex-border);
+      background: var(--nex-surface-subtle);
+    }
+    .role-pillar-body {
+      padding: 24px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .role-feature-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 24px;
+      display: grid;
+      gap: 12px;
+    }
+    .role-feature-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--nex-text-primary);
+    }
+    .role-feature-list li span {
+      color: var(--nex-emerald);
+      font-weight: bold;
+    }
+    .comparison-table-wrap {
+      overflow-x: auto;
+      margin: 36px 0;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--nex-border);
+      background: #FFFFFF;
+    }
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 14px;
+    }
+    .comparison-table th, .comparison-table td {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--nex-border);
+    }
+    .comparison-table th {
+      background: var(--nex-surface-subtle);
+      font-weight: 700;
+      color: var(--nex-forest);
+    }
+    .comparison-table tr:last-child td {
+      border-bottom: none;
+    }
+    .faq-accordion {
+      max-width: 820px;
+      margin: 32px auto 0;
+      display: grid;
+      gap: 12px;
+    }
+    .faq-item {
+      background: #FFFFFF;
+      border: 1px solid var(--nex-border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+    .faq-question {
+      width: 100%;
+      text-align: left;
+      padding: 18px 20px;
+      background: transparent;
+      border: none;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--nex-forest);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+    .faq-question:hover {
+      background: var(--nex-surface-subtle);
+    }
+    .faq-answer {
+      padding: 0 20px 18px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--nex-text-secondary);
+      border-top: 1px solid transparent;
+    }
+  </style>
+</head>
+<body>
+
+<!-- 1. NAVBAR DINÁMICO CENTRALIZADO -->
+<header class="nav" data-nex-navigation></header>
+
+<main>
+  <!-- 2. HERO PRINCIPAL CORPORATIVO -->
+  <section class="propuesta-hero" aria-labelledby="propuestaHeading">
+    <div class="nex-container">
+      <div class="propuesta-hero-content">
+        <span class="nex-badge nex-badge-lime" style="letter-spacing:1px;font-weight:700;padding:4px 12px;">ECOSISTEMA COMERCIAL DURANGO</span>
+        <h1 id="propuestaHeading">Cómo Funciona <em>NEX24</em></h1>
+        <p>
+          Conectamos directamente a productores locales de Durango, pequeñas tienditas de barrio y consumidores finales mediante inteligencia artificial, mayoreo transparente y logística regional.
+        </p>
+
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+          <a class="nex-btn nex-btn-accent" href="/tienda">Explorar Mercado →</a>
+          <a class="nex-btn nex-btn-outline" style="color:#FFFFFF;border-color:rgba(255,255,255,0.3);" href="/lens">Probar Lens IA <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg></a>
+          <a class="nex-btn nex-btn-ghost" style="color:var(--nex-lime);" href="/login">Acceso / Registro</a>
+        </div>
+
+        <div class="propuesta-stats-bar">
+          <div class="propuesta-stat-item">
+            <div class="propuesta-stat-number">14</div>
+            <div class="propuesta-stat-label">Productores Verificados de Durango</div>
+          </div>
+          <div class="propuesta-stat-item">
+            <div class="propuesta-stat-number">-20%</div>
+            <div class="propuesta-stat-label">Ahorro Promedio en Mayoreo B2B</div>
+          </div>
+          <div class="propuesta-stat-item">
+            <div class="propuesta-stat-number">0%</div>
+            <div class="propuesta-stat-label">Comisiones Abusivas por Venta</div>
+          </div>
+          <div class="propuesta-stat-item">
+            <div class="propuesta-stat-number">24/7</div>
+            <div class="propuesta-stat-label">Disponibilidad de Catálogo Digital</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. EL FLUJO EN 3 PASOS INTUITIVOS -->
+  <section class="nex-home-section" style="background:var(--nex-bg);">
+    <div class="nex-container">
+      <div class="nex-section-header">
+        <span class="nex-section-tag">Paso a Paso</span>
+        <h2>Comercio Inteligente en 3 Etapas</h2>
+        <p>Diseñado para que cualquier consumidor o dueño de tiendita encuentre insumos y productos locales en segundos.</p>
+      </div>
+
+      <div class="flow-steps">
+        <article class="flow-card">
+          <div class="flow-card-num">1</div>
+          <h3>Descubre o Escanea</h3>
+          <p>
+            Navega por el mercado digital o utiliza <strong>Lens IA</strong> con la cámara de tu celular. Sube una foto de cualquier marca comercial conocida (como café de lata, quesos de marca o miel comercial) y nuestra IA identificará instantáneamente al productor artesanal local de Durango que ofrece el equivalente auténtico.
+          </p>
+          <div class="flow-card-tag"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg> Impulsado por Gemini Vision</div>
+        </article>
+
+        <article class="flow-card">
+          <div class="flow-card-num">2</div>
+          <h3>Compara Menudeo y Mayoreo</h3>
+          <p>
+            Visualiza precios 100% transparentes: precio unitario para consumo personal (B2C) y precio con descuento por volumen para tienditas y comercios (B2B). Consulta la capacidad de suministro semanal del productor y su cercanía geográfica en Durango.
+          </p>
+          <div class="flow-card-tag"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bar-chart-3" style="margin-right:4px;"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg> Escala de mayoreo visible</div>
+        </article>
+
+        <article class="flow-card">
+          <div class="flow-card-num">3</div>
+          <h3>Conecta y Abastécete Directo</h3>
+          <p>
+            Sin pasarelas complejas ni intermediarios que retengan tus fondos. Genera cotizaciones formales descargables o contacta al productor directamente por WhatsApp con un solo clic para acordar entrega, pago y ruta de abasto en Durango.
+          </p>
+          <div class="flow-card-tag"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle" style="margin-right:4px;"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg> Trato directo por WhatsApp</div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. EXPERIENCIA ADAPTADA POR TIPO DE USUARIO -->
+  <section class="nex-home-section" style="background:var(--nex-surface);">
+    <div class="nex-container">
+      <div class="nex-section-header">
+        <span class="nex-section-tag">Tres Actores, Una Sola Red</span>
+        <h2>¿Qué Hace NEX24 por Ti?</h2>
+        <p>Soluciones específicas para cada participante de la cadena económica local.</p>
+      </div>
+
+      <div class="role-pillars">
+        <!-- Pilar Consumidor -->
+        <article class="role-pillar-card">
+          <div class="role-pillar-head">
+            <span class="nex-badge nex-badge-b2c" style="margin-bottom:8px;">Para el Consumidor · B2C</span>
+            <h3 style="margin:0;font-size:1.3rem;color:var(--nex-forest);">Consume Calidad Local</h3>
+            <p style="margin:6px 0 0;font-size:13px;color:var(--nex-text-secondary);">Descubre lo que se produce en tu propia tierra sin precios inflados.</p>
+          </div>
+          <div class="role-pillar-body">
+            <ul class="role-feature-list">
+              <li><span><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg></span> Escanea productos comerciales con Lens IA y encuentra alternativas locales.</li>
+              <li><span><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg></span> Productos más frescos y naturales sin conservadores industriales.</li>
+              <li><span><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg></span> Ubica tienditas cercanas a tu colonia.</li>
+              <li><span><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg></span> Apoya directamente la economía de familias productoras de Durango.</li>
+            </ul>
+            <a class="nex-btn nex-btn-primary" href="/tienda" style="width:100%;text-align:center;">Explorar Tienda →</a>
+          </div>
+        </article>
+
+        <!-- Pilar Tienditas -->
+        <article class="role-pillar-card" style="border-color:var(--nex-b2b);">
+          <div class="role-pillar-head" style="background:rgba(2, 132, 199, 0.05);">
+            <span class="nex-badge nex-badge-b2b" style="margin-bottom:8px;">Para Tienditas y Comercios · B2B</span>
+            <h3 style="margin:0;font-size:1.3rem;color:var(--nex-forest);">Abastecimiento sin Intermediarios</h3>
+            <p style="margin:6px 0 0;font-size:13px;color:var(--nex-text-secondary);">Mejora tus márgenes y asegura inventario de alta rotación.</p>
+          </div>
+          <div class="role-pillar-body">
+            <ul class="role-feature-list">
+              <li><span><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg></span> Precios de mayoreo con ahorros de hasta 20% respecto a distribuidores.</li>
+              <li><span><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg></span> Conoce capacidades semanales reales para no quedarte sin mercancía.</li>
+              <li><span><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg></span> Arma listas de abasto recurrentes y cotiza lotes completos en 1 clic.</li>
+              <li><span><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg></span> Facturación y acuerdos comerciales directos con los productores.</li>
+            </ul>
+            <a class="nex-btn nex-btn-b2b" href="/login" style="width:100%;text-align:center;">Acceso para Tienditas →</a>
+          </div>
+        </article>
+
+        <!-- Pilar Productores -->
+        <article class="role-pillar-card">
+          <div class="role-pillar-head">
+            <span class="nex-badge nex-badge-lime" style="margin-bottom:8px;">Para Productores Locales</span>
+            <h3 style="margin:0;font-size:1.3rem;color:var(--nex-forest);">Canal de Venta Permanente</h3>
+            <p style="margin:6px 0 0;font-size:13px;color:var(--nex-text-secondary);">Tu negocio abierto 24/7 frente a toda la ciudad y comercios.</p>
+          </div>
+          <div class="role-pillar-body">
+            <ul class="role-feature-list">
+              <li><span><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg></span> Presencia garantizada en el catálogo geolocalizado de Durango.</li>
+              <li><span><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg></span> Reconocimiento prioritario en búsquedas visuales de Lens IA.</li>
+              <li><span><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg></span> Panel comercial para gestionar inventario, capacidad y rutas de entrega.</li>
+              <li><span><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg></span> Recibe solicitudes de compra directamente a tu WhatsApp oficial.</li>
+            </ul>
+            <a class="nex-btn nex-btn-outline" href="/registro" style="width:100%;text-align:center;">Registrar mi Producción →</a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. TABLA COMPARATIVA: MODELO TRADICIONAL VS RED NEX24 -->
+  <section class="nex-home-section" style="background:var(--nex-bg);border-top:1px solid var(--nex-border);">
+    <div class="nex-container">
+      <div class="nex-section-header">
+        <span class="nex-section-tag">Ventaja Competitiva</span>
+        <h2>Cadena Tradicional vs Red NEX24</h2>
+        <p>Por qué el comercio directo y transparente transforma la economía de Durango.</p>
+      </div>
+
+      <div class="comparison-table-wrap">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Aspecto Comercial</th>
+              <th>Canal Tradicional / Intermediarios</th>
+              <th style="background:rgba(31, 157, 85, 0.08);color:var(--nex-forest);">Red NEX24 Durango</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Margen del Productor</strong></td>
+              <td style="color:#DC2626;">Bajo (el intermediario se queda 30-50%)</td>
+              <td style="color:var(--nex-emerald);font-weight:700;">100% íntegro para el productor local</td>
+            </tr>
+            <tr>
+              <td><strong>Precio para Tienditas</strong></td>
+              <td>Precios inflados por 2 a 3 niveles de distribución</td>
+              <td style="color:var(--nex-emerald);font-weight:700;">Precio de mayoreo directo (-20% de ahorro)</td>
+            </tr>
+            <tr>
+              <td><strong>Descubrimiento de Marcas</strong></td>
+              <td>Depende de publicidad masiva de grandes consorcios</td>
+              <td style="color:var(--nex-emerald);font-weight:700;">Lens IA detecta alternativas locales con una foto</td>
+            </tr>
+            <tr>
+              <td><strong>Disponibilidad y Pedidos</strong></td>
+              <td>Visitas esporádicas de preventistas y llamadas</td>
+              <td style="color:var(--nex-emerald);font-weight:700;">Catálogo 24/7 con inventario y cotizador online</td>
+            </tr>
+            <tr>
+              <td><strong>Logística Regional</strong></td>
+              <td>Rutas rígidas e impuestas desde fuera del estado</td>
+              <td style="color:var(--nex-emerald);font-weight:700;">Rutas locales: Centro, Canatlán, Nuevo Ideal, Nombre de Dios</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. PREGUNTAS FRECUENTES (FAQ) -->
+  <section class="nex-home-section" style="background:var(--nex-surface);">
+    <div class="nex-container">
+      <div class="nex-section-header">
+        <span class="nex-section-tag">Dudas Resueltas</span>
+        <h2>Preguntas Frecuentes</h2>
+        <p>Todo lo que necesitas saber antes de empezar a usar la plataforma.</p>
+      </div>
+
+      <div class="faq-accordion">
+        <details class="faq-item" open>
+          <summary class="faq-question">
+            <span>¿NEX24 cobra comisión por cada venta o cotización?</span>
+          </summary>
+          <div class="faq-answer">
+            No. NEX24 es una plataforma de vinculación comercial directa. No retenemos comisiones por transacción. La negociación y el pago se realizan directamente entre el comprador y el productor mediante WhatsApp, transferencia o efectivo.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">
+            <span>¿Cómo funciona el reconocimiento visual con Lens IA?</span>
+          </summary>
+          <div class="faq-answer">
+            Lens IA utiliza modelos de visión avanzados (Gemini Vision) para analizar fotografías de productos comunes (como latas de café, frascos de miel o empaques de queso). Extrae las características clave y las cruza instantáneamente con el catálogo de 34 productores de Durango creado para el hackatón, para sugerir equivalentes locales.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">
+            <span>¿Quiénes pueden comprar con precio de mayoreo B2B?</span>
+          </summary>
+          <div class="faq-answer">
+            Cualquier tiendita de abarrotes, cafetería, restaurante o comercio registrado en la plataforma puede acceder a los precios de mayoreo indicados en cada producto cumpliendo los volúmenes mínimos estipulados por cada productor.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">
+            <span>¿Cómo verifican a los productores en la plataforma?</span>
+          </summary>
+          <div class="faq-answer">
+            Cada productor registrado pasa por un proceso de verificación donde se constata su ubicación en Durango, su capacidad de producción artesanal o agroindustrial, sus permisos y la autenticidad de sus ingredientes.
+          </div>
+        </details>
+      </div>
+
+      <!-- CTA FINAL -->
+      <div style="text-align:center;margin-top:48px;">
+        <h3 style="font-size:1.4rem;color:var(--nex-forest);margin-bottom:12px;">¿Listo para conectar con el comercio de Durango?</h3>
+        <p style="color:var(--nex-text-secondary);margin-bottom:24px;font-size:15px;">Únete como consumidor, tiendita o proveedor en menos de 2 minutos.</p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+          <a class="nex-btn nex-btn-accent nex-btn-lg" href="/tienda">Ir al Mercado Inteligente →</a>
+          <a class="nex-btn nex-btn-primary nex-btn-lg" href="/login">Acceso / Registro de Negocio</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- FOOTER CENTRALIZADO DINÁMICO -->
+<footer class="nex-footer" data-nex-footer="true"></footer>
+
+<script src="../js/navigation.js"></script>
+</body>
+</html>

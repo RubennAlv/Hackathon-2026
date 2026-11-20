@@ -23,7 +23,7 @@ BACKEND (Lens Local):
 - vision.js: Gemini, modo mock y fallback.
 - server.js: API Express (escaneo, health y catálogo).
 - matcher.js: lógica de matching entre detecciones y productores.
-- productores.json: catálogo ficticio de 14 productores.
+- productores.json: catálogo ficticio de 34 productores (19 categorías).
 - scripts/: pruebas y prueba manual de Gemini.
 - package.json y env.example: dependencias y variables de entorno del servidor.
 

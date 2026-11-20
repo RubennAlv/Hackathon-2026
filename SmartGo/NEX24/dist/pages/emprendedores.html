@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Panel Comercial | NEX24</title>
+  <meta name="description" content="Panel de administración comercial para proveedores y negocios de Durango en NEX24.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B8F36B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 20h10'/%3E%3Cpath d='M10 20c5.5-2.5.8-6.4 3-10'/%3E%3Cpath d='M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z'/%3E%3Cpath d='M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/design.css">
+  <link rel="stylesheet" href="../css/panel.css">
+</head>
+<body>
+
+<!-- Navegación centralizada -->
+<header class="nav" data-nex-navigation></header>
+
+<!-- Contenedor del Panel -->
+<div id="businessApp">
+  <!-- Cabecera del Panel -->
+  <div class="nex-panel-header">
+    <div class="nex-container">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;">
+        <div>
+          <span class="nex-section-tag">PANEL COMERCIAL · RED LOCAL DURANGO</span>
+          <h1 id="businessTitle" style="margin:6px 0 4px;font-size:clamp(1.8rem,3vw,2.4rem);">Mi Negocio</h1>
+          <p id="businessSubtitle" style="margin:0;font-size:14px;color:var(--nex-text-secondary);">
+            Administra tu catálogo de productos, existencias, precios de mayoreo y solicitudes de cotización.
+          </p>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span id="profileStatus" class="nex-badge nex-badge-verified"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check" style="margin-right:4px;"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>Verificado</span>
+          <div id="accountBanner" style="display:flex;align-items:center;font-size:13px;color:var(--nex-text-secondary);"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main class="nex-container" style="padding-bottom:var(--space-16);">
+    <!-- Pestañas de Navegación del Panel (Generadas o adaptadas dinámicamente según rol) -->
+    <nav class="nex-panel-tabs" id="panelNavTabs" role="tablist" aria-label="Secciones del panel">
+      <!-- Inyectado dinámicamente según el rol: Proveedor o Tiendita/Comprador -->
+    </nav>
+
+    <!-- Notificación contextual de éxito o alerta -->
+    <div id="panelAlertBox" class="nex-alert nex-alert-success" hidden></div>
+
+    <!-- SECCIONES PARA PROVEEDOR -->
+    <div id="providerSections">
+      <!-- TAB 1: DASHBOARD PROVEEDOR -->
+      <section id="tabDashboard" class="nex-panel-tab-content active" role="tabpanel">
+        <div class="nex-metrics-grid">
+          <div class="nex-metric-card">
+            <span class="nex-metric-label">Productos Publicados</span>
+            <span class="nex-metric-value" id="metricProductsCount">0</span>
+            <span class="nex-metric-hint">Activos en el Marketplace</span>
+          </div>
+          <div class="nex-metric-card b2b">
+            <span class="nex-metric-label">Capacidad Semanal</span>
+            <span class="nex-metric-value" id="metricCapacity">120 kg</span>
+            <span class="nex-metric-hint">Suministro para negocios B2B</span>
+          </div>
+          <div class="nex-metric-card lime">
+            <span class="nex-metric-label">Cotizaciones Recibidas</span>
+            <span class="nex-metric-value" id="metricQuotesCount">0</span>
+            <span class="nex-metric-hint">Solicitudes de tienditas</span>
+          </div>
+          <div class="nex-metric-card">
+            <span class="nex-metric-label">Rutas de Entrega</span>
+            <span class="nex-metric-value" id="metricRoutesCount">3</span>
+            <span class="nex-metric-hint">Zonas activas en Durango</span>
+          </div>
+        </div>
+
+        <div class="nex-grid nex-grid-2">
+          <div class="nex-panel-card">
+            <div class="nex-panel-card-head">
+              <h3>Estado de Verificación Comercial</h3>
+              <span class="nex-badge nex-badge-verified">Activo</span>
+            </div>
+            <p style="font-size:13px;line-height:1.6;color:var(--nex-text-secondary);">
+              Tu negocio cuenta con el sello de <strong>Proveedor Verificado de Durango</strong>. Tus productos se muestran de forma prioritaria en el Marketplace B2B y en las búsquedas visuales de <strong>Lens IA</strong>.
+            </p>
+            <div style="background:var(--nex-bg);padding:14px;border-radius:var(--radius-md);font-size:12px;margin-top:14px;">
+              <div>• <strong>Visibilidad:</strong> Pública en marketplace y Lens IA</div>
+              <div>• <strong>Canal de contacto:</strong> WhatsApp directo y cotización formal</div>
+              <div>• <strong>Zona principal:</strong> <span id="summaryZone">Centro, Durango</span></div>
+            </div>
+          </div>
+
+          <div class="nex-panel-card">
+            <div class="nex-panel-card-head">
+              <h3>Actividad Comercial Reciente</h3>
+              <span class="nex-badge nex-badge-b2b">B2B / B2C</span>
+            </div>
+            <div id="recentActivityList" style="display:grid;gap:10px;font-size:13px;">
+              <p style="color:var(--nex-text-muted);">Sin cotizaciones pendientes de atención.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: CATÁLOGO PROVEEDOR -->
+      <section id="tabCatalog" class="nex-panel-tab-content" role="tabpanel">
+        <div class="nex-panel-card">
+          <div class="nex-panel-card-head">
+            <div>
+              <h3>Catálogo de Productos</h3>
+              <p style="font-size:12px;color:var(--nex-text-secondary);margin:2px 0 0;">
+                Configura tus productos con precios de menudeo para consumidores y precios de mayoreo para tienditas.
+              </p>
+            </div>
+            <button type="button" class="nex-btn nex-btn-primary nex-btn-sm" id="btnOpenNewProductModal">
+              + Publicar Nuevo Producto
+            </button>
+          </div>
+
+          <div class="tablebox" style="box-shadow:none;border-radius:var(--radius-md);">
+            <table class="nex-table">
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>Categoría</th>
+                  <th>P. Menudeo (B2C)</th>
+                  <th>P. Mayoreo (B2B)</th>
+                  <th>Unidad</th>
+                  <th>Estado</th>
+                  <th style="text-align:right;">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="providerCatalogTable">
+                <!-- Dinámico -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: CAPACIDAD PROVEEDOR -->
+      <section id="tabInventory" class="nex-panel-tab-content" role="tabpanel">
+        <div class="nex-panel-card" style="max-width:780px;">
+          <div class="nex-panel-card-head">
+            <h3>Capacidad Operativa y Logística</h3>
+            <span class="nex-badge nex-badge-b2b">Suministro B2B</span>
+          </div>
+          <p style="font-size:13px;color:var(--nex-text-secondary);margin-bottom:18px;">
+            Esta información permite que los negocios compradores sepan cuánto volumen puedes surtir semanalmente y qué colonias o zonas de Durango cubres.
+          </p>
+
+          <form id="capacityForm">
+            <div class="form-grid">
+              <div class="field">
+                <label for="capacidadInput">Capacidad de Suministro Semanal</label>
+                <input type="text" id="capacidadInput" class="nex-form-input" placeholder="Ej. 120 kg, 300 piezas, 50 bultos" required>
+              </div>
+              <div class="field">
+                <label for="disponibilidadSelect">Disponibilidad de Entrega</label>
+                <select id="disponibilidadSelect" class="nex-form-input">
+                  <option value="inmediata">Entrega inmediata (24h)</option>
+                  <option value="bajo-pedido">Bajo pedido (48h - 72h)</option>
+                  <option value="por-lote">Producción semanal por lotes</option>
+                </select>
+              </div>
+              <div class="field full">
+                <label for="rutasInput">Rutas y Zonas de Entrega en Durango</label>
+                <input type="text" id="rutasInput" class="nex-form-input" placeholder="Ej. Centro, Zona Industrial, Fracc. Guadalupe, Zona Norte">
+                <small class="hint">Separa las zonas con comas.</small>
+              </div>
+            </div>
+            <div style="margin-top:20px;">
+              <button type="submit" class="nex-btn nex-btn-primary">Guardar Configuración Operativa</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- TAB 4: PEDIDOS RECIBIDOS PROVEEDOR -->
+      <section id="tabOrders" class="nex-panel-tab-content" role="tabpanel">
+        <div class="nex-panel-card">
+          <div class="nex-panel-card-head">
+            <div>
+              <h3>Solicitudes de Cotización y Pedidos Recibidos</h3>
+              <p style="font-size:12px;color:var(--nex-text-secondary);margin:2px 0 0;">
+                Revisa los pedidos solicitados por tienditas o clientes y contacta directamente al comprador.
+              </p>
+            </div>
+            <span id="ordersCounter" class="nex-badge nex-badge-lime">0 solicitudes</span>
+          </div>
+
+          <div class="tablebox" style="box-shadow:none;border-radius:var(--radius-md);">
+            <table class="nex-table">
+              <thead>
+                <tr>
+                  <th>Folio</th>
+                  <th>Cliente / Negocio</th>
+                  <th>Productos Solicitados</th>
+                  <th>Importe Est.</th>
+                  <th>Estado</th>
+                  <th style="text-align:right;">Contacto</th>
+                </tr>
+              </thead>
+              <tbody id="providerOrdersTable">
+                <!-- Dinámico -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- SECCIONES PARA COMPRADOR / TIENDITA (FASE 6) -->
+    <div id="buyerSections" hidden>
+      <!-- TAB 1: RESUMEN TIENDITA / COMPRADOR -->
+      <section id="tabBuyerDashboard" class="nex-panel-tab-content active" role="tabpanel">
+        <div class="nex-metrics-grid">
+          <div class="nex-metric-card b2b">
+            <span class="nex-metric-label">Insumos en Abasto</span>
+            <span class="nex-metric-value" id="metricBuyerSupplyCount">0</span>
+            <span class="nex-metric-hint">Productos guardados</span>
+          </div>
+          <div class="nex-metric-card lime">
+            <span class="nex-metric-label">Cotizaciones Emitidas</span>
+            <span class="nex-metric-value" id="metricBuyerQuotesCount">0</span>
+            <span class="nex-metric-hint">Folios registrados</span>
+          </div>
+          <div class="nex-metric-card">
+            <span class="nex-metric-label">Proveedores Vinculados</span>
+            <span class="nex-metric-value" id="metricBuyerSuppliersCount">0</span>
+            <span class="nex-metric-hint">Productores de Durango</span>
+          </div>
+          <div class="nex-metric-card">
+            <span class="nex-metric-label">Ahorro por Mayoreo Est.</span>
+            <span class="nex-metric-value" id="metricBuyerSavings">$0.00</span>
+            <span class="nex-metric-hint">Vs precio menudeo</span>
+          </div>
+        </div>
+
+        <div class="nex-grid nex-grid-2">
+          <div class="nex-panel-card">
+            <div class="nex-panel-card-head">
+              <h3>Punto de Venta / Abastecimiento</h3>
+              <span class="nex-badge nex-badge-verified">Comercio Activo</span>
+            </div>
+            <p style="font-size:13px;line-height:1.6;color:var(--nex-text-secondary);">
+              Tu negocio está conectado a la red directa de productores de Durango. Puedes consolidar pedidos de mayoreo sin intermediarios para mantener abastecido tu punto de venta.
+            </p>
+            <div style="margin-top:14px;display:flex;gap:10px;">
+              <a class="nex-btn nex-btn-primary nex-btn-sm" href="/tienda?tipo=mayoreo">Explorar Catálogo B2B →</a>
+              <a class="nex-btn nex-btn-outline nex-btn-sm" href="/mapa">Ver mapa de proveedores</a>
+            </div>
+          </div>
+
+          <div class="nex-panel-card">
+            <div class="nex-panel-card-head">
+              <h3>Últimas Cotizaciones</h3>
+              <span class="nex-badge nex-badge-b2b">Historial</span>
+            </div>
+            <div id="buyerRecentQuotesList" style="display:grid;gap:8px;font-size:13px;">
+              <p style="color:var(--nex-text-muted);">Sin cotizaciones emitidas aún.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: LISTA DE ABASTO Y COMPARADOR MULTI-PROVEEDOR -->
+      <section id="tabBuyerSupply" class="nex-panel-tab-content" role="tabpanel">
+        <div class="nex-panel-card">
+          <div class="nex-panel-card-head">
+            <div>
+              <h3>Comparador Multi-Proveedor de Insumos</h3>
+              <p style="font-size:12px;color:var(--nex-text-secondary);margin:2px 0 0;">
+                Analiza qué productores de Durango suministran cada insumo de tu lista de abastecimiento para armar pedidos optimizados.
+              </p>
+            </div>
+            <a class="nex-btn nex-btn-secondary nex-btn-sm" href="/tienda">+ Explorar más insumos</a>
+          </div>
+
+          <div id="buyerSupplyComparatorTable" class="tablebox" style="box-shadow:none;border-radius:var(--radius-md);">
+            <!-- Dinámico -->
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: COTIZACIONES EMITIDAS TIENDITA -->
+      <section id="tabBuyerOrders" class="nex-panel-tab-content" role="tabpanel">
+        <div class="nex-panel-card">
+          <div class="nex-panel-card-head">
+            <div>
+              <h3>Mis Cotizaciones y Pedidos Emitidos</h3>
+              <p style="font-size:12px;color:var(--nex-text-secondary);margin:2px 0 0;">
+                Folios comerciales emitidos a productores locales de Durango.
+              </p>
+            </div>
+          </div>
+
+          <div class="tablebox" style="box-shadow:none;border-radius:var(--radius-md);">
+            <table class="nex-table">
+              <thead>
+                <tr>
+                  <th>Folio</th>
+                  <th>Fecha</th>
+                  <th>Insumos Solicitados</th>
+                  <th>Total Est.</th>
+                  <th>Ahorro Mayoreo</th>
+                  <th style="text-align:right;">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="buyerQuotesTable">
+                <!-- Dinámico -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: PROVEEDORES FAVORITOS -->
+      <section id="tabBuyerFavorites" class="nex-panel-tab-content" role="tabpanel">
+        <div class="nex-panel-card">
+          <div class="nex-panel-card-head">
+            <h3>Directorio de Proveedores Frecuentes</h3>
+            <span class="nex-badge nex-badge-verified">Verificados</span>
+          </div>
+          <div id="buyerFavoritesGrid" class="nex-grid nex-grid-3">
+            <!-- Dinámico -->
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- SECCIONES PARA ADMINISTRADOR / MODERADOR (FASE 9) -->
+    <div id="adminSections" hidden>
+      <!-- TAB 1: RESUMEN DE MODERACIÓN -->
+      <section id="tabAdminOverview" class="nex-panel-tab-content active" role="tabpanel">
+        <div class="nex-metrics-grid">
+          <div class="nex-metric-card">
+            <span class="nex-metric-label">Comercios Registrados</span>
+            <span class="nex-metric-value" id="metricAdminTotalCount">0</span>
+            <span class="nex-metric-hint">Red comercial Durango</span>
+          </div>
+          <div class="nex-metric-card lime">
+            <span class="nex-metric-label">Comercios Verificados</span>
+            <span class="nex-metric-value" id="metricAdminApprovedCount">0</span>
+            <span class="nex-metric-hint">Con sello de confianza</span>
+          </div>
+          <div class="nex-metric-card b2b">
+            <span class="nex-metric-label">Solicitudes en Revisión</span>
+            <span class="nex-metric-value" id="metricAdminPendingCount">0</span>
+            <span class="nex-metric-hint">Pendientes de auditoría</span>
+          </div>
+          <div class="nex-metric-card">
+            <span class="nex-metric-label">Productores Oficiales</span>
+            <span class="nex-metric-value">14</span>
+            <span class="nex-metric-hint">Productores verificados Dgo</span>
+          </div>
+        </div>
+
+        <div class="nex-grid nex-grid-2">
+          <div class="nex-panel-card">
+            <div class="nex-panel-card-head">
+              <h3>Protocolo de Confianza Comercial</h3>
+              <span class="nex-badge nex-badge-verified">Normativa NEX24</span>
+            </div>
+            <p style="font-size:13px;line-height:1.6;color:var(--nex-text-secondary);margin-bottom:12px;">
+              El sello <strong><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check" style="margin-right:4px;"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>Proveedor Verificado de Durango</strong> garantiza a los compradores y tienditas que el proveedor cuenta con domicilio físico validado, capacidad de surtido semanal comprobable y canal directo de contacto sin intermediarios.
+            </p>
+            <div style="background:var(--nex-bg);padding:14px;border-radius:var(--radius-md);font-size:12px;line-height:1.7;">
+              <div>• <strong>1. Ubicación Local:</strong> Comercio o taller establecido en el estado de Durango.</div>
+              <div>• <strong>2. Capacidad B2B:</strong> Capacidad de suministro semanal mínima declarada.</div>
+              <div>• <strong>3. Precios Claros:</strong> Desglose transparente de precio menudeo y mayoreo.</div>
+              <div>• <strong>4. Atención Verificada:</strong> Línea directa de WhatsApp y responsable comercial.</div>
+            </div>
+          </div>
+
+          <div class="nex-panel-card">
+            <div class="nex-panel-card-head">
+              <h3>Acciones Rápidas de Verificación</h3>
+              <span class="nex-badge nex-badge-b2b">Auditoría</span>
+            </div>
+            <p style="font-size:13px;color:var(--nex-text-secondary);line-height:1.6;">
+              Revisa la lista de solicitudes recientes en la pestaña <strong>"Bandeja de Moderación"</strong> para auditar negocios, activar su visibilidad en el Marketplace y habilitar el matching en Lens IA.
+            </p>
+            <div style="margin-top:16px;display:flex;gap:10px;">
+              <button type="button" class="nex-btn nex-btn-primary nex-btn-sm" id="btnGoToModeration">
+                Ir a Bandeja de Moderación →
+              </button>
+              <a href="/tienda" class="nex-btn nex-btn-outline nex-btn-sm">
+                Ver Catálogo Público
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: BANDEJA DE MODERACIÓN Y REGISTROS -->
+      <section id="tabAdminModeration" class="nex-panel-tab-content" role="tabpanel">
+        <div class="nex-panel-card">
+          <div class="nex-panel-card-head">
+            <div>
+              <h3>Bandeja de Moderación de Comercios</h3>
+              <p style="font-size:12px;color:var(--nex-text-secondary);margin:2px 0 0;">
+                Audita y gestiona el estatus de aprobación de proveedores y tienditas registradas en Durango.
+              </p>
+            </div>
+            <button type="button" class="nex-btn nex-btn-secondary nex-btn-sm" id="btnRefreshAdminList">
+              ↺ Actualizar Lista
+            </button>
+          </div>
+
+          <div class="tablebox" style="box-shadow:none;border-radius:var(--radius-md);">
+            <table class="nex-table">
+              <thead>
+                <tr>
+                  <th>Negocio Comercial</th>
+                  <th>Tipo / Rol</th>
+                  <th>Responsable y Contacto</th>
+                  <th>Zona Durango</th>
+                  <th>Capacidad / Suministro</th>
+                  <th>Estado</th>
+                  <th style="text-align:right;">Acciones de Moderación</th>
+                </tr>
+              </thead>
+              <tbody id="adminBusinessesTable">
+                <!-- Dinámico -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: AUDITORÍA DE SELLOS DE CONFIANZA -->
+      <section id="tabAdminBadges" class="nex-panel-tab-content" role="tabpanel">
+        <div class="nex-panel-card" style="max-width:820px;">
+          <div class="nex-panel-card-head">
+            <h3>Sellos Oficiales de Confianza y Calidad Comercial</h3>
+            <span class="nex-badge nex-badge-verified">Estándar Durango</span>
+          </div>
+          <p style="font-size:13px;color:var(--nex-text-secondary);margin-bottom:18px;">
+            NEX24 implementa tres niveles de certificación que se despliegan en las fichas de producto, catálogo mayorista y resultados de Lens IA.
+          </p>
+
+          <div style="display:grid;gap:14px;">
+            <div style="display:flex;gap:14px;padding:14px;border:1px solid var(--nex-border);border-radius:var(--radius-md);background:var(--nex-surface);">
+              <span class="nex-badge nex-badge-verified" style="height:fit-content;font-size:12px;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check" style="margin-right:4px;"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>Proveedor Verificado</span>
+              <div>
+                <strong style="color:var(--nex-forest);display:block;font-size:14px;">Proveedor Verificado de Durango</strong>
+                <p style="font-size:12px;color:var(--nex-text-secondary);margin:4px 0 0;">
+                  Se otorga a productores agroalimentarios y manufactureros del estado con capacidad de surtido constante y contacto directo validado.
+                </p>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:14px;padding:14px;border:1px solid var(--nex-border);border-radius:var(--radius-md);background:var(--nex-surface);">
+              <span class="nex-badge nex-badge-b2b" style="height:fit-content;font-size:12px;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-building" style="margin-right:4px;"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>Suministro B2B</span>
+              <div>
+                <strong style="color:var(--nex-b2b);display:block;font-size:14px;">Capacidad de Mayoreo Escalonado</strong>
+                <p style="font-size:12px;color:var(--nex-text-secondary);margin:4px 0 0;">
+                  Acredita que el proveedor maneja precios de mayoreo formal (desde 5 piezas) con descuentos del 15% al 30% para tienditas y restaurantes.
+                </p>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:14px;padding:14px;border:1px solid var(--nex-border);border-radius:var(--radius-md);background:var(--nex-surface);">
+              <span class="nex-badge nex-badge-lime" style="height:fit-content;font-size:12px;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-truck" style="margin-right:4px;"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>Ruta Activa</span>
+              <div>
+                <strong style="color:var(--nex-forest);display:block;font-size:14px;">Rutas Locales de Despacho</strong>
+                <p style="font-size:12px;color:var(--nex-text-secondary);margin:4px 0 0;">
+                  Indica cobertura activa de entrega dentro de Durango capital, Nombre de Dios, Canatlán, Nuevo Ideal o zona metropolitana en 24-48h.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- TAB 5: CONFIGURACIÓN COMERCIAL (Común a ambos) -->
+
+    <!-- TAB 5: CONFIGURACIÓN COMERCIAL -->
+    <section id="tabSettings" class="nex-panel-tab-content" role="tabpanel">
+      <div class="nex-panel-card" style="max-width:780px;">
+        <div class="nex-panel-card-head">
+          <h3>Datos del Negocio y Contacto</h3>
+          <span class="nex-badge nex-badge-verified">Datos Registrados</span>
+        </div>
+
+        <form id="settingsForm">
+          <div class="form-grid">
+            <div class="field">
+              <label for="settingsName">Nombre Comercial del Negocio</label>
+              <input type="text" id="settingsName" class="nex-form-input" required>
+            </div>
+            <div class="field">
+              <label for="settingsResponsible">Persona Responsable</label>
+              <input type="text" id="settingsResponsible" class="nex-form-input" required>
+            </div>
+            <div class="field">
+              <label for="settingsPhone">Teléfono / WhatsApp de Pedidos</label>
+              <input type="tel" id="settingsPhone" class="nex-form-input" required placeholder="618 000 0000">
+            </div>
+            <div class="field">
+              <label for="settingsZone">Zona en Durango</label>
+              <input type="text" id="settingsZone" class="nex-form-input" required placeholder="Ej. Centro">
+            </div>
+            <div class="field full">
+              <label for="settingsAddress">Dirección Física</label>
+              <input type="text" id="settingsAddress" class="nex-form-input" required placeholder="Calle, número, colonia">
+            </div>
+            <div class="field full">
+              <label for="settingsSchedule">Horario de Atención Comercial</label>
+              <input type="text" id="settingsSchedule" class="nex-form-input" placeholder="Ej. Lunes a Viernes 8:00 AM - 6:00 PM">
+            </div>
+          </div>
+          <div style="margin-top:20px;">
+            <button type="submit" class="nex-btn nex-btn-primary">Actualizar Información Comercial</button>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Modal: Publicar / Editar Producto -->
+<div id="productFormModal" class="nex-modal-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="modalFormTitle">
+  <div class="nex-modal-dialog">
+    <button type="button" class="nex-modal-close" id="closeProductFormModal" aria-label="Cerrar ventana"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+    <div style="border-bottom:2px solid var(--nex-emerald);padding-bottom:10px;margin-bottom:16px;">
+      <span class="nex-badge nex-badge-lime" style="margin-bottom:4px;">CATÁLOGO PROVEEDOR</span>
+      <h2 id="modalFormTitle" style="margin:4px 0 0;font-size:1.4rem;">Publicar Nuevo Producto</h2>
+    </div>
+
+    <form id="productEditForm">
+      <input type="hidden" id="prodEditId" value="">
+      <div class="form-grid">
+        <div class="field full">
+          <label for="prodEditName">Nombre del Producto *</label>
+          <input type="text" id="prodEditName" class="nex-form-input" required placeholder="Ej. Café molido de altura 500g">
+        </div>
+        <div class="field">
+          <label for="prodEditCategory">Categoría Comercial *</label>
+          <select id="prodEditCategory" class="nex-form-input" required>
+            <option value="cafe">Café y Bebidas</option>
+            <option value="queso">Lácteos y Quesos</option>
+            <option value="miel">Miel y Derivados</option>
+            <option value="mezcal">Mezcal Artesanal</option>
+            <option value="panaderia">Panadería y Harinas</option>
+            <option value="salsas">Salsas y Chiles</option>
+            <option value="carnes">Carnes y Cecina</option>
+            <option value="tortillas">Tortillas de Harina</option>
+            <option value="dulces">Dulces Típicos</option>
+            <option value="botana">Botanas y Nueces</option>
+            <option value="cosmetica">Cosmética Natural</option>
+            <option value="artesania">Textiles y Artesanías</option>
+            <option value="cuero">Talabartería y Piel</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="prodEditUnit">Presentación / Unidad *</label>
+          <input type="text" id="prodEditUnit" class="nex-form-input" required placeholder="Ej. bolsa 500g, kg, botella 750ml">
+        </div>
+        <div class="field">
+          <label for="prodEditPriceB2C">Precio Menudeo (Consumidor) *</label>
+          <input type="number" id="prodEditPriceB2C" class="nex-form-input" required min="1" step="0.5" placeholder="Ej. 135">
+        </div>
+        <div class="field">
+          <label for="prodEditPriceB2B">Precio Mayoreo (Negocios B2B) *</label>
+          <input type="number" id="prodEditPriceB2B" class="nex-form-input" required min="1" step="0.5" placeholder="Ej. 108">
+        </div>
+        <div class="field full">
+          <label for="prodEditDesc">Descripción Comercial</label>
+          <textarea id="prodEditDesc" class="nex-form-input" rows="3" placeholder="Describe los ingredientes, proceso artesanal o características de tu producto..."></textarea>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:20px;justify-content:flex-end;">
+        <button type="button" class="nex-btn nex-btn-ghost" id="cancelProductFormBtn">Cancelar</button>
+        <button type="submit" class="nex-btn nex-btn-primary" id="saveProductBtn">Guardar Producto en Catálogo</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<footer class="nex-footer" data-nex-footer="true"></footer>
+
+<script src="../js/navigation.js"></script>
+<script src="../js/app.js"></script>
+</body>
+</html>

@@ -37,6 +37,19 @@
 .mapa-wrap .notice.error{background:#fff0ed;border:1px solid #f0c3ba;color:#8f382b;border-radius:9px;padding:11px 13px;font-size:12px;margin-bottom:12px}
 
 .mapa-canvas{width:100%;height:560px;border-radius:12px;border:1px solid var(--line);background:#eef2e8;z-index:0}
+.mapa-canvas.mapa-local{position:relative;overflow:hidden;background:linear-gradient(145deg,#edf3df,#dfead5)}
+.local-map-grid{position:absolute;inset:-20%;background-image:linear-gradient(#fff9 1px,transparent 1px),linear-gradient(90deg,#fff9 1px,transparent 1px);background-size:48px 48px;transform:rotate(-8deg) scale(1.08)}
+.local-map-road{position:absolute;background:#fff;border:5px solid #cadabc;border-radius:999px;opacity:.95}
+.local-road-one{width:130%;height:90px;left:-15%;top:43%;transform:rotate(-18deg)}
+.local-road-two{width:90px;height:125%;left:58%;top:-12%;transform:rotate(12deg)}
+.local-map-label{position:absolute;left:18px;bottom:16px;font-size:10px;font-weight:800;letter-spacing:2px;color:#718078}
+.local-marker-layer{position:absolute;inset:0}
+.pin-lens.local-pin{position:absolute;width:38px;height:38px;border:0;border-radius:50% 50% 50% 0;transform:translate(-50%,-100%) rotate(-45deg);background:#14251f;box-shadow:0 7px 16px #14251f30;cursor:pointer;padding:0}
+.pin-lens.local-pin span{display:grid;place-items:center;width:38px;height:38px;transform:rotate(45deg);font-size:17px}
+.pin-lens.local-pin.usuario{width:18px;height:18px;border:3px solid #fff;background:#6a963d;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 5px 12px #14251f40}
+.pin-lens.local-pin.usuario span{width:12px;height:12px;transform:none}
+.pin-lens.local-pin.sugerencia{box-shadow:0 0 0 8px #c6f36b66,0 7px 16px #14251f30}
+.local-popup{position:absolute;z-index:30;width:min(280px,calc(100% - 24px));padding:12px 14px;border-radius:12px;background:#fff;box-shadow:0 14px 34px #14251f30;border:1px solid var(--line)}
 .leaflet-container{font-family:inherit}
 .pin-lens{background:transparent;border:0}
 .pin-lens span{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:#fff;border:2px solid #5b842c;box-shadow:0 6px 16px #14251f33;font-size:18px;transition:transform .15s}

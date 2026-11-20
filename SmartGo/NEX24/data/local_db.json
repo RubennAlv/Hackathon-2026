@@ -1,0 +1,55 @@
+{
+  "users": [
+    {
+      "id": "admin_01",
+      "email": "admin@nex24.com",
+      "password": "demo",
+      "role": "admin",
+      "business_name": "Supervisión y Verificación Durango",
+      "responsible_name": "Coordinador Comercial NEX24",
+      "phone": "6181234500",
+      "address": "Palacio de Gobierno / Centro, Durango",
+      "schedule": "Lunes a Viernes 8:00 AM - 5:00 PM",
+      "zone": "Centro",
+      "category": "Administración",
+      "products": "Sellos de Verificación Oficial",
+      "capacity": "Auditoría regional",
+      "status": "approved",
+      "created_at": "2026-11-20T08:44:25.807Z"
+    },
+    {
+      "id": "biz_01",
+      "email": "proveedor@nex24.com",
+      "password": "demo",
+      "role": "proveedor",
+      "business_name": "Café Sierra Madre Tostadores",
+      "responsible_name": "Martín Soto",
+      "phone": "5216180000001",
+      "address": "Av. 20 de Noviembre #805, Zona Centro, Durango",
+      "schedule": "Lunes a Sábado 8:00 AM - 6:00 PM",
+      "zone": "Centro",
+      "category": "cafe",
+      "products": "Café tostado en grano 500g, Café molido 250g",
+      "capacity": "120 kg/semana",
+      "status": "approved",
+      "created_at": "2026-11-20T08:44:25.808Z"
+    },
+    {
+      "id": "biz_02",
+      "email": "tiendita@nex24.com",
+      "password": "demo",
+      "role": "tiendita",
+      "business_name": "Abarrotes y Tiendita El Centro",
+      "responsible_name": "Guadalupe Hernández",
+      "phone": "5216180000002",
+      "address": "Calle 5 de Febrero #402, Zona Centro, Durango",
+      "schedule": "24 Horas",
+      "zone": "Centro",
+      "category": "Abarrotes",
+      "products": "Insumos y abasto regional",
+      "capacity": "Consumo semanal frecuente",
+      "status": "approved",
+      "created_at": "2026-11-20T08:44:25.808Z"
+    }
+  ]
+}
