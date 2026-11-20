@@ -47,6 +47,7 @@ function getNavigationItems(profile) {
   return [
     { href: '/', label: 'Inicio', key: 'inicio' },
     { href: '/tienda', label: 'Mercado', key: 'tienda' },
+    { href: '/mapa', label: 'Mapa IA 🗺️', key: 'mapa' },
     { href: '/ubicaciones', label: 'Proveedores', key: 'ubicaciones' },
     { href: '/lens', label: 'Lens IA ✨', key: 'lens' },
     { href: '/propuesta', label: 'Cómo funciona', key: 'propuesta' },

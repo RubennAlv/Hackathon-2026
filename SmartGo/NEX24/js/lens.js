@@ -247,17 +247,11 @@
           </div>
           ${logistics}
           <div class="producer-footer">
-<<<<<<< HEAD
-            <span class="distance">⌖ ${km(p.distancia_km)} · ${esc(p.zona_durango)}</span>
-            ${whatsapp ? `<a class="wa" href="https://wa.me/${whatsapp}?text=${mensaje}" target="_blank" rel="noopener">WhatsApp</a>` : ""}
-            <a class="map" href="mapa.html?productor=${encodeURIComponent(p.id)}">Ver en mapa ↗</a>
-            <a class="map map-ext" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${p.lat},${p.lng}`)}" target="_blank" rel="noopener">GMaps</a>
-=======
             <span class="distance">📍 ${esc(p.zona_durango)} (${km(p.distancia_km)})</span>
             <a class="btn-catalog" href="${tiendaUrl}">🛒 Ver en Tienda</a>
             ${whatsapp ? `<a class="wa" href="https://wa.me/${whatsapp}?text=${mensaje}" target="_blank" rel="noopener">💬 WhatsApp</a>` : ""}
-            <a class="map" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${p.lat},${p.lng}`)}" target="_blank" rel="noopener">Mapa ↗</a>
->>>>>>> a0eb23c (mejoras de registro, UI, Proveedores, Comerciantes, UX etc)
+            <a class="map" href="/mapa?productor=${encodeURIComponent(p.id)}">Ver en mapa ↗</a>
+            <a class="map map-ext" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${p.lat},${p.lng}`)}" target="_blank" rel="noopener">GMaps</a>
           </div>
           ${p.razon ? `<small class="reason">🔍 ${esc(p.razon)}</small>` : ""}
         </article>`;

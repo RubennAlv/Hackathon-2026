@@ -502,22 +502,16 @@ app.get('/api/auth/me', async (req, res) => {
 // La interfaz NEX24 se sirve desde el mismo servidor que la API.
 // Solo se exponen las carpetas públicas: nunca RAIZ completa (ahí viven .env y la key).
 app.get(['/', '/index.html'], (_req, res) => res.sendFile(path.join(RAIZ, 'index.html')));
-<<<<<<< HEAD
-app.get('/lens', (_req, res) => res.redirect('/pages/lens.html'));
-app.get('/mapa', (_req, res) => res.redirect('/pages/mapa.html'));
-app.get('/tienda', (_req, res) => res.redirect('/pages/tienda.html'));
-app.get('/emprendedores', (_req, res) => res.redirect('/pages/emprendedores.html'));
-=======
 app.get('/propuesta', (_req, res) => res.sendFile(path.join(RAIZ, 'pages/propuesta.html')));
 app.get('/productos', (_req, res) => res.sendFile(path.join(RAIZ, 'pages/productos.html')));
 app.get('/ubicaciones', (_req, res) => res.sendFile(path.join(RAIZ, 'pages/ubicaciones.html')));
 app.get('/simulacion', (_req, res) => res.sendFile(path.join(RAIZ, 'pages/simulacion.html')));
 app.get('/lens', (_req, res) => res.sendFile(path.join(RAIZ, 'pages/lens.html')));
+app.get('/mapa', (_req, res) => res.sendFile(path.join(RAIZ, 'pages/mapa.html')));
 app.get('/tienda', (_req, res) => res.sendFile(path.join(RAIZ, 'pages/tienda.html')));
 app.get('/emprendedores', (_req, res) => res.sendFile(path.join(RAIZ, 'pages/emprendedores.html')));
 app.get('/registro', (_req, res) => res.sendFile(path.join(RAIZ, 'pages/registro.html')));
 app.get('/login', (_req, res) => res.sendFile(path.join(RAIZ, 'pages/login.html')));
->>>>>>> a0eb23c (mejoras de registro, UI, Proveedores, Comerciantes, UX etc)
 app.use('/pages', express.static(path.join(RAIZ, 'pages')));
 app.use('/css', express.static(path.join(RAIZ, 'css')));
 app.use('/js', express.static(path.join(RAIZ, 'js')));

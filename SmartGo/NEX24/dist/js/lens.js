@@ -250,7 +250,8 @@
             <span class="distance">📍 ${esc(p.zona_durango)} (${km(p.distancia_km)})</span>
             <a class="btn-catalog" href="${tiendaUrl}">🛒 Ver en Tienda</a>
             ${whatsapp ? `<a class="wa" href="https://wa.me/${whatsapp}?text=${mensaje}" target="_blank" rel="noopener">💬 WhatsApp</a>` : ""}
-            <a class="map" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${p.lat},${p.lng}`)}" target="_blank" rel="noopener">Mapa ↗</a>
+            <a class="map" href="/mapa?productor=${encodeURIComponent(p.id)}">Ver en mapa ↗</a>
+            <a class="map map-ext" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${p.lat},${p.lng}`)}" target="_blank" rel="noopener">GMaps</a>
           </div>
           ${p.razon ? `<small class="reason">🔍 ${esc(p.razon)}</small>` : ""}
         </article>`;
@@ -276,6 +277,7 @@
       <div class="match-line">
         <span class="match-pill ${esc(data.match_type)}">${esc(matchTexto)}</span>
         <span>${resultados.length} productor${resultados.length === 1 ? "" : "es"} · ${donde}${ms ? ` · ${(ms / 1000).toFixed(1)} s` : ""}</span>
+        <a class="map-all" href="mapa.html">🗺️ Ver todos en el mapa</a>
       </div>
       ${notaFallback}
       <div class="producer-list">${tarjetas || '<p class="fallback-note">No hay productores para mostrar.</p>'}</div>

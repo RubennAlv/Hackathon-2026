@@ -8,6 +8,7 @@
   margin: 0 auto;
   padding: var(--space-8) var(--space-4) var(--space-16);
 }
+}
 
 .lens-hero {
   display: grid;

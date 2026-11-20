@@ -13,6 +13,7 @@ Con un solo comando (`npm start`) el servidor sirve la aplicación web completa 
 | `http://localhost:3001/` | **Landing Page** | Descubrimiento comercial, 12 secciones corporativas, buscador y valor local. |
 | `http://localhost:3001/tienda` | **Mercado Inteligente** | Catálogo B2C (menudeo) y B2B (mayoreo), filtros, carrito y cotizaciones con folio oficial. |
 | `http://localhost:3001/lens` | **Lens IA** | Escaneo visual de productos comerciales y matching automático con productores de Durango. |
+| `http://localhost:3001/mapa` | **Mapa IA** | Mapa interactivo geolocalizado de los 14 productores de Durango. |
 | `http://localhost:3001/emprendedores` | **Panel de Operaciones** | Panel con suite para **Proveedores** (CRUD catálogo, pedidos), **Tienditas** (comparador multi-proveedor, lista de abasto) y **Admin/Moderador** (auditoría y sellos de verificación). |
 | `http://localhost:3001/login` | **Autenticación** | Inicio de sesión con accesos rápidos de 1 clic para proveedor, tiendita y admin. |
 | `http://localhost:3001/registro` | **Registro** | Registro segmentado para comercios y proveedores de Durango. |
@@ -40,18 +41,7 @@ npm run build     # Genera la carpeta /dist
 
 ---
 
-<<<<<<< HEAD
-| URL | Qué es |
-|---|---|
-| `http://localhost:3001/` | Tienda NEX24 |
-| `http://localhost:3001/lens` | Lens IA (atajo a `/pages/lens.html`) |
-| `http://localhost:3001/mapa` | Mapa Lens IA (atajo a `/pages/mapa.html`) |
-| `http://localhost:3001/pages/mapa.html?productor=p01` | Enfoca el productor sugerido por Lens IA (lo genera el link "Ver en mapa") |
-| `http://localhost:3001/api/lens/scan` | Endpoint de visión |
-| `http://localhost:3001/health` | Estado de la API |
-=======
 ## 👥 Cuentas de Demostración (1 Clic en `/login`)
->>>>>>> a0eb23c (mejoras de registro, UI, Proveedores, Comerciantes, UX etc)
 
 - **Proveedor:** `proveedor@nex24.com` (Acceso a catálogo de productos, rutas y pedidos recibidos)
 - **Tiendita:** `tiendita@nex24.com` (Acceso a comparador de insumos, cotizador institucional y lista de abasto)

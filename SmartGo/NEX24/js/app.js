@@ -159,17 +159,6 @@ async function renderStore() {
   applyMarketFiltersAndRender();
   renderCart();
 }
-<<<<<<< HEAD
-let cart=[];
-function renderStore(){
- const grid=document.querySelector("#storeItems");
- if(!grid)return;
- document.querySelector("#stockSummary").textContent=`${products.length} productos locales`;
- grid.innerHTML=products.map(p=>`<article class="store-card"><div class="product-icon">${p.emoji}</div><div class="product-copy"><span class="tag">${p.bulk?"A granel":"Empaquetado"}</span><h3>${p.name}</h3><p>${p.type}</p><strong>${money(p.price)} / ${p.unit}</strong></div>${p.bulk?`<label class="weight-label" for="mode-${p.id}">Modalidad de pesaje<select id="mode-${p.id}"><option>Báscula digital (simulada)</option><option>Captura manual</option></select></label><label class="weight-label" for="weight-${p.id}">Peso neto (kg)<input id="weight-${p.id}" type="number" min=".05" max="${state.inventory[p.id]}" step=".05" value=".50"></label>`:""}<button class="add-button" data-product="${p.id}">${p.bulk?"Agregar peso":"Agregar al carrito"}</button></article>`).join("");
- grid.addEventListener("click",event=>{const button=event.target.closest("[data-product]");if(!button)return;const product=getProduct(button.dataset.product);const input=document.querySelector(`#weight-${product.id}`);const quantity=product.bulk?Number(input.value):1;if(!quantity||quantity<=0||quantity>state.inventory[product.id]){showMessage(`Ingresa una cantidad válida. Disponible: ${state.inventory[product.id]} ${product.unit}.`,"error");return;}const existing=cart.find(item=>item.id===product.id);if(existing)existing.quantity+=quantity;else cart.push({id:product.id,quantity});renderCart();});
- renderCart();
- document.querySelector("#payButton").addEventListener("click",pay);
-=======
 
 function setupB2BControls() {
   const btnB2C = document.querySelector('#btnModeB2C');
@@ -296,7 +285,6 @@ function setupMarketControls() {
       applyMarketFiltersAndRender();
     });
   }
->>>>>>> a0eb23c (mejoras de registro, UI, Proveedores, Comerciantes, UX etc)
 }
 
 function applyMarketFiltersAndRender() {
@@ -1919,7 +1907,3 @@ if (document.readyState === 'loading') {
   renderStore();
   protectBusinessDashboard();
 }
-<<<<<<< HEAD
-renderLanding();setupLocations();renderStore();renderDashboard();
-=======
->>>>>>> a0eb23c (mejoras de registro, UI, Proveedores, Comerciantes, UX etc)
