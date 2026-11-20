@@ -5,11 +5,16 @@
   "type": "module",
   "main": "server.js",
   "scripts": {
+    "prestart": "fuser -k 3001/tcp 2>/dev/null || true",
     "start": "node server.js",
+    "predev": "fuser -k 3001/tcp 2>/dev/null || true",
     "dev": "node --watch server.js",
-    "test": "node scripts/test.js"
+    "build": "node scripts/build.js",
+    "test": "node scripts/test.js",
+    "qa": "node scripts/qa_verification.js"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.119.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.0",

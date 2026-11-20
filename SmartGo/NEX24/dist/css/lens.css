@@ -1,0 +1,680 @@
+/* =============================================================================
+   NEX24 LENS IA — RECONOCIMIENTO INTELIGENTE Y MATCHING COMERCIAL (FASE 7)
+   Estilos alineados al Design System corporativo de NEX24
+   ============================================================================= */
+
+.lens-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-4) var(--space-16);
+}
+
+.lens-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(240px, 0.4fr);
+  gap: var(--space-8);
+  align-items: end;
+  margin-bottom: var(--space-8);
+  padding-bottom: var(--space-6);
+  border-bottom: 1px solid var(--nex-border);
+}
+
+.lens-hero-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-2);
+  padding-bottom: 4px;
+}
+
+.api-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--nex-surface);
+  border: 1px solid var(--nex-border);
+  border-radius: var(--radius-full);
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--nex-text-secondary);
+  white-space: nowrap;
+  box-shadow: var(--nex-shadow-xs);
+}
+
+.api-status .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #C9D2C7;
+}
+
+.api-status.ok {
+  color: var(--nex-forest);
+  border-color: #B8F36B;
+  background: #F4FBEB;
+}
+
+.api-status.ok .dot {
+  background: #246B4B;
+}
+
+.api-status.bad {
+  color: var(--nex-danger);
+  border-color: #F8D7DA;
+  background: #FFF5F5;
+}
+
+.api-status.bad .dot {
+  background: var(--nex-danger);
+}
+
+/* Grilla principal */
+.lens-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.lens-card {
+  background: var(--nex-surface);
+  border: 1px solid var(--nex-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--nex-shadow-sm);
+}
+
+.upload-card {
+  position: sticky;
+  top: 80px;
+}
+
+/* Zona de Carga / Drag & Drop */
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  border: 2px dashed #99CF7A;
+  border-radius: var(--radius-md);
+  background: #F7FAF3;
+  padding: 36px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.dropzone[hidden] {
+  display: none;
+}
+
+.dropzone:hover,
+.dropzone.drag {
+  border-color: var(--nex-emerald);
+  background: #EDF7E2;
+  transform: translateY(-1px);
+}
+
+.drop-icon {
+  font-size: 42px;
+  line-height: 1;
+}
+
+.dropzone strong {
+  font-size: 15px;
+  color: var(--nex-forest);
+}
+
+.dropzone small {
+  color: var(--nex-text-secondary);
+  font-size: 12px;
+}
+
+/* Vista previa */
+.preview {
+  margin: 0;
+}
+
+.preview img {
+  display: block;
+  width: 100%;
+  max-height: 280px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  background: var(--nex-bg);
+  border: 1px solid var(--nex-border);
+}
+
+.preview figcaption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--nex-text-secondary);
+}
+
+.link-button {
+  border: 0;
+  background: none;
+  color: var(--nex-emerald);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.link-button:hover {
+  color: var(--nex-forest);
+}
+
+.location-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: var(--space-4);
+}
+
+.hint {
+  font-size: 12px;
+  color: var(--nex-text-secondary);
+  line-height: 1.5;
+}
+
+#scanHint {
+  margin-top: var(--space-2);
+  text-align: center;
+}
+
+.scan-button {
+  font-weight: 700;
+  font-size: 15px;
+  padding: 13px 20px;
+}
+
+.scan-button[aria-busy="true"] {
+  opacity: 0.75;
+  cursor: progress;
+}
+
+/* Chips de modo demo */
+.demo-block {
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--nex-border);
+}
+
+.demo-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--nex-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 10px;
+}
+
+.demo-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.demo-chips button {
+  border: 1px solid var(--nex-border);
+  background: var(--nex-surface);
+  border-radius: var(--radius-full);
+  padding: 6px 12px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--nex-text-primary);
+  transition: all var(--transition-fast);
+}
+
+.demo-chips button:hover {
+  border-color: var(--nex-emerald);
+  background: #F4FBEB;
+}
+
+.demo-chips button.active {
+  background: var(--nex-forest);
+  border-color: var(--nex-forest);
+  color: #FFFFFF;
+}
+
+/* Resultados */
+.results-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--nex-border);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: var(--radius-full);
+  padding: 5px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.pill.gemini {
+  background: #E8F7CF;
+  color: var(--nex-forest);
+}
+
+.pill.mock {
+  background: #EEF1EB;
+  color: var(--nex-text-secondary);
+}
+
+.pill.fallback {
+  background: #FFF3D6;
+  color: #8A6A1C;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  border: 2px dashed var(--nex-border);
+  border-radius: var(--radius-md);
+  color: var(--nex-text-secondary);
+}
+
+.empty-state strong {
+  display: block;
+  font-size: 16px;
+  color: var(--nex-forest);
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  font-size: 13px;
+  line-height: 1.6;
+  max-width: 380px;
+  margin: 0 auto;
+}
+
+/* Tarjeta de diagnóstico de IA */
+.detection {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  background: var(--nex-bg);
+  border: 1px solid var(--nex-border);
+  border-radius: var(--radius-md);
+  padding: 18px;
+}
+
+.detection-icon {
+  font-size: 38px;
+  line-height: 1;
+}
+
+.detection-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.detection-copy > small {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--nex-text-muted);
+  text-transform: uppercase;
+}
+
+.detection-copy h3 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--nex-forest);
+  margin: 2px 0 4px;
+}
+
+.detection-copy p {
+  font-size: 13px;
+  color: var(--nex-text-secondary);
+  margin: 0;
+}
+
+.confidence {
+  margin-left: auto;
+  text-align: right;
+  flex: none;
+}
+
+.confidence b {
+  display: block;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--nex-emerald);
+  line-height: 1;
+}
+
+.confidence small {
+  font-size: 11px;
+  color: var(--nex-text-muted);
+  font-weight: 600;
+}
+
+.keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.keywords span {
+  background: var(--nex-surface);
+  border: 1px solid var(--nex-border);
+  border-radius: var(--radius-full);
+  padding: 3px 9px;
+  font-size: 11px;
+  color: var(--nex-text-secondary);
+}
+
+.match-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 18px 0 8px;
+}
+
+.match-line > span:last-child {
+  font-size: 12px;
+  color: var(--nex-text-secondary);
+  font-weight: 500;
+}
+
+.match-pill {
+  border-radius: var(--radius-full);
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.match-pill.exacto {
+  background: #E8F7CF;
+  color: var(--nex-forest);
+}
+
+.match-pill.categoria {
+  background: #EDF1FF;
+  color: #3F5F9C;
+}
+
+.match-pill.fallback {
+  background: #FFF3D6;
+  color: #8A6A1C;
+}
+
+.fallback-note {
+  font-size: 12px;
+  color: #8A6A1C;
+  background: #FFF8E6;
+  border: 1px solid #F2E2B8;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  margin-top: 10px;
+}
+
+/* Tarjetas de productores coincidentes */
+.producer-list {
+  display: grid;
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.producer {
+  border: 1px solid var(--nex-border);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  background: var(--nex-surface);
+  box-shadow: var(--nex-shadow-xs);
+  transition: all var(--transition-normal);
+}
+
+.producer:hover {
+  border-color: #B8F36B;
+  box-shadow: var(--nex-shadow-md);
+  transform: translateY(-1px);
+}
+
+.producer-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.producer-head h3 {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--nex-forest);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.verified {
+  flex: none;
+  background: #E8F7CF;
+  color: var(--nex-forest);
+  border-radius: var(--radius-full);
+  padding: 3px 9px;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.producer > p {
+  font-size: 13px;
+  color: var(--nex-text-secondary);
+  line-height: 1.55;
+  margin: 6px 0 12px;
+}
+
+.producer-products {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.producer-products span {
+  background: var(--nex-bg);
+  border: 1px solid var(--nex-border);
+  border-radius: var(--radius-xs);
+  padding: 3px 8px;
+  font-size: 11px;
+  color: var(--nex-text-primary);
+  font-weight: 500;
+}
+
+/* Precios duales B2C / B2B */
+.prices {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin: 14px 0;
+  padding: 12px 14px;
+  background: #F9FAF7;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--nex-border);
+}
+
+.prices small {
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--nex-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 2px;
+}
+
+.prices b {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--nex-forest);
+}
+
+.prices .b2b-price b {
+  color: var(--nex-b2b);
+}
+
+.prices span {
+  font-size: 11px;
+  color: var(--nex-text-secondary);
+}
+
+/* Bloque logístico */
+.logistics-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--nex-text-secondary);
+  margin-bottom: 14px;
+}
+
+.logistics-info strong {
+  color: var(--nex-text-primary);
+}
+
+/* Footer de la tarjeta */
+.producer-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--nex-border);
+  padding-top: 12px;
+  font-size: 12px;
+}
+
+.distance {
+  color: var(--nex-text-secondary);
+  font-weight: 600;
+}
+
+.wa {
+  margin-left: auto;
+  background: #1F9D55;
+  color: #FFFFFF !important;
+  border-radius: var(--radius-sm);
+  padding: 7px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: background var(--transition-fast);
+}
+
+.wa:hover {
+  background: #178247;
+}
+
+.btn-catalog {
+  background: var(--nex-surface);
+  border: 1px solid var(--nex-border);
+  color: var(--nex-forest);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: all var(--transition-fast);
+}
+
+.btn-catalog:hover {
+  border-color: var(--nex-emerald);
+  color: var(--nex-emerald);
+  background: #F4FBEB;
+}
+
+.map {
+  color: var(--nex-text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.map:hover {
+  color: var(--nex-forest);
+  text-decoration: underline;
+}
+
+.reason {
+  display: block;
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--nex-text-muted);
+  line-height: 1.4;
+}
+
+/* Pie de página */
+.lens-footnote {
+  margin-top: var(--space-8);
+  font-size: 12px;
+  color: var(--nex-text-muted);
+  text-align: center;
+}
+
+/* Responsivo */
+@media (max-width: 900px) {
+  .lens-grid {
+    grid-template-columns: 1fr;
+  }
+  .upload-card {
+    position: static;
+  }
+  .lens-hero {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  .lens-hero-side {
+    align-items: flex-start;
+    padding-bottom: 0;
+  }
+}
+
+@media (max-width: 500px) {
+  .lens-card {
+    padding: var(--space-4);
+  }
+  .detection {
+    flex-wrap: wrap;
+  }
+  .confidence {
+    width: 100%;
+    text-align: left;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-left: 0;
+    margin-top: 8px;
+  }
+  .prices {
+    gap: 16px;
+  }
+}

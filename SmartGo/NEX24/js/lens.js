@@ -172,6 +172,7 @@
     modeBadge.hidden = true;
     errorBox.hidden = false;
     errorBox.textContent = mensaje;
+    window.nexToast?.error(mensaje, 'Lens IA');
   }
 
   function pintarResultados(data, ms) {
@@ -204,21 +205,61 @@
           `Hola ${p.nombre}, te contacto desde NEX24 Lens. Me interesa ${(p.productos && p.productos[0]) || "tu producto"}.`
         );
 
+        const menudeo = Number(p.precio_menudeo) || 0;
+        const mayoreo = Number(p.precio_mayoreo) || 0;
+        const ahorro = Math.max(0, menudeo - mayoreo);
+        const ahorroPct = menudeo > 0 ? Math.round((ahorro / menudeo) * 100) : 0;
+        const badgeAhorro = ahorro > 0 ? `<span class="nex-badge nex-badge-lime" style="font-weight:700;font-size:10px;margin-left:6px;">-${ahorroPct}% Mayoreo</span>` : "";
+
+        const capacidad = p.capacidad_semanal ? `📦 Suministro: <strong>${esc(p.capacidad_semanal)}/sem</strong>` : "";
+        const rutas = (Array.isArray(p.rutas_entrega) && p.rutas_entrega.length) ? `🚚 Rutas: <strong>${esc(p.rutas_entrega.join(", "))}</strong>` : "";
+        const logistics = (capacidad || rutas) ? `
+          <div class="logistics-info">
+            ${capacidad ? `<span>${capacidad}</span>` : ""}
+            ${rutas ? `<span>${rutas}</span>` : ""}
+          </div>
+        ` : "";
+
+        const tiendaUrl = `/tienda?q=${encodeURIComponent(p.nombre)}`;
+
         return `<article class="producer">
-          <div class="producer-head"><h3>${esc(p.nombre)}</h3>${verificado}</div>
+          <div class="producer-head">
+            <div>
+              <h3>${esc(p.nombre)}</h3>
+              <small style="color:var(--nex-text-secondary);text-transform:capitalize;">${esc(p.categoria || "Agroalimentario")}</small>
+            </div>
+            ${verificado}
+          </div>
           <p>${esc(p.descripcion)}</p>
           <div class="producer-products">${productos}</div>
           <div class="prices">
-            <div><small>Menudeo</small><b>${dinero(p.precio_menudeo)}</b><span> / ${esc(p.unidad)}</span></div>
-            <div><small>Mayoreo</small><b>${dinero(p.precio_mayoreo)}</b><span> / ${esc(p.unidad)}</span></div>
+            <div>
+              <small>Menudeo (B2C)</small>
+              <b>${dinero(p.precio_menudeo)}</b>
+              <span> / ${esc(p.unidad)}</span>
+            </div>
+            <div class="b2b-price">
+              <small>Mayoreo (B2B)</small>
+              <b>${dinero(p.precio_mayoreo)}</b>
+              <span> / ${esc(p.unidad)}</span>
+              ${badgeAhorro}
+            </div>
           </div>
+          ${logistics}
           <div class="producer-footer">
+<<<<<<< HEAD
             <span class="distance">⌖ ${km(p.distancia_km)} · ${esc(p.zona_durango)}</span>
             ${whatsapp ? `<a class="wa" href="https://wa.me/${whatsapp}?text=${mensaje}" target="_blank" rel="noopener">WhatsApp</a>` : ""}
             <a class="map" href="mapa.html?productor=${encodeURIComponent(p.id)}">Ver en mapa ↗</a>
             <a class="map map-ext" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${p.lat},${p.lng}`)}" target="_blank" rel="noopener">GMaps</a>
+=======
+            <span class="distance">📍 ${esc(p.zona_durango)} (${km(p.distancia_km)})</span>
+            <a class="btn-catalog" href="${tiendaUrl}">🛒 Ver en Tienda</a>
+            ${whatsapp ? `<a class="wa" href="https://wa.me/${whatsapp}?text=${mensaje}" target="_blank" rel="noopener">💬 WhatsApp</a>` : ""}
+            <a class="map" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${p.lat},${p.lng}`)}" target="_blank" rel="noopener">Mapa ↗</a>
+>>>>>>> a0eb23c (mejoras de registro, UI, Proveedores, Comerciantes, UX etc)
           </div>
-          ${p.razon ? `<small class="reason">${esc(p.razon)}</small>` : ""}
+          ${p.razon ? `<small class="reason">🔍 ${esc(p.razon)}</small>` : ""}
         </article>`;
       })
       .join("");
@@ -252,6 +293,8 @@
     resultsEmpty.hidden = true;
     errorBox.hidden = true;
 
+    window.nexToast?.success(`Identificado: ${productoBonito} (${resultados.length} opciones en Durango)`, 'Lens IA');
+
     if (window.innerWidth <= 900) {
       results.closest(".results-card")?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
@@ -260,7 +303,7 @@
   async function escanear() {
     if (escaneando) return;
     if (!seleccion && !demoActivo) {
-      setHint("Sube una foto o elige una demo para comenzar.");
+      setHint("Sube una foto para comenzar.");
       return;
     }
 
@@ -385,7 +428,7 @@
           ? "Modo demo: respuesta simulada, no se llama a Gemini."
           : seleccion
             ? "Foto lista. Pulsa “Analizar con IA”."
-            : "Sube una foto o elige una demo para comenzar."
+            : "Sube una foto para comenzar."
       );
     });
   });

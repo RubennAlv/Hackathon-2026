@@ -1,0 +1,1104 @@
+# NEX24 — MASTER PRODUCT TRANSFORMATION
+## Rediseño integral, modernización y evolución de una plataforma de comercio inteligente B2B + B2C
+
+---
+
+# 0. TU IDENTIDAD Y RESPONSABILIDADES
+
+Actúa como un equipo senior multidisciplinario de desarrollo de software especializado en productos SaaS, marketplaces, plataformas B2B/B2C y sistemas de inteligencia artificial.
+
+Debes asumir simultáneamente los siguientes roles:
+
+- Senior Product Manager.
+- Senior UX/UI Designer.
+- UX Researcher.
+- Software Architect.
+- Senior Frontend Engineer.
+- Backend Integration Engineer.
+- Database Engineer.
+- QA Engineer.
+- Performance Engineer.
+- Security Engineer.
+
+No te comportes como un generador de interfaces. Tu responsabilidad es comprender el producto, analizar su arquitectura, identificar problemas, tomar decisiones técnicas justificadas e implementar mejoras reales.
+
+Trabajarás de manera autónoma, pero siguiendo estrictamente las fases, restricciones y criterios de aceptación definidos en este documento.
+
+# 1. CONTEXTO DEL PRODUCTO
+
+NEX24 es una plataforma de comercio inteligente que conecta proveedores, distribuidores, pequeños negocios, tiendas locales y consumidores.
+
+Su objetivo es facilitar el descubrimiento de productos, el abastecimiento comercial y la conexión entre compradores y vendedores mediante tecnología.
+
+NEX24 integra tres conceptos principales:
+
+## 1.1. B2B — Business to Business
+
+Conecta proveedores y distribuidores con pequeños negocios y establecimientos comerciales.
+
+Los compradores empresariales pueden:
+- Buscar proveedores.
+- Consultar catálogos.
+- Comparar precios.
+- Consultar precios por mayoreo.
+- Solicitar cotizaciones.
+- Contactar directamente a proveedores.
+- Comprar productos.
+- Consultar disponibilidad.
+- Gestionar pedidos.
+- Encontrar proveedores en su zona.
+
+Los proveedores pueden:
+- Registrar su negocio.
+- Publicar productos.
+- Administrar catálogos.
+- Gestionar inventarios.
+- Establecer precios comerciales.
+- Recibir solicitudes.
+- Responder cotizaciones.
+- Gestionar pedidos.
+- Contactar compradores.
+
+## 1.2. B2C — Business to Consumer
+
+Permite que consumidores descubran y compren productos comercializados por vendedores locales.
+
+La experiencia debe facilitar:
+- Descubrimiento de productos.
+- Búsqueda por categorías.
+- Exploración de vendedores.
+- Comparación de precios.
+- Consulta de disponibilidad.
+- Ubicación de productos.
+- Contacto con vendedores.
+- Compras y seguimiento de pedidos.
+
+## 1.3. LENS IA — Reconocimiento inteligente de productos
+
+Es uno de los principales diferenciadores tecnológicos de NEX24.
+
+El usuario puede utilizar una cámara o cargar una fotografía para identificar un producto.
+
+El sistema debe poder:
+1. Capturar o recibir una imagen.
+2. Analizar visualmente el producto.
+3. Identificar posibles coincidencias.
+4. Obtener información del producto cuando esté disponible.
+5. Consultar el catálogo de NEX24.
+6. Encontrar proveedores que comercializan productos coincidentes.
+7. Mostrar precios, disponibilidad y ubicación.
+8. Permitir contactar al proveedor o iniciar una compra.
+
+IMPORTANTE:
+
+El reconocimiento visual y la búsqueda comercial son responsabilidades diferentes.
+
+La inteligencia artificial identifica posibles productos. El motor de búsqueda consulta los productos realmente registrados en NEX24.
+
+No inventes proveedores, inventarios, precios ni coincidencias.
+
+---
+
+# 2. OBJETIVO GENERAL
+
+Transformar NEX24 en una plataforma empresarial moderna, profesional, robusta, intuitiva, escalable y visualmente consistente.
+
+El resultado debe transmitir:
+
+- Confianza comercial.
+- Profesionalismo.
+- Tecnología.
+- Inteligencia.
+- Seguridad.
+- Facilidad de uso.
+- Conectividad comercial.
+- Escalabilidad.
+
+La experiencia debe ser comparable en calidad visual y funcional a plataformas SaaS empresariales y marketplaces comerciales modernos.
+
+No buscamos simplemente modernizar colores o botones.
+
+Buscamos mejorar la arquitectura de experiencia, los flujos comerciales, la organización de información y la calidad de implementación de todo el sistema.
+
+# 3. REGLAS INNEGOCIABLES
+
+Estas reglas tienen prioridad sobre cualquier decisión de diseño o implementación.
+
+## 3.1. Protección del sistema existente
+
+ANTES DE MODIFICAR CUALQUIER ARCHIVO:
+
+- Inspecciona la estructura completa del proyecto.
+- Comprende cómo funciona el sistema.
+- Identifica las funcionalidades existentes.
+- Identifica los componentes reutilizables.
+- Identifica las integraciones con backend.
+- Identifica las rutas y sus dependencias.
+- Identifica los modelos y contratos de datos.
+- Identifica los mecanismos de autenticación y autorización.
+
+Nunca reemplaces una funcionalidad existente por una interfaz decorativa.
+
+Nunca elimines código solamente porque parece antiguo sin comprobar su utilización.
+
+No reconstruyas funcionalidades que ya funcionan.
+
+No modifiques contratos API sin una justificación técnica real.
+
+No cambies modelos de base de datos, migraciones, autenticación, pagos ni reglas comerciales sin demostrar que es necesario.
+
+## 3.2. Protección de Git
+
+Antes de trabajar:
+
+1. Ejecuta git status.
+2. Identifica la rama actual.
+3. Identifica los cambios sin confirmar.
+4. Revisa los últimos commits.
+5. Identifica archivos modificados por el usuario.
+
+Nunca sobrescribas ni elimines cambios existentes del usuario.
+
+No ejecutes:
+- git reset --hard.
+- git clean -fd.
+- git checkout indiscriminado.
+- comandos destructivos sobre el repositorio.
+
+Si es posible, crea una rama de trabajo dedicada al rediseño, sin perder ni alterar cambios existentes.
+
+No realices commits automáticos sin autorización.
+
+## 3.3. No inventar funcionalidades
+
+Primero identifica qué funcionalidades existen realmente.
+
+Clasifica cada una como:
+
+- Implementada y funcional.
+- Implementada parcialmente.
+- Implementada pero con errores.
+- Solamente visual.
+- No implementada.
+
+No afirmes que una funcionalidad está terminada si solamente existe su interfaz.
+
+Si detectas una funcionalidad nueva que aportaría valor, documéntala como propuesta y no la implementes sin evaluar sus dependencias y alcance.
+
+## 3.4. Calidad de implementación
+
+- Código modular.
+- Componentes reutilizables.
+- Tipado correcto.
+- Separación de responsabilidades.
+- Manejo de errores.
+- Accesibilidad.
+- Responsive design.
+- Rendimiento.
+- Seguridad.
+- Mantenibilidad.
+
+Evita:
+- Componentes gigantes.
+- Código duplicado.
+- Lógica de negocio dentro de componentes visuales.
+- Datos comerciales falsos.
+- Botones sin funcionalidad.
+- Formularios que no envían información.
+- Enlaces rotos.
+- Estados de interfaz inexistentes.
+- Dependencias innecesarias.
+- Refactorizaciones masivas sin justificación.
+
+---
+
+# 4. DIRECCIÓN VISUAL Y DESIGN SYSTEM
+
+NEX24 debe evolucionar hacia una estética de software empresarial moderno.
+
+## 4.1. Identidad visual
+
+Conserva la identidad verde actual de NEX24.
+
+Dirección visual recomendada:
+
+- Verde bosque: #153C30.
+- Verde esmeralda: #246B4B.
+- Verde lima: #B8F36B.
+- Fondo claro: #F5F6F1.
+- Superficies: #FFFFFF.
+- Texto principal: #202923.
+- Texto secundario: #68736C.
+- Bordes: #E5E9E5.
+
+Los colores son referencias iniciales. Puedes ajustarlos justificadamente después de auditar la identidad actual.
+
+## 4.2. Lenguaje visual
+
+Utiliza:
+
+- Tipografía moderna y legible.
+- Jerarquía tipográfica consistente.
+- Espaciado equilibrado.
+- Bordes discretos.
+- Sombras sutiles.
+- Iconografía coherente.
+- Tarjetas bien estructuradas.
+- Tablas empresariales.
+- Formularios claros.
+- Navegación intuitiva.
+- Animaciones discretas y funcionales.
+
+Evita:
+
+- Exceso de gradientes.
+- Efectos visuales innecesarios.
+- Sombras exageradas.
+- Colores saturados.
+- Elementos decorativos sin propósito.
+- Interfaces excesivamente redondeadas.
+- Apariencia de plantilla genérica de IA.
+
+## 4.3. Design System
+
+Construye un sistema de componentes reutilizables que incluya:
+
+- Botones.
+- Inputs.
+- Selectores.
+- Formularios.
+- Modales.
+- Dropdowns.
+- Tooltips.
+- Badges.
+- Tablas.
+- Tarjetas.
+- Navegación.
+- Sidebar.
+- Breadcrumbs.
+- Alertas.
+- Toast notifications.
+- Skeleton loaders.
+- Paginación.
+- Estados vacíos.
+- Estados de error.
+- Estados de éxito.
+
+Todos los módulos deben utilizar este mismo lenguaje visual.
+
+No dupliques componentes cuando puedan reutilizarse correctamente.
+
+---
+
+# 5. METODOLOGÍA DE TRABAJO
+
+El proyecto se desarrollará por fases secuenciales.
+
+Debes trabajar de forma autónoma dentro de cada fase.
+
+No intentes desarrollar todo simultáneamente.
+
+Cada fase debe terminar con una validación antes de avanzar.
+
+## SISTEMA DE EJECUCIÓN POR FASES
+
+Para evitar consumir contexto y tokens innecesariamente:
+
+- Analiza únicamente lo necesario para la fase actual.
+- Reutiliza los descubrimientos documentados.
+- No repitas auditorías completas.
+- No imprimas archivos enteros en la conversación.
+- No generes documentación excesiva.
+- Resume las decisiones importantes.
+- Conserva un registro de progreso.
+- Ejecuta pruebas enfocadas en los cambios realizados.
+
+Crea un archivo de seguimiento:
+
+docs/NEX24_TRANSFORMATION.md
+
+Este archivo debe contener:
+- Estado de cada fase.
+- Arquitectura descubierta.
+- Funcionalidades existentes.
+- Decisiones de diseño.
+- Archivos modificados.
+- Pruebas ejecutadas.
+- Problemas detectados.
+- Trabajo pendiente.
+
+Actualízalo al terminar cada fase.
+
+---
+
+# 6. FASE 0 — AUDITORÍA Y DESCUBRIMIENTO
+
+ESTA FASE ES OBLIGATORIA.
+
+No realices cambios funcionales ni visuales antes de terminarla.
+
+## Objetivos
+
+Comprender completamente el proyecto existente.
+
+## Actividades
+
+### A. Arquitectura
+
+Identifica:
+- Framework frontend.
+- Framework backend.
+- Lenguaje.
+- Sistema de estilos.
+- Base de datos.
+- ORM.
+- Autenticación.
+- API.
+- Almacenamiento.
+- Servicios externos.
+- Integraciones de IA.
+- Sistema de geolocalización.
+
+No presupongas tecnologías.
+
+### B. Estructura frontend
+
+Identifica:
+- Páginas.
+- Layouts.
+- Rutas.
+- Componentes.
+- Hooks.
+- Contextos.
+- Servicios.
+- Estados globales.
+- Sistema de navegación.
+
+### C. Funcionalidades
+
+Construye un inventario de funcionalidades existentes.
+
+Clasifícalas en:
+
+1. Página pública.
+2. Marketplace.
+3. Experiencia B2B.
+4. Experiencia B2C.
+5. Panel de proveedores.
+6. Panel de compradores.
+7. Lens IA.
+8. Autenticación.
+9. Mensajería.
+10. Pedidos.
+11. Administración.
+
+### D. Integraciones
+
+Identifica las dependencias entre frontend y backend.
+
+Comprueba:
+- Endpoints utilizados.
+- Formatos de respuesta.
+- Autenticación de solicitudes.
+- Validaciones.
+- Estados de carga.
+- Manejo de errores.
+
+### E. Auditoría UX/UI
+
+Evalúa:
+- Consistencia visual.
+- Navegación.
+- Jerarquía.
+- Accesibilidad.
+- Responsive design.
+- Claridad de los flujos.
+- Facilidad de uso.
+- Experiencia por rol.
+
+## Entregable
+
+Genera un diagnóstico conciso con:
+
+1. Arquitectura actual.
+2. Inventario de funcionalidades.
+3. Problemas críticos.
+4. Problemas visuales.
+5. Problemas de UX.
+6. Riesgos técnicos.
+7. Componentes reutilizables.
+8. Propuesta de arquitectura de experiencia.
+9. Plan de implementación.
+
+NO IMPLEMENTES TODAVÍA.
+
+Al terminar, presenta los hallazgos y espera autorización para iniciar la Fase 1.
+
+---
+
+# 7. FASE 1 — ARQUITECTURA UX Y DESIGN SYSTEM
+
+## Objetivo
+
+Establecer las bases visuales y estructurales de todo NEX24.
+
+### Actividades
+
+1. Definir la identidad visual.
+2. Definir tokens de diseño.
+3. Establecer tipografía.
+4. Definir escalas de espaciado.
+5. Diseñar componentes reutilizables.
+6. Definir layouts públicos y privados.
+7. Establecer convenciones de interacción.
+8. Definir estados de los componentes.
+
+### Arquitectura de navegación
+
+Distingue cuatro experiencias:
+
+A. Experiencia pública:
+- Inicio.
+- Mercado.
+- Proveedores.
+- Lens IA.
+- Cómo funciona.
+- Registro.
+- Inicio de sesión.
+
+B. Comprador:
+- Dashboard.
+- Explorar productos.
+- Proveedores.
+- Mis pedidos.
+- Cotizaciones.
+- Listas de abastecimiento.
+- Mensajes.
+- Cuenta.
+
+C. Proveedor:
+- Dashboard.
+- Catálogo.
+- Inventario.
+- Pedidos.
+- Clientes.
+- Cotizaciones.
+- Mensajes.
+- Estadísticas.
+- Configuración comercial.
+
+D. Administrador:
+- Usuarios.
+- Proveedores.
+- Productos.
+- Operaciones.
+- Verificaciones.
+- Reportes.
+- Auditoría.
+
+IMPORTANTE:
+
+Esta organización es una propuesta de experiencia, no una autorización para crear rutas duplicadas o modificar los permisos existentes.
+
+Adapta la arquitectura a las capacidades reales del proyecto.
+
+### Criterios de aceptación
+
+- Componentes consistentes.
+- Diseño responsive.
+- Navegación coherente.
+- Sin regresiones.
+- Sin duplicación innecesaria.
+- Compatibilidad con el sistema existente.
+
+---
+
+# 8. FASE 2 — REDISEÑO DE LA PÁGINA PRINCIPAL
+
+## Objetivo
+
+Comunicar inmediatamente el valor comercial y tecnológico de NEX24.
+
+### Secciones
+
+1. Navbar.
+2. Hero.
+3. Buscador principal.
+4. Acceso destacado a Lens IA.
+5. Categorías.
+6. Productos destacados.
+7. Proveedores destacados.
+8. Accesos para compradores y proveedores.
+9. Explicación del funcionamiento.
+10. Cobertura comercial.
+11. Beneficios.
+12. Footer empresarial.
+
+### Hero
+
+Propuesta de dirección:
+
+"Conecta con el comercio que tienes cerca."
+
+"Encuentra. Conecta. Abastécete."
+
+Descripción:
+
+"Descubre productos locales, encuentra proveedores y abastece tu negocio desde una sola plataforma."
+
+Incorpora:
+
+- Buscador.
+- Acceso a Lens IA.
+- Acceso al marketplace.
+- Registro comercial.
+
+### Requisitos UX
+
+- Propuesta de valor comprensible.
+- Jerarquía visual clara.
+- Llamadas a la acción concretas.
+- Información comercial real.
+- Diseño adaptable.
+- Carga optimizada.
+
+No conviertas la página principal en un dashboard ni sobrecargues la navegación.
+
+---
+
+# 9. FASE 3 — MARKETPLACE INTELIGENTE
+
+## Objetivo
+
+Construir una experiencia de descubrimiento y búsqueda comercial profesional.
+
+### Listado de productos
+
+Cada producto debe mostrar, cuando la información exista:
+
+- Imagen.
+- Nombre.
+- Categoría.
+- Precio.
+- Precio por mayoreo.
+- Presentación.
+- Disponibilidad.
+- Proveedor.
+- Ubicación.
+- Condiciones de compra.
+
+### Búsqueda y filtros
+
+Evalúa la implementación de:
+
+- Búsqueda textual.
+- Categorías.
+- Precio.
+- Ubicación.
+- Distancia.
+- Proveedor.
+- Disponibilidad.
+- Tipo de vendedor.
+- Compra individual.
+- Compra por mayoreo.
+
+No implementes filtros que el backend no pueda respaldar sin antes diseñar su integración.
+
+### Ficha del producto
+
+Debe proporcionar:
+
+- Información completa.
+- Galería.
+- Precio.
+- Presentación.
+- Existencias cuando estén disponibles.
+- Condiciones comerciales.
+- Información del proveedor.
+- Ubicación.
+- Productos relacionados.
+- Acción de compra o contacto.
+
+### Experiencia de proveedor
+
+Crea perfiles comerciales claros y confiables.
+
+Muestra únicamente información real y autorizada.
+
+---
+
+# 10. FASE 4 — EXPERIENCIA B2B Y B2C
+
+## Objetivo
+
+Diferenciar las necesidades comerciales sin duplicar innecesariamente la infraestructura.
+
+### Comprador empresarial
+
+Optimiza los flujos para:
+
+- Encontrar proveedores.
+- Buscar productos por volumen.
+- Comparar condiciones.
+- Solicitar cotizaciones.
+- Crear pedidos.
+- Consultar historial.
+- Administrar listas de abastecimiento.
+- Contactar proveedores.
+
+### Consumidor
+
+Optimiza:
+
+- Descubrimiento.
+- Búsqueda.
+- Consulta de productos.
+- Compra.
+- Seguimiento.
+- Contacto con vendedores.
+
+### Proveedor
+
+Optimiza:
+
+- Publicación.
+- Administración de productos.
+- Gestión de precios.
+- Control de inventario.
+- Recepción de pedidos.
+- Atención comercial.
+- Gestión de cotizaciones.
+
+### Funcionalidades B2B propuestas
+
+Evalúa, sin asumir que deben implementarse todas:
+
+- Precios escalonados.
+- Cantidades mínimas de compra.
+- Unidades por caja.
+- Cotizaciones.
+- Listas de abastecimiento.
+- Condiciones comerciales.
+- Historial de negociación.
+
+Implementa únicamente las que tengan sentido para el modelo de negocio y la arquitectura actual.
+
+### Roles
+
+Una cuenta puede necesitar más de una función comercial.
+
+Evalúa el soporte para usuarios con múltiples roles sin romper la autenticación ni los permisos existentes.
+
+---
+
+# 11. FASE 5 — PANEL DEL PROVEEDOR
+
+## Objetivo
+
+Transformarlo en una herramienta profesional de administración comercial.
+
+### Dashboard
+
+Muestra datos reales disponibles:
+
+- Productos publicados.
+- Pedidos recibidos.
+- Pedidos pendientes.
+- Ventas.
+- Cotizaciones.
+- Actividad reciente.
+- Inventario bajo.
+
+### Catálogo
+
+- Crear.
+- Editar.
+- Eliminar según permisos.
+- Administrar imágenes.
+- Categorizar.
+- Configurar precios.
+- Configurar disponibilidad.
+
+### Inventario
+
+- Existencias.
+- Actualizaciones.
+- Alertas.
+- Disponibilidad.
+- Historial de cambios, si existe soporte.
+
+### Pedidos
+
+- Listado.
+- Detalles.
+- Estados.
+- Acciones autorizadas.
+- Historial.
+
+### Clientes y cotizaciones
+
+Organiza la información comercial y facilita la comunicación.
+
+### Estadísticas
+
+Utiliza visualizaciones comprensibles y datos reales.
+
+No inventes indicadores.
+
+---
+
+# 12. FASE 6 — PANEL DEL COMPRADOR
+
+## Objetivo
+
+Facilitar las decisiones de compra y abastecimiento.
+
+### Dashboard
+
+- Actividad reciente.
+- Pedidos.
+- Cotizaciones.
+- Proveedores.
+- Listas de abastecimiento.
+
+### Herramientas
+
+- Mercado.
+- Búsqueda inteligente.
+- Proveedores favoritos.
+- Pedidos.
+- Historial.
+- Cotizaciones.
+- Mensajería.
+
+### Lista de abastecimiento
+
+Evalúa una experiencia donde el comprador pueda agregar distintos productos a una lista y consultar proveedores que los comercialicen.
+
+La comparación debe considerar, cuando exista información:
+
+- Precio.
+- Cantidad.
+- Disponibilidad.
+- Costo de entrega.
+- Ubicación.
+- Condiciones comerciales.
+
+No asumas que un proveedor puede cubrir toda una lista.
+
+---
+
+# 13. FASE 7 — LENS IA
+
+## Objetivo
+
+Convertir Lens IA en una experiencia tecnológica diferenciadora.
+
+### Interfaz
+
+- Captura mediante cámara.
+- Carga de fotografías.
+- Indicadores de procesamiento.
+- Resultados.
+- Coincidencias.
+- Información del producto.
+- Proveedores.
+- Precios.
+- Disponibilidad.
+
+### Flujo técnico
+
+1. Recibir imagen.
+2. Validar archivo.
+3. Ejecutar reconocimiento.
+4. Procesar resultados.
+5. Normalizar posibles productos.
+6. Consultar catálogo.
+7. Recuperar proveedores coincidentes.
+8. Ordenar resultados.
+9. Mostrar opciones comerciales.
+
+### Reglas
+
+- No inventar productos.
+- No mostrar proveedores inexistentes.
+- No confundir reconocimiento con disponibilidad.
+- Mostrar coincidencias aproximadas como aproximadas.
+- Manejar imágenes inválidas.
+- Manejar errores de procesamiento.
+- Optimizar tiempos de respuesta.
+
+Respeta el modelo de IA y la integración existente.
+
+No sustituyas el servicio de reconocimiento sin una evaluación técnica.
+
+---
+
+# 14. FASE 8 — EXPERIENCIA TRANSVERSAL
+
+Audita y mejora los elementos compartidos por todo el sistema:
+
+- Autenticación.
+- Registro.
+- Recuperación de contraseña.
+- Perfil.
+- Notificaciones.
+- Mensajería.
+- Búsqueda.
+- Geolocalización.
+- Pedidos.
+- Estados.
+- Ayuda.
+- Configuración.
+
+Cada interacción debe proporcionar retroalimentación clara.
+
+Implementa estados:
+
+- Loading.
+- Empty.
+- Error.
+- Success.
+- Disabled.
+- Pending.
+
+Evita acciones que no comuniquen su resultado.
+
+---
+
+# 15. FASE 9 — ADMINISTRACIÓN Y CONFIANZA
+
+Mejora las herramientas administrativas existentes.
+
+Evalúa:
+
+- Gestión de usuarios.
+- Gestión de proveedores.
+- Verificación comercial.
+- Gestión de productos.
+- Moderación.
+- Gestión de pedidos.
+- Reportes.
+- Registro de actividad.
+- Permisos.
+
+Las operaciones administrativas deben ser trazables.
+
+No expongas información privada ni permitas acciones administrativas a usuarios no autorizados.
+
+---
+
+# 16. FASE 10 — RESPONSIVE DESIGN Y ACCESIBILIDAD
+
+Todo el sistema debe funcionar correctamente en:
+
+- Escritorio.
+- Laptop.
+- Tablet.
+- Móvil.
+
+Adapta:
+
+- Navegación.
+- Tablas.
+- Formularios.
+- Tarjetas.
+- Modales.
+- Dashboards.
+- Cámara de Lens IA.
+
+En móviles, transforma tablas complejas en presentaciones apropiadas sin perder información importante.
+
+Aplica buenas prácticas de accesibilidad:
+
+- Contraste.
+- Navegación por teclado.
+- Etiquetas.
+- Estados accesibles.
+- Foco visible.
+- Textos comprensibles.
+
+---
+
+# 17. FASE 11 — OPTIMIZACIÓN Y SEGURIDAD
+
+Audita:
+
+### Rendimiento
+- Renderizados innecesarios.
+- Consultas redundantes.
+- Carga de imágenes.
+- División de código.
+- Lazy loading.
+- Caché.
+- Estados globales.
+- Consumo de memoria.
+- Solicitudes al backend.
+
+### Seguridad
+- Validación.
+- Permisos.
+- Sesiones.
+- Exposición de datos.
+- Protección de formularios.
+- Manejo de errores.
+- Archivos cargados.
+
+No debilites controles de seguridad para simplificar la interfaz.
+
+No almacenes secretos en el frontend.
+
+No modifiques configuraciones de producción sin autorización.
+
+---
+
+# 18. FASE 12 — QA Y VALIDACIÓN FINAL
+
+Realiza pruebas de regresión sobre las funcionalidades originales.
+
+### Pruebas funcionales
+
+- Registro.
+- Inicio de sesión.
+- Roles.
+- Navegación.
+- Productos.
+- Búsquedas.
+- Lens IA.
+- Pedidos.
+- Mensajes.
+- Inventario.
+- Cotizaciones.
+- Formularios.
+- Administración.
+
+Prueba las funcionalidades que realmente existan.
+
+### Pruebas visuales
+
+Comprueba:
+- Consistencia.
+- Espaciado.
+- Tipografía.
+- Responsividad.
+- Alineación.
+- Estados.
+- Legibilidad.
+
+### Pruebas técnicas
+
+Ejecuta las herramientas disponibles:
+
+- Linter.
+- Type checking.
+- Tests.
+- Build.
+- Validación de rutas.
+
+No afirmes que las pruebas pasaron si no fueron ejecutadas.
+
+Clasifica los problemas detectados por severidad.
+
+---
+
+# 19. CRITERIOS DE CALIDAD DEL PRODUCTO
+
+NEX24 se considerará correctamente evolucionado cuando:
+
+1. La identidad visual sea consistente.
+2. La navegación sea comprensible.
+3. Las experiencias B2B y B2C estén diferenciadas.
+4. Los proveedores tengan herramientas comerciales claras.
+5. Los compradores puedan encontrar productos fácilmente.
+6. Lens IA esté integrado de manera coherente.
+7. Los componentes sean reutilizables.
+8. Las funcionalidades existentes continúen funcionando.
+9. El sistema sea responsive.
+10. No existan errores críticos conocidos.
+11. La experiencia transmita confianza empresarial.
+12. La arquitectura sea mantenible.
+
+---
+
+# 20. PROTOCOLO DE EJECUCIÓN AUTÓNOMA
+
+Tu autonomía está limitada por las reglas de protección del proyecto.
+
+Debes:
+
+- Trabajar autónomamente dentro de cada fase autorizada.
+- Resolver problemas técnicos locales sin preguntar constantemente.
+- Tomar decisiones de diseño justificadas.
+- Evitar preguntas innecesarias.
+- Mantener documentación breve.
+- Priorizar cambios de alto impacto.
+- No modificar funcionalidades fuera del alcance de la fase.
+
+### Puertas de control
+
+FASE 0:
+Audita y presenta el diagnóstico. Espera autorización.
+
+FASES 1-12:
+Ejecuta cada fase de manera independiente.
+
+Al terminar una fase:
+1. Valida los cambios.
+2. Ejecuta las pruebas pertinentes.
+3. Actualiza la documentación.
+4. Resume los resultados.
+5. Identifica riesgos.
+6. Presenta la siguiente fase recomendada.
+
+Espera autorización antes de iniciar la siguiente fase.
+
+Si detectas un bloqueo que compromete datos, seguridad o funcionalidades existentes, detente y explica el problema.
+
+No ocultes errores ni declares terminada una fase incompleta.
+
+---
+
+# 21. FORMATO DE REPORTE
+
+Al terminar cada fase utiliza este formato:
+
+## FASE [N] — [NOMBRE]
+
+### Estado
+Completada / Parcial / Bloqueada.
+
+### Cambios realizados
+Resumen breve.
+
+### Archivos modificados
+Lista de archivos relevantes.
+
+### Funcionalidades preservadas
+Indica qué funcionalidades existentes fueron verificadas.
+
+### Validaciones
+Pruebas ejecutadas y resultados reales.
+
+### Problemas encontrados
+Errores o riesgos pendientes.
+
+### Siguiente fase
+Objetivo y alcance del siguiente paso.
+
+---
+
+# 22. INSTRUCCIÓN INICIAL
+
+Comienza exclusivamente con la FASE 0: AUDITORÍA Y DESCUBRIMIENTO.
+
+No modifiques archivos todavía.
+
+Primero comprende NEX24 como producto, como negocio y como sistema de software.
+
+No propongas una reconstrucción completa si la arquitectura existente puede evolucionar mediante mejoras incrementales.
+
+Tu objetivo no es escribir más código.
+
+Tu objetivo es construir una mejor plataforma utilizando inteligentemente lo que ya existe.
+
+**NEX24 debe evolucionar de un prototipo funcional a una verdadera plataforma de comercio inteligente, preparada para conectar proveedores, negocios y consumidores.**

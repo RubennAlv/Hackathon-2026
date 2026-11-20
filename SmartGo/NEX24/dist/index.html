@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NEX24 — Plataforma de Comercio Inteligente B2B + B2C</title>
+  <meta name="description" content="Conecta proveedores, pequeños negocios y consumidores en Durango. Descubrimiento comercial inteligente, mayoreo, menudeo y Lens IA.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌱%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/design.css">
+</head>
+<body>
+
+<!-- 1. NAVBAR DINÁMICO CENTRALIZADO -->
+<header class="nav" data-nex-navigation></header>
+
+<main>
+  <!-- 2. HERO PRINCIPAL CORPORATIVO -->
+  <section class="nex-home-hero" aria-labelledby="heroHeading">
+    <div class="nex-container">
+      <div class="nex-hero-content">
+        <div>
+          <span class="nex-hero-tag">Comercio Inteligente B2B + B2C · Durango</span>
+          <h1 id="heroHeading" class="nex-hero-title">Conecta con el comercio que <em>tienes cerca.</em></h1>
+          <div class="nex-hero-subtitle">Encuentra. Conecta. Abastécete.</div>
+          <p class="nex-hero-desc">
+            Descubre productos locales auténticos, encuentra proveedores directos y abastece tu negocio desde una sola plataforma con reconocimiento visual inteligente.
+          </p>
+
+          <!-- 3. BUSCADOR PRINCIPAL INTEGRADO -->
+          <div class="nex-hero-search">
+            <form class="nex-search-form" action="/tienda" method="GET" role="search">
+              <div class="nex-search-input-wrap">
+                <span aria-hidden="true">🔍</span>
+                <input class="nex-search-input" type="search" name="q" placeholder="¿Qué buscas? Ej. Café de altura, queso menonita, miel..." aria-label="Buscar productos o proveedores">
+              </div>
+              <button type="submit" class="nex-btn nex-btn-accent">Buscar ahora</button>
+            </form>
+          </div>
+
+          <div class="nex-hero-actions">
+            <a class="nex-btn nex-btn-accent" href="/tienda">Explorar Mercado →</a>
+            <a class="nex-btn nex-btn-outline" style="color:#FFFFFF;border-color:rgba(255,255,255,0.3);" href="/lens">Probar Lens IA ✨</a>
+            <a class="nex-btn nex-btn-ghost" style="color:var(--nex-lime-soft);" href="/registro">Registrar mi negocio</a>
+          </div>
+        </div>
+
+        <!-- Tarjeta Visual Interactiva -->
+        <div class="nex-hero-card-side">
+          <div class="nex-preview-card">
+            <div class="nex-preview-badge">
+              <span>● RED LOCAL DURANGO</span>
+              <span class="nex-badge nex-badge-verified">✓ Verificado</span>
+            </div>
+            <div class="nex-preview-item">
+              <div class="nex-preview-icon">☕</div>
+              <div>
+                <strong style="display:block;font-size:14px;">Café Sierra Madre</strong>
+                <small style="color:var(--nex-text-muted);">Tostado en lotes semanales</small>
+              </div>
+              <div style="margin-left:auto;text-align:right;">
+                <b style="color:var(--nex-forest);display:block;font-size:15px;">$135</b>
+                <small style="color:var(--nex-b2b);font-weight:700;">Mayoreo: $108</small>
+              </div>
+            </div>
+            <div class="nex-preview-item">
+              <div class="nex-preview-icon">🧀</div>
+              <div>
+                <strong style="display:block;font-size:14px;">Quesos Nuevo Ideal</strong>
+                <small style="color:var(--nex-text-muted);">Leche de rancho madurada</small>
+              </div>
+              <div style="margin-left:auto;text-align:right;">
+                <b style="color:var(--nex-forest);display:block;font-size:15px;">$190</b>
+                <small style="color:var(--nex-b2b);font-weight:700;">Mayoreo: $160</small>
+              </div>
+            </div>
+            <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--nex-border);display:flex;justify-content:space-between;align-items:center;font-size:12px;">
+              <span style="color:var(--nex-text-secondary);">Escáner Lens IA activo</span>
+              <span class="nex-badge nex-badge-lime">Listo para conectar</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. ACCESO DESTACADO A LENS IA -->
+  <section class="nex-lens-banner-section">
+    <div class="nex-container">
+      <div class="nex-lens-banner">
+        <div>
+          <span class="nex-badge nex-badge-lime" style="margin-bottom:12px;">DIFERENCIADOR TECNOLÓGICO</span>
+          <h2>Reconocimiento Inteligente Lens IA</h2>
+          <p>
+            Enfoca cualquier producto comercial con tu cámara o carga una foto. Lens IA identifica el producto con Gemini Vision y busca al productor local de Durango que ofrece el equivalente, mostrándote precios de menudeo, mayoreo y distancia exacta.
+          </p>
+          <div class="nex-demo-chips">
+            <span>Pruebas instantáneas:</span>
+            <a class="nex-demo-chip" href="/lens">📷 Abrir Escáner</a>
+            <a class="nex-demo-chip" href="/lens">☕ Café comercial</a>
+            <a class="nex-demo-chip" href="/lens">🍯 Miel natural</a>
+            <a class="nex-demo-chip" href="/lens">🧀 Queso menonita</a>
+            <a class="nex-demo-chip" href="/lens">🥖 Panadería artesanal</a>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:12px;">
+          <a class="nex-btn nex-btn-accent nex-btn-lg" href="/lens" style="width:100%;max-width:240px;">Escanear Foto ✨</a>
+          <small style="color:#C7D8CF;font-size:12px;">Detección instantánea sin costo</small>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. CATEGORÍAS COMERCIALES -->
+  <section class="nex-home-section" style="background-color:var(--nex-bg);">
+    <div class="nex-container">
+      <div class="nex-section-header">
+        <span class="nex-section-tag">Catálogo Local</span>
+        <h2>Explora por Categorías</h2>
+        <p>Encuentra insumos para tu negocio o productos de alta calidad para consumo personal elaborados en Durango.</p>
+      </div>
+
+      <div class="nex-categories-grid">
+        <a class="nex-category-card" href="/tienda?categoria=cafe">
+          <div class="nex-category-icon">☕</div>
+          <div class="nex-category-info">
+            <h3>Café y Bebidas</h3>
+            <span>Tostadores y artesanos</span>
+          </div>
+        </a>
+        <a class="nex-category-card" href="/tienda?categoria=queso">
+          <div class="nex-category-icon">🧀</div>
+          <div class="nex-category-info">
+            <h3>Lácteos y Quesos</h3>
+            <span>Menonitas y de rancho</span>
+          </div>
+        </a>
+        <a class="nex-category-card" href="/tienda?categoria=miel">
+          <div class="nex-category-icon">🍯</div>
+          <div class="nex-category-info">
+            <h3>Miel y Derivados</h3>
+            <span>Sierra y flor silvestre</span>
+          </div>
+        </a>
+        <a class="nex-category-card" href="/tienda?categoria=mezcal">
+          <div class="nex-category-icon">🥃</div>
+          <div class="nex-category-info">
+            <h3>Mezcal y Destilados</h3>
+            <span>Palenques de Nombre de Dios</span>
+          </div>
+        </a>
+        <a class="nex-category-card" href="/tienda?categoria=panaderia">
+          <div class="nex-category-icon">🥖</div>
+          <div class="nex-category-info">
+            <h3>Panadería y Harinas</h3>
+            <span>Horno tradicional y granos</span>
+          </div>
+        </a>
+        <a class="nex-category-card" href="/tienda?categoria=salsas">
+          <div class="nex-category-icon">🌶️</div>
+          <div class="nex-category-info">
+            <h3>Salsas y Chiles</h3>
+            <span>Chile de árbol y macha</span>
+          </div>
+        </a>
+        <a class="nex-category-card" href="/tienda?categoria=carnes">
+          <div class="nex-category-icon">🥩</div>
+          <div class="nex-category-info">
+            <h3>Carnes y Cecina</h3>
+            <span>Carne seca y machaca</span>
+          </div>
+        </a>
+        <a class="nex-category-card" href="/tienda?categoria=tortillas">
+          <div class="nex-category-icon">🫓</div>
+          <div class="nex-category-info">
+            <h3>Tortillas de Harina</h3>
+            <span>Hechas a mano en Durango</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. PRODUCTOS DESTACADOS (B2C & B2B) -->
+  <section class="nex-home-section" style="background-color:var(--nex-surface);">
+    <div class="nex-container">
+      <div class="nex-section-header">
+        <span class="nex-section-tag">Oferta Comercial</span>
+        <h2>Productos Destacados</h2>
+        <p>Disponibles para compra al menudeo por consumidores o para abastecimiento al mayoreo por negocios locales.</p>
+      </div>
+
+      <div class="nex-grid nex-grid-4">
+        <!-- Producto 1 -->
+        <article class="nex-product-card">
+          <div class="nex-product-card-top">
+            <span class="nex-badge nex-badge-b2c">B2C Menudeo</span>
+            <span class="nex-badge nex-badge-b2b">B2B Mayoreo</span>
+          </div>
+          <div class="nex-product-card-body">
+            <div style="font-size:2rem;margin-bottom:8px;">☕</div>
+            <h3>Café tostado en grano 500g</h3>
+            <span class="nex-product-provider">Café Sierra Madre Tostadores</span>
+            <p style="font-size:13px;line-height:1.5;">Café de altura tostado en lotes pequeños cada semana en Durango.</p>
+            <div class="nex-product-pricing">
+              <div class="nex-price-col">
+                <small>Consumidor</small>
+                <b>$135</b>
+                <span style="font-size:11px;color:var(--nex-text-muted);">/ bolsa</span>
+              </div>
+              <div class="nex-price-col b2b">
+                <small>Negocio</small>
+                <b>$108</b>
+                <span style="font-size:11px;color:var(--nex-b2b);">/ mayoreo</span>
+              </div>
+            </div>
+            <a class="nex-btn nex-btn-secondary nex-btn-sm" href="/tienda" style="margin-top:14px;width:100%;">Consultar en tienda</a>
+          </div>
+        </article>
+
+        <!-- Producto 2 -->
+        <article class="nex-product-card">
+          <div class="nex-product-card-top">
+            <span class="nex-badge nex-badge-b2c">B2C Menudeo</span>
+            <span class="nex-badge nex-badge-b2b">B2B Mayoreo</span>
+          </div>
+          <div class="nex-product-card-body">
+            <div style="font-size:2rem;margin-bottom:8px;">🧀</div>
+            <h3>Queso menonita 1kg</h3>
+            <span class="nex-product-provider">Quesos Menonitas Nuevo Ideal</span>
+            <p style="font-size:13px;line-height:1.5;">Queso madurado de leche de rancho elaborado en Nuevo Ideal, Durango.</p>
+            <div class="nex-product-pricing">
+              <div class="nex-price-col">
+                <small>Consumidor</small>
+                <b>$190</b>
+                <span style="font-size:11px;color:var(--nex-text-muted);">/ kg</span>
+              </div>
+              <div class="nex-price-col b2b">
+                <small>Negocio</small>
+                <b>$160</b>
+                <span style="font-size:11px;color:var(--nex-b2b);">/ mayoreo</span>
+              </div>
+            </div>
+            <a class="nex-btn nex-btn-secondary nex-btn-sm" href="/tienda" style="margin-top:14px;width:100%;">Consultar en tienda</a>
+          </div>
+        </article>
+
+        <!-- Producto 3 -->
+        <article class="nex-product-card">
+          <div class="nex-product-card-top">
+            <span class="nex-badge nex-badge-b2c">B2C Menudeo</span>
+            <span class="nex-badge nex-badge-b2b">B2B Mayoreo</span>
+          </div>
+          <div class="nex-product-card-body">
+            <div style="font-size:2rem;margin-bottom:8px;">🥃</div>
+            <h3>Mezcal joven 750ml</h3>
+            <span class="nex-product-provider">Mezcal Artesanal Nombre de Dios</span>
+            <p style="font-size:13px;line-height:1.5;">Destilado en palenque familiar tradicional con agaves de la región.</p>
+            <div class="nex-product-pricing">
+              <div class="nex-price-col">
+                <small>Consumidor</small>
+                <b>$520</b>
+                <span style="font-size:11px;color:var(--nex-text-muted);">/ botella</span>
+              </div>
+              <div class="nex-price-col b2b">
+                <small>Negocio</small>
+                <b>$430</b>
+                <span style="font-size:11px;color:var(--nex-b2b);">/ mayoreo</span>
+              </div>
+            </div>
+            <a class="nex-btn nex-btn-secondary nex-btn-sm" href="/tienda" style="margin-top:14px;width:100%;">Consultar en tienda</a>
+          </div>
+        </article>
+
+        <!-- Producto 4 -->
+        <article class="nex-product-card">
+          <div class="nex-product-card-top">
+            <span class="nex-badge nex-badge-b2c">B2C Menudeo</span>
+            <span class="nex-badge nex-badge-b2b">B2B Mayoreo</span>
+          </div>
+          <div class="nex-product-card-body">
+            <div style="font-size:2rem;margin-bottom:8px;">🫓</div>
+            <h3>Tortillas de harina 1kg</h3>
+            <span class="nex-product-provider">Tortillas de Harina La Abuela</span>
+            <p style="font-size:13px;line-height:1.5;">Hechas a mano con receta tradicional de Durango, listas para negocio o mesa.</p>
+            <div class="nex-product-pricing">
+              <div class="nex-price-col">
+                <small>Consumidor</small>
+                <b>$42</b>
+                <span style="font-size:11px;color:var(--nex-text-muted);">/ paquete</span>
+              </div>
+              <div class="nex-price-col b2b">
+                <small>Negocio</small>
+                <b>$33</b>
+                <span style="font-size:11px;color:var(--nex-b2b);">/ mayoreo</span>
+              </div>
+            </div>
+            <a class="nex-btn nex-btn-secondary nex-btn-sm" href="/tienda" style="margin-top:14px;width:100%;">Consultar en tienda</a>
+          </div>
+        </article>
+      </div>
+
+      <div style="text-align:center;margin-top:36px;">
+        <a class="nex-btn nex-btn-primary" href="/tienda">Ver todo el catálogo en el Mercado →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 & 8. ACCESOS SEGMENTADOS PARA COMPRADORES Y PROVEEDORES -->
+  <section class="nex-home-section" style="background-color:var(--nex-bg);">
+    <div class="nex-container">
+      <div class="nex-section-header">
+        <span class="nex-section-tag">Dos Experiencias Integradas</span>
+        <h2>Diseñado para Negocios y Consumidores</h2>
+        <p>Una infraestructura comercial flexible que atiende tanto el abastecimiento empresarial como la compra local individual.</p>
+      </div>
+
+      <div class="nex-dual-cards">
+        <!-- Tarjeta B2B -->
+        <article class="nex-dual-card b2b">
+          <span class="nex-badge nex-badge-b2b" style="margin-bottom:12px;">Para Negocios · B2B</span>
+          <h3>Abastecimiento para Tienditas y Comercios</h3>
+          <p>Optimiza tus compras al por mayor directamente con los productores de Durango sin intermediarios costosos.</p>
+          <ul class="nex-feature-list">
+            <li><span>✓</span> <strong>Precios por volumen:</strong> Ahorra con escalas de mayoreo transparentes.</li>
+            <li><span>✓</span> <strong>Capacidades visibles:</strong> Conoce cuántos kilos o piezas semanales ofrece cada productor.</li>
+            <li><span>✓</span> <strong>Rutas logísticas:</strong> Identifica quién entrega en Centro, Zona Industrial o colonias.</li>
+            <li><span>✓</span> <strong>Cotizaciones rápidas:</strong> Solicita lotes y recibe respuesta directa por WhatsApp o plataforma.</li>
+          </ul>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <a class="nex-btn nex-btn-b2b" href="/registro">Registrar mi negocio B2B</a>
+            <a class="nex-btn nex-btn-secondary" href="/ubicaciones">Ver directorio de proveedores</a>
+          </div>
+        </article>
+
+        <!-- Tarjeta B2C -->
+        <article class="nex-dual-card b2c">
+          <span class="nex-badge nex-badge-b2c" style="margin-bottom:12px;">Para Consumidores · B2C</span>
+          <h3>Descubre y Compra lo Hecho en Durango</h3>
+          <p>Conoce los mejores productos elaborados por manos locales, apoya a productores de la región y compra con confianza.</p>
+          <ul class="nex-feature-list">
+            <li><span>✓</span> <strong>Búsqueda visual con Lens IA:</strong> Encuentra alternativas locales de productos comerciales.</li>
+            <li><span>✓</span> <strong>Puntos cercanos:</strong> Localiza tienditas y puntos de autoservicio en tu zona.</li>
+            <li><span>✓</span> <strong>Precios de menudeo justos:</strong> Compra productos frescos sin sobreprecios de cadenas.</li>
+            <li><span>✓</span> <strong>Contacto directo:</strong> Comunícate con el vendedor para conocer disponibilidad inmediata.</li>
+          </ul>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <a class="nex-btn nex-btn-primary" href="/tienda">Entrar al Mercado</a>
+            <a class="nex-btn nex-btn-accent" href="/lens">Probar Lens IA ✨</a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. EXPLICACIÓN DEL FUNCIONAMIENTO -->
+  <section class="nex-home-section" style="background-color:var(--nex-surface);">
+    <div class="nex-container">
+      <div class="nex-section-header">
+        <span class="nex-section-tag">Flujo Comercial</span>
+        <h2>¿Cómo Funciona NEX24?</h2>
+        <p>Una experiencia de comercio inteligente en tres pasos simples y transparentes.</p>
+      </div>
+
+      <div class="nex-steps-grid">
+        <div class="nex-step-card">
+          <div class="nex-step-num">1</div>
+          <h3>Encuentra o Escanea</h3>
+          <p>Busca productos en nuestro catálogo digital o toma una fotografía a cualquier marca con <strong>Lens IA</strong> para identificar alternativas locales equivalentes.</p>
+        </div>
+        <div class="nex-step-card">
+          <div class="nex-step-num">2</div>
+          <h3>Compara y Selecciona</h3>
+          <p>Revisa precios claros de menudeo y mayoreo, condiciones de entrega, distancias geolocalizadas y capacidades de suministro semanal.</p>
+        </div>
+        <div class="nex-step-card">
+          <div class="nex-step-num">3</div>
+          <h3>Conecta y Abastécete</h3>
+          <p>Contacta directamente al productor por WhatsApp o inicia tu pedido/cotización de forma ágil, segura y sin comisiones abusivas.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 & 11. COBERTURA COMERCIAL Y BENEFICIOS -->
+  <section class="nex-home-section" style="background-color:var(--nex-bg);border-top:1px solid var(--nex-border);">
+    <div class="nex-container">
+      <div class="nex-section-header">
+        <span class="nex-section-tag">Impacto Regional</span>
+        <h2>Cobertura en Durango y Municipios</h2>
+        <p>Conectamos productores del campo y la ciudad con consumidores y comercios locales.</p>
+      </div>
+
+      <div class="nex-grid nex-grid-3">
+        <div class="nex-card">
+          <h3 style="font-size:1.1rem;display:flex;align-items:center;gap:8px;">📍 Durango Capital</h3>
+          <p style="font-size:13px;">Cobertura activa en Zona Centro, Zona Industrial, Fraccionamiento Guadalupe, Zona Norte y Zona Hotelera.</p>
+          <span class="nex-badge nex-badge-lime">Entregas semanales</span>
+        </div>
+        <div class="nex-card">
+          <h3 style="font-size:1.1rem;display:flex;align-items:center;gap:8px;">📍 Municipios Productores</h3>
+          <p style="font-size:13px;">Productores registrados de Nuevo Ideal (quesos), Nombre de Dios (mezcal), Canatlán (manzana y sidras) y El Mezquital (miel).</p>
+          <span class="nex-badge nex-badge-b2b">Rutas directas</span>
+        </div>
+        <div class="nex-card">
+          <h3 style="font-size:1.1rem;display:flex;align-items:center;gap:8px;">📍 Red de Tienditas</h3>
+          <p style="font-size:13px;">Pequeños negocios locales que ofrecen autoservicio y venta directa de productos regionales a los ciudadanos.</p>
+          <span class="nex-badge nex-badge-verified">Comercio seguro</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- 12. FOOTER EMPRESARIAL ESTRUCTURADO -->
+<footer class="nex-footer">
+  <div class="nex-container">
+    <div class="nex-footer-main">
+      <div class="nex-footer-col">
+        <a class="logo" href="/" style="color:#FFFFFF;margin-bottom:14px;display:inline-block;font-size:26px;">NEX<span style="color:var(--nex-lime);">24</span></a>
+        <p style="font-size:13px;max-width:320px;line-height:1.6;">
+          Plataforma de comercio inteligente que conecta productores, distribuidores, tienditas y consumidores en Durango, México.
+        </p>
+        <span class="nex-badge nex-badge-lime" style="font-size:11px;">Tecnología Hackathon 2026</span>
+      </div>
+
+      <div class="nex-footer-col">
+        <h4>Mercado</h4>
+        <ul class="nex-footer-links">
+          <li><a href="/tienda">Explorar catálogo</a></li>
+          <li><a href="/tienda?categoria=cafe">Café local</a></li>
+          <li><a href="/tienda?categoria=queso">Quesos menonitas</a></li>
+          <li><a href="/tienda?categoria=mezcal">Mezcal artesanal</a></li>
+          <li><a href="/tienda?tipo=mayoreo">Precios por mayoreo</a></li>
+        </ul>
+      </div>
+
+      <div class="nex-footer-col">
+        <h4>Tecnología</h4>
+        <ul class="nex-footer-links">
+          <li><a href="/lens">Lens IA (Escáner visual)</a></li>
+          <li><a href="/ubicaciones">Directorio de proveedores</a></li>
+          <li><a href="/propuesta">Modelo de autoservicio</a></li>
+          <li><a href="/simulacion">Simulación 3D</a></li>
+        </ul>
+      </div>
+
+      <div class="nex-footer-col">
+        <h4>Negocios</h4>
+        <ul class="nex-footer-links">
+          <li><a href="/registro">Registro de tiendita</a></li>
+          <li><a href="/registro">Registro de productor</a></li>
+          <li><a href="/login">Acceso comercial</a></li>
+          <li><a href="/emprendedores">Panel de gestión</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="nex-footer-bottom">
+      <div>© 2026 NEX24. Todos los derechos reservados. Durango, Dgo., México.</div>
+      <div>Impulsando el comercio local con inteligencia artificial y conexión directa.</div>
+    </div>
+  </div>
+</footer>
+
+<script src="js/navigation.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

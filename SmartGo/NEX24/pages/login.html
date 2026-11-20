@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Iniciar sesión | NEX24</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="../css/styles.css"><link rel="stylesheet" href="../css/design.css"><link rel="stylesheet" href="../css/registro.css">
+</head>
+<body>
+<header class="nav" data-nex-navigation></header>
+<main class="registration-page">
+  <div class="registration-shell" style="max-width:820px;grid-template-columns:.8fr 1.2fr">
+    <aside class="registration-aside"><small>MI CUENTA</small><h1>Accede a tu perfil.</h1><p>Entra como tiendita o proveedor para administrar tu operación.</p></aside>
+    <section class="registration-form-card">
+      <div id="loginMessage" class="form-message" role="status"></div>
+      <h2>Iniciar sesión</h2>
+      <form id="loginForm">
+        <div class="form-grid">
+          <div class="field full"><label for="loginEmail">Correo electrónico</label><input id="loginEmail" type="email" required autocomplete="email"></div>
+          <div class="field full"><label for="loginPassword">Contraseña</label><input id="loginPassword" type="password" required autocomplete="current-password"></div>
+        </div>
+        <button id="loginSubmit" class="submit-registration" type="submit">Entrar a mi negocio</button>
+        <p style="margin-top:14px;text-align:center;font-size:12px;color:var(--muted)">¿Aún no tienes cuenta? <a href="/registro" style="font-weight:800;color:var(--ink)">Crear registro</a></p>
+        
+        <div style="margin-top:20px;padding-top:14px;border-top:1px solid var(--line);text-align:center;">
+          <small style="display:block;color:var(--muted);font-size:11px;margin-bottom:8px;font-weight:700;">Accesos de prueba rápida (Demo Hackathon):</small>
+          <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">
+            <button type="button" id="demoProviderBtn" class="nex-btn nex-btn-secondary nex-btn-sm">Probar como Proveedor (Café)</button>
+            <button type="button" id="demoStoreBtn" class="nex-btn nex-btn-secondary nex-btn-sm">Probar como Tiendita</button>
+            <button type="button" id="demoAdminBtn" class="nex-btn nex-btn-outline nex-btn-sm" style="border-color:var(--nex-forest);color:var(--nex-forest);">Probar como Moderador/Admin</button>
+          </div>
+        </div>
+      </form>
+    </section>
+  </div>
+</main>
+<script src="../js/navigation.js"></script>
+<script src="../js/login.js"></script>
+</body>
+</html>

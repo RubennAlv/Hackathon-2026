@@ -1,24 +1,46 @@
-# Lens Local API (backend)
+# NEX24 — Plataforma de Comercio Inteligente B2B + B2C (Durango)
 
-API del módulo B2C **Lens Local** de Origen DGO: recibe una foto de un producto, la identifica con Gemini y devuelve los productores de Durango que ofrecen el equivalente, con precio y distancia.
+Plataforma integral de abastecimiento comercial y mercado local que conecta productores auténticos de Durango, tienditas de barrio y consumidores finales, potenciada por **Lens IA** (reconocimiento visual y matching regional).
 
-Para Persona A (frontend): todo se consume por HTTP. El contrato de la sección [Escanear](#post-apilensscan) es el que debe respetarse.
+---
 
-## Requisitos
+## 🚀 Arquitectura de la Plataforma
 
-- Node 22 o superior (probado con v24.14.1)
-- Opcional: API key de Gemini (https://aistudio.google.com)
+Con un solo comando (`npm start`) el servidor sirve la aplicación web completa y la API REST en el mismo puerto:
 
-## Levantar el servidor
+| Ruta Web | Módulo | Descripción |
+|---|---|---|
+| `http://localhost:3001/` | **Landing Page** | Descubrimiento comercial, 12 secciones corporativas, buscador y valor local. |
+| `http://localhost:3001/tienda` | **Mercado Inteligente** | Catálogo B2C (menudeo) y B2B (mayoreo), filtros, carrito y cotizaciones con folio oficial. |
+| `http://localhost:3001/lens` | **Lens IA** | Escaneo visual de productos comerciales y matching automático con productores de Durango. |
+| `http://localhost:3001/emprendedores` | **Panel de Operaciones** | Panel con suite para **Proveedores** (CRUD catálogo, pedidos), **Tienditas** (comparador multi-proveedor, lista de abasto) y **Admin/Moderador** (auditoría y sellos de verificación). |
+| `http://localhost:3001/login` | **Autenticación** | Inicio de sesión con accesos rápidos de 1 clic para proveedor, tiendita y admin. |
+| `http://localhost:3001/registro` | **Registro** | Registro segmentado para comercios y proveedores de Durango. |
+
+---
+
+## 🛠️ Comandos y Scripts
 
 ```bash
+# Instalación de dependencias
 npm install
-cp env.example .env      # en Windows: copy env.example .env
-npm start                # http://localhost:3001
+
+# Iniciar servidor en modo desarrollo / producción
+npm start         # Inicia en http://localhost:3001
+
+# Ejecución de pruebas unitarias de catálogo y matching
+npm test          # 17 pruebas unitarias (matcher, vision, catálogo)
+
+# Suite de validación integral y QA end-to-end
+npm run qa        # 66 pruebas automatizadas de endpoints, vistas, seguridad y flujos
+
+# Compilación de artefactos estáticos para distribución
+npm run build     # Genera la carpeta /dist
 ```
 
-Con un solo `npm start` se sirven **la interfaz y la API en el mismo puerto**:
+---
 
+<<<<<<< HEAD
 | URL | Qué es |
 |---|---|
 | `http://localhost:3001/` | Tienda NEX24 |
@@ -27,10 +49,22 @@ Con un solo `npm start` se sirven **la interfaz y la API en el mismo puerto**:
 | `http://localhost:3001/pages/mapa.html?productor=p01` | Enfoca el productor sugerido por Lens IA (lo genera el link "Ver en mapa") |
 | `http://localhost:3001/api/lens/scan` | Endpoint de visión |
 | `http://localhost:3001/health` | Estado de la API |
+=======
+## 👥 Cuentas de Demostración (1 Clic en `/login`)
+>>>>>>> a0eb23c (mejoras de registro, UI, Proveedores, Comerciantes, UX etc)
 
-El cliente (`js/lens.js`) usa rutas relativas cuando la página la sirve Express. Si abres el HTML con Live Server o directamente con `file://`, cae automáticamente a `http://localhost:3001`. También puedes forzar otra URL con `localStorage.setItem("lensApi", "http://...")`.
+- **Proveedor:** `proveedor@nex24.com` (Acceso a catálogo de productos, rutas y pedidos recibidos)
+- **Tiendita:** `tiendita@nex24.com` (Acceso a comparador de insumos, cotizador institucional y lista de abasto)
+- **Moderador / Admin:** `admin@nex24.com` (Dashboard de auditoría de comercios, aprobación/suspensión y sellos de verificación)
 
-Sin API key (o con `MOCK=true`) el servidor funciona igual en **modo mock**: usa detecciones de demo y el matching real contra el catálogo. Ideal para desarrollar el frontend sin internet.
+---
+
+## 🔒 Seguridad y Rendimiento
+
+- **Cabeceras HTTP:** `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy`, y `Content-Security-Policy` restrictiva.
+- **Protección de Servidor:** Bloqueo 403 a archivos protegidos (`.env`, `.git`, `package.json`, `supabase.sql`).
+- **Políticas de Caché:** `no-store` en APIs críticas, `stale-while-revalidate` en recursos estáticos CSS/JS y `no-cache` en vistas HTML.
+- **Accesibilidad (A11Y):** WCAG 2.1 AA con `:focus-visible`, skip-link (`#mainContent`), teclado accesible en modales (`Escape`), touch targets de mínimo 44px y soporte para `prefers-reduced-motion`.
 
 ## Abrir desde el celular
 

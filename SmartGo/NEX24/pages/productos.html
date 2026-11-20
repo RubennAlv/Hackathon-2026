@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Catálogo de Productos | NEX24</title>
+  <meta name="description" content="Catálogo completo de productos y productores locales de Durango.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌱%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/design.css">
+  <link rel="stylesheet" href="../css/panel.css">
+</head>
+<body>
+<header class="nav" data-nex-navigation></header>
+
+<div class="nex-market-header">
+  <div class="nex-container">
+    <span class="nex-section-tag">CATÁLOGO REGIONAL · PRODUCTORES DE DURANGO</span>
+    <h1 style="margin:6px 0 10px;font-size:clamp(1.8rem,3vw,2.5rem);">Productos Locales Disponibles</h1>
+    <p style="margin:0;max-width:720px;font-size:var(--font-size-md);color:var(--nex-text-secondary);">
+      Explora los productos artesanales y comerciales elaborados en nuestra región. Puedes consultar disponibilidad o ir a la tienda para cotizar lotes al mayoreo.
+    </p>
+    <div style="margin-top:16px;">
+      <a class="nex-btn nex-btn-accent" href="/tienda">Ir al Mercado Inteligente y Cotizador →</a>
+    </div>
+  </div>
+</div>
+
+<main class="nex-container" style="padding-bottom:var(--space-16);">
+  <div class="cards" id="productGrid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:var(--space-5);">
+    <p>Cargando productos verificados...</p>
+  </div>
+</main>
+
+<footer class="nex-footer">
+  <div class="nex-container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;">
+    <div>
+      <a class="logo" href="/" style="color:#FFFFFF;font-size:22px;">NEX<span style="color:var(--nex-lime);">24</span></a>
+      <p style="font-size:12px;margin:4px 0 0;color:#B4C4BC;">Impulsando lo local, las 24 horas. Durango, México.</p>
+    </div>
+    <div style="font-size:12px;color:#85988F;">
+      © 2026 NEX24 · Prototipo Comercial Hackathon
+    </div>
+  </div>
+</footer>
+
+<script src="../js/navigation.js"></script>
+<script src="../js/app.js"></script>
+</body>
+</html>

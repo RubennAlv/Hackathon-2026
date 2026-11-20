@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mercado Inteligente | NEX24</title>
+  <meta name="description" content="Explora productos locales, compara precios de menudeo y mayoreo, y cotiza directamente con productores de Durango.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🛍️%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/design.css">
+  <link rel="stylesheet" href="../css/panel.css">
+</head>
+<body>
+
+<!-- Navegación centralizada -->
+<header class="nav" data-nex-navigation></header>
+
+<!-- Cabecera del Marketplace -->
+<div class="nex-market-header">
+  <div class="nex-container">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;">
+      <div>
+        <span class="nex-section-tag">CATÁLOGO REGIONAL VERIFICADO · DURANGO</span>
+        <h1 style="margin:6px 0 10px;font-size:clamp(1.8rem,3vw,2.5rem);">Mercado Comercial y Abastecimiento B2B</h1>
+        <p style="margin:0;max-width:720px;font-size:var(--font-size-md);color:var(--nex-text-secondary);">
+          Descubre productos locales auténticos, compara precios de menudeo o mayoreo y cotiza insumos al por mayor para tu negocio.
+        </p>
+      </div>
+
+      <!-- Selector de Experiencia Comercial B2B / B2C -->
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px;">
+        <div class="nex-mode-switcher-wrap" role="radiogroup" aria-label="Modo de experiencia">
+          <button type="button" class="nex-mode-pill active" id="btnModeB2C" aria-checked="true">
+            🛒 Consumidor (B2C)
+          </button>
+          <button type="button" class="nex-mode-pill" id="btnModeB2B" aria-checked="false">
+            🏢 Negocio / Mayoreo (B2B)
+          </button>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button type="button" class="nex-btn nex-btn-secondary nex-btn-sm" id="openSupplyListBtn">
+            📋 Mi Lista de Abasto
+          </button>
+          <button type="button" class="nex-btn nex-btn-ghost nex-btn-sm" id="openQuotesHistoryBtn" style="border:1px solid var(--nex-border);">
+            📜 Mis Cotizaciones
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main class="nex-container" style="padding-bottom:var(--space-16);">
+  <!-- Barra de Herramientas y Filtros -->
+  <section class="nex-market-toolbar" aria-label="Filtros de búsqueda comercial">
+    <div class="nex-toolbar-row-top">
+      <!-- Buscador por texto -->
+      <div class="nex-filter-search">
+        <span aria-hidden="true">🔍</span>
+        <input type="search" id="marketSearchInput" placeholder="Buscar por producto, productor o palabra clave..." aria-label="Buscar productos">
+      </div>
+
+      <!-- Filtro de Tipo de Compra / Modo Comercial -->
+      <div style="display:flex;gap:6px;align-items:center;">
+        <button type="button" class="nex-chip active" data-filter-mode="todos">Todos</button>
+        <button type="button" class="nex-chip" data-filter-mode="b2c">Menudeo (B2C)</button>
+        <button type="button" class="nex-chip chip-b2b" data-filter-mode="b2b">Mayoreo (B2B)</button>
+      </div>
+
+      <!-- Filtro por Zona -->
+      <select id="marketZoneSelect" class="nex-toolbar-select" aria-label="Filtrar por zona de Durango">
+        <option value="">Todas las zonas</option>
+        <option value="Centro">Centro</option>
+        <option value="Nuevo Ideal">Nuevo Ideal</option>
+        <option value="Nombre de Dios">Nombre de Dios</option>
+        <option value="Canatlán">Canatlán</option>
+        <option value="Zona Industrial">Zona Industrial</option>
+        <option value="Fracc. Guadalupe">Fracc. Guadalupe</option>
+        <option value="Santiago Papasquiaro">Santiago Papasquiaro</option>
+        <option value="El Mezquital">El Mezquital</option>
+      </select>
+
+      <!-- Ordenamiento -->
+      <select id="marketSortSelect" class="nex-toolbar-select" aria-label="Ordenar productos">
+        <option value="destacados">Destacados primero</option>
+        <option value="precio-asc">Precio: Menor a mayor</option>
+        <option value="precio-desc">Precio: Mayor a menor</option>
+        <option value="nombre">Nombre (A-Z)</option>
+      </select>
+    </div>
+
+    <!-- Chips de Categoría -->
+    <div class="nex-category-filter-chips" id="categoryChips">
+      <button type="button" class="nex-chip active" data-category="">Todas las categorías</button>
+      <button type="button" class="nex-chip" data-category="cafe">☕ Café</button>
+      <button type="button" class="nex-chip" data-category="queso">🧀 Quesos y Lácteos</button>
+      <button type="button" class="nex-chip" data-category="miel">🍯 Miel</button>
+      <button type="button" class="nex-chip" data-category="mezcal">🥃 Mezcal</button>
+      <button type="button" class="nex-chip" data-category="panaderia">🥖 Panadería</button>
+      <button type="button" class="nex-chip" data-category="salsas">🌶️ Salsas y Chiles</button>
+      <button type="button" class="nex-chip" data-category="carnes">🥩 Carnes y Cecina</button>
+      <button type="button" class="nex-chip" data-category="tortillas">🫓 Tortillas</button>
+      <button type="button" class="nex-chip" data-category="botana">🥨 Botanas y Nueces</button>
+      <button type="button" class="nex-chip" data-category="bebidas">🥤 Bebidas y Sidras</button>
+      <button type="button" class="nex-chip" data-category="dulces">🍬 Dulces típicos</button>
+      <button type="button" class="nex-chip" data-category="cosmetica">🧴 Cosmética natural</button>
+      <button type="button" class="nex-chip" data-category="artesania">🧶 Textiles y Artesanía</button>
+      <button type="button" class="nex-chip" data-category="cuero">👜 Talabartería</button>
+    </div>
+  </section>
+
+  <!-- Resumen de Resultados y Estado -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+    <div id="stockSummary" style="font-size:var(--font-size-sm);font-weight:var(--font-weight-bold);color:var(--nex-text-secondary);">
+      Cargando productos verificados...
+    </div>
+    <div id="activeFilterPill" style="font-size:12px;color:var(--nex-emerald);font-weight:700;"></div>
+  </div>
+
+  <div id="purchaseMessage" class="nex-alert nex-alert-success" hidden></div>
+
+  <!-- Layout Principal: Catálogo + Panel de Cotización / Carrito -->
+  <div class="nex-market-layout">
+    <!-- Listado de Productos -->
+    <section aria-label="Catálogo de productos">
+      <div id="storeItems" class="nex-market-grid">
+        <p>Cargando catálogo comercial...</p>
+      </div>
+    </section>
+
+    <!-- Sidebar: Cotizador y Abastecimiento Directo -->
+    <aside class="nex-cart-panel" aria-labelledby="cartHeading">
+      <div class="nex-cart-header">
+        <h3 id="cartHeading">Pedido / Cotización</h3>
+        <span id="cartCount" class="nex-badge nex-badge-lime">0 items</span>
+      </div>
+
+      <div id="cartItems" class="nex-cart-items-list">
+        <div class="nex-empty-state" style="padding:28px 14px;border:none;background:transparent;">
+          <span style="font-size:2rem;display:block;margin-bottom:6px;">🛒</span>
+          <strong style="display:block;font-size:13px;color:var(--nex-text-primary);">Tu lista está vacía</strong>
+          <small style="color:var(--nex-text-muted);">Agrega productos para comprar o solicitar cotización por mayoreo.</small>
+        </div>
+      </div>
+
+      <!-- Resumen Financiero y Ahorro -->
+      <div class="nex-cart-summary-box">
+        <div class="nex-cart-row">
+          <span>Subtotal estimado</span>
+          <strong id="cartSubtotal">$0.00</strong>
+        </div>
+        <div class="nex-cart-row" id="cartWholesaleRow" style="color:var(--nex-b2b);display:none;">
+          <span>Ahorro por mayoreo</span>
+          <strong id="cartSavings">-$0.00</strong>
+        </div>
+        <div class="nex-cart-row total">
+          <span>Total</span>
+          <span id="cartTotal">$0.00</span>
+        </div>
+      </div>
+
+      <!-- Botones de Acción Comercial -->
+      <div style="margin-top:18px;display:grid;gap:10px;">
+        <button id="quoteWhatsAppButton" type="button" class="nex-btn nex-btn-primary" style="width:100%;background:#1F9D55;" disabled>
+          <span>💬</span> Contactar y Cotizar (WhatsApp)
+        </button>
+        <button id="viewQuoteSummaryBtn" type="button" class="nex-btn nex-btn-outline" style="width:100%;font-size:12px;" disabled>
+          📄 Ver Resumen de Cotización
+        </button>
+      </div>
+      <small style="display:block;margin-top:12px;font-size:11px;color:var(--nex-text-muted);text-align:center;">
+        Trato directo con el productor · Sin cargos ocultos
+      </small>
+    </aside>
+  </div>
+</main>
+
+<!-- Modal: Ficha Técnica y Comercial del Producto -->
+<div id="productDetailModal" class="nex-modal-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="modalProductTitle">
+  <div class="nex-modal-dialog">
+    <button type="button" class="nex-modal-close" id="closeProductModal" aria-label="Cerrar ventana">✕</button>
+    <div id="modalProductContent">
+      <!-- Inyectado dinámicamente -->
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Resumen de Cotización Formal -->
+<div id="quoteSummaryModal" class="nex-modal-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="modalQuoteTitle">
+  <div class="nex-modal-dialog">
+    <button type="button" class="nex-modal-close" id="closeQuoteModal" aria-label="Cerrar ventana">✕</button>
+    <div id="modalQuoteContent">
+      <!-- Inyectado dinámicamente -->
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Lista de Abastecimiento B2B -->
+<div id="supplyListModal" class="nex-modal-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="modalSupplyTitle">
+  <div class="nex-modal-dialog">
+    <button type="button" class="nex-modal-close" id="closeSupplyModal" aria-label="Cerrar ventana">✕</button>
+    <div style="border-bottom:2px solid var(--nex-b2b);padding-bottom:10px;margin-bottom:16px;">
+      <span class="nex-badge nex-badge-b2b" style="margin-bottom:4px;">HERRAMIENTA COMERCIAL B2B</span>
+      <h2 id="modalSupplyTitle" style="margin:4px 0 0;font-size:1.4rem;">Lista de Abastecimiento Recurrente</h2>
+    </div>
+    <p style="font-size:13px;color:var(--nex-text-secondary);margin-bottom:16px;">
+      Administra tus insumos periódicos para tu tiendita o restaurante. Puedes agregar los productos a tu cotización con un solo clic.
+    </p>
+    <div id="supplyListContent" style="display:grid;gap:10px;margin-bottom:20px;">
+      <!-- Dinámico -->
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--nex-border);padding-top:14px;">
+      <button type="button" class="nex-btn nex-btn-ghost nex-btn-sm" id="clearSupplyListBtn">Vaciar lista</button>
+      <button type="button" class="nex-btn nex-btn-b2b" id="addAllSupplyToCartBtn">Cargar toda la lista al pedido →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Historial de Cotizaciones -->
+<div id="quotesHistoryModal" class="nex-modal-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="modalHistoryTitle">
+  <div class="nex-modal-dialog">
+    <button type="button" class="nex-modal-close" id="closeHistoryModal" aria-label="Cerrar ventana">✕</button>
+    <div style="border-bottom:2px solid var(--nex-forest);padding-bottom:10px;margin-bottom:16px;">
+      <span class="nex-badge nex-badge-verified" style="margin-bottom:4px;">NEGOCIACIONES Y PEDIDOS</span>
+      <h2 id="modalHistoryTitle" style="margin:4px 0 0;font-size:1.4rem;">Historial de Cotizaciones Emitidas</h2>
+    </div>
+    <p style="font-size:13px;color:var(--nex-text-secondary);margin-bottom:16px;">
+      Consulta las cotizaciones generadas previamente, descarga comprobantes o vuelve a contactar al proveedor.
+    </p>
+    <div id="quotesHistoryContent" style="display:grid;gap:12px;margin-bottom:16px;">
+      <!-- Dinámico -->
+    </div>
+  </div>
+</div>
+
+<script src="../js/navigation.js"></script>
+<script src="../js/app.js"></script>
+</body>
+</html>
