@@ -31,6 +31,25 @@ const money = (val) => {
   return Number.isFinite(n) ? `$${n.toFixed(2)}` : '—';
 };
 
+// --- Identidad del proveedor (perfil en cards de abasto) ----------------------
+const escTexto = (valor) => String(valor ?? '').replace(/[&<>"']/g, (c) => ({
+  '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+})[c]);
+
+function inicialesProveedor(nombre) {
+  const palabras = String(nombre || '').trim().split(/\s+/)
+    .filter((p) => p && !/^(de|del|la|el|los|las|y)$/i.test(p));
+  if (!palabras.length) return 'NQ';
+  if (palabras.length === 1) return palabras[0].slice(0, 2).toUpperCase();
+  return (palabras[0][0] + palabras[1][0]).toUpperCase();
+}
+
+function colorProveedor(clave) {
+  let hash = 0;
+  for (const c of String(clave || '')) hash = (hash * 31 + c.charCodeAt(0)) | 0;
+  return Math.abs(hash) % 6;
+}
+
 // Estado global de productos y carrito
 let allProducts = [];
 let allProducers = [];
@@ -72,6 +91,7 @@ async function fetchUnifiedCatalog() {
           rutas: Array.isArray(p.rutas_entrega) ? p.rutas_entrega : ['Centro'],
           verificado: p.verificado !== false,
           destacado: Boolean(p.destacado),
+          esSupabase: Boolean(p.es_supabase),
           descripcion: p.descripcion || 'Producto elaborado por productores de Durango.',
           lat: p.lat,
           lng: p.lng
@@ -104,6 +124,7 @@ async function fetchUnifiedCatalog() {
             rutas: p.rutas_entrega || ['Centro'],
             verificado: p.verificado !== false,
             destacado: Boolean(p.destacado),
+          esSupabase: Boolean(p.es_supabase),
             descripcion: p.descripcion || '',
             lat: p.lat,
             lng: p.lng
@@ -365,6 +386,12 @@ function applyMarketFiltersAndRender() {
     const icon = CATEGORY_ICONS[item.categoria] || appIcon('shopping-bag', 26);
     const savings = Math.max(0, item.precio_menudeo - item.precio_mayoreo);
     const savingsPct = Math.round((savings / item.precio_menudeo) * 100);
+    const iniciales = inicialesProveedor(item.productorNombre);
+    const color = colorProveedor(item.productorId || item.productorNombre);
+    const waNum = String(item.whatsapp || '').replace(/\D/g, '');
+    const waUrl = waNum
+      ? `https://wa.me/${waNum}?text=${encodeURIComponent('Hola ' + item.productorNombre + ', te contacto desde NEX24 para abastecerme de ' + item.nombre)}`
+      : '';
 
     return `
       <article class="nex-market-card">
@@ -377,15 +404,26 @@ function applyMarketFiltersAndRender() {
               ${item.verificado ? '<span class="nex-badge nex-badge-verified"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check" style="margin-right:4px;"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>Verificado</span>' : ''}
             </div>
             <h3 class="nex-market-card-title">${item.nombre}</h3>
-            <span class="nex-market-producer"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sprout" style="margin-right:3px;vertical-align:-0.15em;"><path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/></svg>${item.productorNombre} · <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin" style="margin-right:3px;vertical-align:-0.15em;"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>${item.zona}</span>
+            <button type="button" class="nex-market-producer" onclick="openSupplierProfile('${item.productorId}')" title="Ver perfil del proveedor"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sprout" style="margin-right:3px;vertical-align:-0.15em;"><path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/></svg>${item.productorNombre} · <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin" style="margin-right:3px;vertical-align:-0.15em;"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>${item.zona}</button>
           </div>
         </div>
 
-        <p class="nex-market-card-desc">${item.descripcion}</p>
-
-        <div class="nex-market-specs">
-          <div>${appIcon('package', 13, 'margin-right:4px;vertical-align:-0.15em;')}Capacidad: <span>${item.capacidad}</span></div>
-          <div>${appIcon('truck', 13, 'margin-right:4px;vertical-align:-0.15em;')}Entrega: <span>${item.rutas[0] || 'Centro'}</span></div>
+        <div class="nex-supplier-card">
+          <div class="nex-supplier-head">
+            <span class="nex-sup-avatar c${color}" aria-hidden="true">${iniciales}</span>
+            <div class="nex-supplier-meta">
+              <button type="button" class="nex-supplier-name" onclick="openSupplierProfile('${item.productorId}')">${escTexto(item.productorNombre)}</button>
+              <span class="nex-supplier-role">${item.verificado ? appIcon('shield-check', 11, 'margin-right:3px;vertical-align:-0.15em;') + 'Proveedor verificado' : 'Proveedor local'}${item.esSupabase ? '<span class="nex-supplier-new">Nuevo local</span>' : ''}</span>
+            </div>
+            ${waUrl ? `<a class="nex-supplier-wa" href="${waUrl}" target="_blank" rel="noopener" title="Hablar con ${escTexto(item.productorNombre)} por WhatsApp">${appIcon('message-circle', 13, 'margin-right:4px;vertical-align:-0.15em;')}Contactar</a>` : ''}
+          </div>
+          <p class="nex-supplier-desc">${escTexto(item.descripcion)}</p>
+          <div class="nex-supplier-facts">
+            <span>${appIcon('map-pin', 12, 'margin-right:3px;vertical-align:-0.15em;')}${escTexto(item.zona)}</span>
+            <span>${appIcon('package', 12, 'margin-right:3px;vertical-align:-0.15em;')}${escTexto(item.capacidad)}</span>
+            <span>${appIcon('truck', 12, 'margin-right:3px;vertical-align:-0.15em;')}${escTexto(item.rutas[0] || 'Centro')}</span>
+          </div>
+          <button type="button" class="nex-supplier-link" onclick="openSupplierProfile('${item.productorId}')">Ver perfil completo ${appIcon('arrow-up-right', 12, 'margin-left:3px;vertical-align:-0.15em;')}</button>
         </div>
 
         <div class="nex-market-pricing-box">
@@ -579,6 +617,93 @@ window.reopenQuoteByFolio = function(folio) {
   if (modalHistory) modalHistory.hidden = true;
 
   openQuoteSummaryModal(q.total, q.savings || 0, q.folio);
+};
+
+// -----------------------------------------------------------------------------
+// PERFIL DEL PROVEEDOR (reutiliza el modal de detalle)
+// -----------------------------------------------------------------------------
+window.openSupplierProfile = function(productorId) {
+  const modal = document.querySelector('#productDetailModal');
+  const container = document.querySelector('#modalProductContent');
+  if (!modal || !container) return;
+
+  let prod = allProducers.find((p) => String(p.id) === String(productorId));
+  const susProductos = allProducts.filter((p) => String(p.productorId) === String(productorId));
+  if (!prod) {
+    const muestra = susProductos[0] || allProducts.find((p) => p.productorId === productorId);
+    if (!muestra) return;
+    prod = {
+      nombre: muestra.productorNombre,
+      descripcion: muestra.descripcion,
+      categoria: muestra.categoria,
+      zona_durango: muestra.zona,
+      capacidad_semanal: muestra.capacidad,
+      rutas_entrega: muestra.rutas,
+      whatsapp: muestra.whatsapp,
+      verificado: muestra.verificado,
+      es_supabase: muestra.esSupabase,
+    };
+  }
+
+  const nombre = prod.business_name || prod.nombre || 'Proveedor local';
+  const iniciales = inicialesProveedor(nombre);
+  const color = colorProveedor(prod.id || nombre);
+  const waNum = String(prod.whatsapp || '').replace(/\D/g, '');
+  const waUrl = waNum
+    ? `https://wa.me/${waNum}?text=${encodeURIComponent('Hola ' + nombre + ', te contacto desde NEX24 para conocer tu catálogo de abastos.')}`
+    : '';
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((prod.zona_durango || prod.zone || 'Durango') + ', Durango, Mexico')}`;
+  const rutas = Array.isArray(prod.rutas_entrega) ? prod.rutas_entrega : ['Centro'];
+  const categoria = prod.categoria || susProductos[0]?.categoria || 'general';
+
+  container.innerHTML = `
+    <div class="nex-supplier-hero">
+      <span class="nex-sup-avatar nex-sup-avatar-lg c${color}" aria-hidden="true">${iniciales}</span>
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;">
+          ${prod.verificado !== false ? '<span class="nex-badge nex-badge-verified">Proveedor verificado</span>' : '<span class="nex-badge">Proveedor local</span>'}
+          <span class="nex-badge nex-badge-lime">${escTexto(categoria)}</span>
+          ${prod.es_supabase ? '<span class="nex-supplier-new">Nuevo local</span>' : ''}
+        </div>
+        <h2 style="margin:0 0 3px 0;font-size:1.45rem;">${escTexto(nombre)}</h2>
+        <span style="color:var(--nex-emerald);font-weight:700;">Proveedor local de Durango · Origen DGO</span>
+      </div>
+    </div>
+
+    <p style="color:var(--nex-text-secondary);line-height:1.6;margin:14px 0 16px;">${escTexto(prod.descripcion || prod.business_description || 'Productor local registrado en el catálogo NEX24.')}</p>
+
+    <div class="nex-supplier-terms">
+      <div>${appIcon('map-pin', 14, 'margin-right:5px;vertical-align:-0.15em;')}<span><small>Zona</small><strong>${escTexto(prod.zona_durango || prod.zone || 'Durango')}</strong></span></div>
+      <div>${appIcon('package', 14, 'margin-right:5px;vertical-align:-0.15em;')}<span><small>Capacidad</small><strong>${escTexto(prod.capacidad_semanal || prod.capacity || 'Bajo pedido')}</strong></span></div>
+      <div>${appIcon('truck', 14, 'margin-right:5px;vertical-align:-0.15em;')}<span><small>Rutas de entrega</small><strong>${escTexto(rutas.join(', '))}</strong></span></div>
+      <div>${appIcon('phone', 14, 'margin-right:5px;vertical-align:-0.15em;')}<span><small>Contacto</small><strong>${escTexto(prod.whatsapp || prod.phone || 'NEX24')}</strong></span></div>
+    </div>
+
+    ${susProductos.length ? `
+      <div style="margin-top:18px;">
+        <span style="font-size:11px;font-weight:800;color:var(--nex-text-secondary);text-transform:uppercase;">Catálogo que ofrece (${susProductos.length})</span>
+        <div class="nex-supplier-products">
+          ${susProductos.map((sp) => `
+            <div class="nex-supplier-product">
+              <div style="flex:1;min-width:0;">
+                <strong>${escTexto(sp.nombre)}</strong>
+                <small>Mayoreo: <b>${money(sp.precio_mayoreo)}</b> / ${escTexto(sp.unidad)}</small>
+              </div>
+              <button type="button" class="nex-btn nex-btn-secondary nex-btn-sm" onclick="addToCart('${sp.id}'); closeProductModalAction();">+ Cotizar</button>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    ` : '<p style="color:var(--nex-text-secondary);">Este proveedor aún no tiene productos publicados en el catálogo.</p>'}
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;">
+      ${waUrl ? `<a href="${waUrl}" target="_blank" rel="noopener" class="nex-btn nex-btn-primary" style="flex:1;background:#1F9D55;color:#fff;border-color:#1F9D55;">${appIcon('message-circle', 14, 'margin-right:5px;vertical-align:-0.15em;')} Hablar con el proveedor</a>` : ''}
+      <a href="${mapsUrl}" target="_blank" rel="noopener" class="nex-btn nex-btn-secondary">${appIcon('map-pin', 14, 'margin-right:5px;vertical-align:-0.15em;')} Ver zona en mapa</a>
+      <a href="/mapa" class="nex-btn nex-btn-outline">${appIcon('map', 14, 'margin-right:5px;vertical-align:-0.15em;')} Mapa NEX24</a>
+    </div>
+  `;
+
+  modal.hidden = false;
 };
 
 // -----------------------------------------------------------------------------

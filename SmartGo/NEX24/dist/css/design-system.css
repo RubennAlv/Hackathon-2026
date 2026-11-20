@@ -1573,7 +1573,13 @@ footer small {
   display: flex;
   align-items: center;
   gap: 4px;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
 }
+.nex-market-producer:hover { color: var(--nex-b2b); text-decoration: underline; }
 
 .nex-market-card-desc {
   font-size: var(--font-size-sm);
@@ -1582,6 +1588,43 @@ footer small {
   margin: var(--space-2) 0 var(--space-4);
   flex: 1;
 }
+
+/* Perfil del proveedor dentro de las cards de abasto */
+.nex-supplier-card{background:var(--nex-bg);border:1px solid var(--nex-border);border-radius:var(--radius-md);padding:12px;margin:2px 0 var(--space-4)}
+.nex-supplier-head{display:flex;align-items:center;gap:9px}
+.nex-sup-avatar{width:38px;height:38px;flex:none;border-radius:11px;display:grid;place-items:center;font-size:13px;font-weight:800;letter-spacing:.5px}
+.nex-sup-avatar.c0{background:#e3f2d3;color:#35671f}
+.nex-sup-avatar.c1{background:#d8efe6;color:#1f6b50}
+.nex-sup-avatar.c2{background:#f6e9c9;color:#8a6317}
+.nex-sup-avatar.c3{background:#dce9f5;color:#2d5c86}
+.nex-sup-avatar.c4{background:#efe0ef;color:#76407a}
+.nex-sup-avatar.c5{background:#f4e0d8;color:#8c4b2f}
+.nex-supplier-meta{flex:1;min-width:0}
+.nex-supplier-name{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:none;border:0;padding:0;font:inherit;font-size:var(--font-size-sm);font-weight:800;color:var(--nex-forest);cursor:pointer;text-align:left}
+.nex-supplier-name:hover{color:var(--nex-b2b);text-decoration:underline}
+.nex-supplier-role{display:flex;align-items:center;flex-wrap:wrap;gap:4px;font-size:10px;font-weight:700;color:var(--nex-text-muted);margin-top:2px}
+.nex-supplier-new{background:#e7f5e9;border:1px solid #bfe3c4;color:#276b39;border-radius:999px;padding:1px 6px;font-size:9px;font-weight:800;white-space:nowrap}
+.nex-supplier-wa{display:inline-flex;align-items:center;flex:none;background:#1f9d55;color:#fff;border-radius:8px;padding:6px 9px;font-size:10px;font-weight:800;text-decoration:none}
+.nex-supplier-wa:hover{background:#188246}
+.nex-supplier-desc{font-size:11px;line-height:1.5;color:var(--nex-text-secondary);margin:9px 0 8px}
+.nex-supplier-facts{display:flex;flex-wrap:wrap;gap:5px}
+.nex-supplier-facts span{display:inline-flex;align-items:center;background:var(--nex-surface);border:1px solid var(--nex-border);border-radius:999px;padding:4px 8px;font-size:10px;font-weight:700;color:var(--nex-text-secondary)}
+.nex-supplier-link{display:inline-flex;align-items:center;margin-top:9px;background:none;border:0;padding:0;font:inherit;font-size:11px;font-weight:800;color:var(--nex-b2b);cursor:pointer}
+.nex-supplier-link:hover{text-decoration:underline}
+
+/* Modal de perfil del proveedor */
+.nex-supplier-hero{display:flex;align-items:center;gap:14px}
+.nex-sup-avatar-lg{width:64px;height:64px;border-radius:18px;font-size:22px}
+.nex-supplier-terms{display:grid;grid-template-columns:1fr 1fr;gap:10px;background:var(--nex-bg);border:1px solid var(--nex-border);border-radius:var(--radius-md);padding:14px}
+.nex-supplier-terms>div{display:flex;align-items:flex-start;gap:4px;color:var(--nex-emerald)}
+.nex-supplier-terms small{display:block;font-size:9px;font-weight:800;text-transform:uppercase;color:var(--nex-text-muted)}
+.nex-supplier-terms strong{font-size:12px;color:var(--nex-forest)}
+.nex-supplier-products{display:grid;gap:7px;margin-top:8px;max-height:230px;overflow:auto}
+.nex-supplier-product{display:flex;align-items:center;gap:10px;border:1px solid var(--nex-border);border-radius:10px;padding:9px 11px;background:var(--nex-surface)}
+.nex-supplier-product strong{display:block;font-size:12px;color:var(--nex-forest)}
+.nex-supplier-product small{font-size:11px;color:var(--nex-text-secondary)}
+.nex-supplier-product b{color:var(--nex-b2b)}
+@media(max-width:600px){.nex-supplier-terms{grid-template-columns:1fr}.nex-supplier-wa{padding:7px}}
 
 .nex-market-specs {
   display: grid;
