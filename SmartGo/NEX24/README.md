@@ -23,6 +23,8 @@ Con un solo `npm start` se sirven **la interfaz y la API en el mismo puerto**:
 |---|---|
 | `http://localhost:3001/` | Tienda NEX24 |
 | `http://localhost:3001/lens` | Lens IA (atajo a `/pages/lens.html`) |
+| `http://localhost:3001/mapa` | Mapa Lens IA (atajo a `/pages/mapa.html`) |
+| `http://localhost:3001/pages/mapa.html?productor=p01` | Enfoca el productor sugerido por Lens IA (lo genera el link "Ver en mapa") |
 | `http://localhost:3001/api/lens/scan` | Endpoint de visión |
 | `http://localhost:3001/health` | Estado de la API |
 
