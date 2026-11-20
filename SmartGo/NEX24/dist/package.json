@@ -5,9 +5,7 @@
   "type": "module",
   "main": "server.js",
   "scripts": {
-    "prestart": "fuser -k 3001/tcp 2>/dev/null || true",
     "start": "node server.js",
-    "predev": "fuser -k 3001/tcp 2>/dev/null || true",
     "dev": "node --watch server.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js",
