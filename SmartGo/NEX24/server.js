@@ -132,7 +132,7 @@ function leerUbicacion(...fuentes) {
 }
 
 app.get('/health', (_req, res) => {
-  res.json({ ok: true, modo: modoConfigurado() });
+  res.json({ ok: true, modo: modoConfigurado(), db: supabaseConfigurado() ? 'supabase' : 'local' });
 });
 
 app.get('/api/productores', (_req, res) => {
