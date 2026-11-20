@@ -34,7 +34,21 @@ const serverProcess = fork(path.join(ROOT, 'server.js'), [], {
 });
 
 // Esperar a que el servidor esté listo
-await new Promise((resolve) => setTimeout(resolve, 1200));
+let serverReady = false;
+for (let i = 0; i < 25; i++) {
+  try {
+    const res = await fetch(`${BASE_URL}/api/catalogo`);
+    if (res.ok) {
+      serverReady = true;
+      break;
+    }
+  } catch {
+    await new Promise((r) => setTimeout(r, 200));
+  }
+}
+if (!serverReady) {
+  await new Promise((resolve) => setTimeout(resolve, 1500));
+}
 
 try {
   // 1. Verificación de Rutas Públicas Web

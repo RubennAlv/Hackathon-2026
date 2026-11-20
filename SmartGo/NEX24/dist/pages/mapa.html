@@ -6,7 +6,7 @@
   <title>Mapa Lens IA | NEX24</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%97%BA%3C/text%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B8F36B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6z'/%3E%3Cpath d='M9 3v15'/%3E%3Cpath d='M15 6v15'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="../css/styles.css">
   <link rel="stylesheet" href="../css/design-system.css">
   <link rel="stylesheet" href="../css/design.css">
@@ -37,7 +37,7 @@
 
     <div class="mapa-toolbar">
       <label class="buscar">
-        <span aria-hidden="true">🔎</span>
+        <span aria-hidden="true" style="display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
         <input id="filterSearch" type="search" placeholder="Productor, producto o zona…" aria-label="Buscar productores">
       </label>
       <label class="categoria">
@@ -46,14 +46,14 @@
           <option value="">Todas</option>
         </select>
       </label>
-      <button type="button" id="useLocation" class="btn ghost">⌖ Mi ubicación</button>
-      <button type="button" id="resetMap" class="btn ghost">↺ Ver Durango</button>
+      <button type="button" id="useLocation" class="btn ghost"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-crosshair" style="margin-right:6px;"><circle cx="12" cy="12" r="10"/><line x1="22" x2="18" y1="12" y2="12"/><line x1="6" x2="2" y1="12" y2="12"/><line x1="12" x2="12" y1="6" y2="2"/><line x1="12" x2="12" y1="22" y2="18"/></svg>Mi ubicación</button>
+      <button type="button" id="resetMap" class="btn ghost"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-rotate-ccw" style="margin-right:6px;"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>Ver Durango</button>
     </div>
 
     <div id="filterInfo" class="filter-info" aria-live="polite">Cargando catálogo…</div>
     <div id="desdeLens" class="desde-lens" hidden>
       <span id="desdeLensTexto"></span>
-      <button type="button" id="quitarSugerencia">Quitar resaltado ✕</button>
+      <button type="button" id="quitarSugerencia">Quitar resaltado <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x" style="margin-left:4px;"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
     </div>
     <div id="mapaError" class="notice error" hidden role="alert"></div>
 
@@ -66,8 +66,10 @@
     <div id="mapaLista" class="mapa-lista"></div>
   </section>
 
-  <p class="mapa-footnote">Catálogo ficticio de 14 productores de Durango, creado para el hackatón. Mapa local interactivo.</p>
+  <p class="mapa-footnote">Red comercial de 14 productores locales verificados de Durango. Mapa georreferenciado para vinculación comercial B2B y B2C.</p>
 </main>
+
+<footer class="nex-footer" data-nex-footer="true"></footer>
 
 <script src="../js/navigation.js"></script>
 <script src="../js/mapa.js"></script>

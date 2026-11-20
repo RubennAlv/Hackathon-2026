@@ -1,1 +1,725 @@
-.registration-page{min-height:calc(100vh - 72px);padding:48px 5.5% 80px}.registration-shell{max-width:1120px;margin:auto;display:grid;grid-template-columns:.72fr 1.28fr;gap:24px}.registration-aside{border-radius:24px;background:var(--ink);color:#fff;padding:38px;position:relative;overflow:hidden}.registration-aside::after{content:"";position:absolute;width:240px;height:240px;border-radius:50%;right:-120px;bottom:-120px;background:rgba(185,243,107,.12)}.registration-aside small{color:var(--lime);font-weight:800;letter-spacing:1.5px}.registration-aside h1{font-size:44px;line-height:1.05;letter-spacing:-2px;margin:14px 0}.registration-aside p{color:#bfcac3;line-height:1.7}.registration-benefits{display:grid;gap:12px;margin-top:28px}.registration-benefits div{display:flex;gap:10px;align-items:flex-start;color:#eaf1ec;font-size:13px}.registration-benefits span{display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--lime);color:var(--ink);font-weight:900}.registration-form-card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:30px}.role-switch{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px}.role-option{border:1px solid var(--line);border-radius:14px;background:#f8faf5;padding:14px;cursor:pointer;text-align:left}.role-option strong,.role-option small{display:block}.role-option strong{font-size:14px}.role-option small{margin-top:4px;color:var(--muted);line-height:1.4}.role-option.active{border-color:#9fc66d;background:var(--lime-2);box-shadow:0 8px 20px rgba(23,53,42,.08)}.registration-form-card h2{font-size:22px;margin-bottom:18px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field{display:grid;gap:7px}.field.full{grid-column:1/-1}.field label{font-size:11px;font-weight:800;color:#607067}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:10px;background:#fbfcf8;padding:12px 13px;font:inherit;font-size:13px;color:var(--ink);outline:none}.field textarea{min-height:90px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:#86ad55;box-shadow:0 0 0 3px rgba(185,243,107,.22)}.conditional{display:none}.conditional.visible{display:grid}.form-message{display:none;margin-bottom:14px;border-radius:10px;padding:12px 14px;font-size:12px}.form-message.visible{display:block}.form-message.success{background:#edf8dc;color:#41652b;border:1px solid #cee8a8}.form-message.error{background:#fff0ed;color:#8f382b;border:1px solid #f0c3ba}.submit-registration{width:100%;margin-top:18px;border:0;border-radius:10px;background:var(--ink);color:#fff;padding:14px;font:inherit;font-size:13px;font-weight:800;cursor:pointer}.submit-registration:disabled{opacity:.65;cursor:wait}@media(max-width:850px){.registration-shell{grid-template-columns:1fr}.registration-aside{padding:28px}.registration-aside h1{font-size:38px}}@media(max-width:560px){.registration-page{padding:28px 5.5% 60px}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.role-switch{grid-template-columns:1fr}.registration-form-card{padding:20px}.registration-aside h1{font-size:34px}}
+/* =============================================================================
+   NEX24 — ESTILOS MODERNOS DE AUTENTICACIÓN Y REGISTRO COMERCIAL
+   ============================================================================= */
+
+.registration-page {
+  min-height: calc(100vh - 72px);
+  padding: 40px 5% 80px;
+  background: var(--nex-bg);
+}
+
+.registration-shell {
+  max-width: 1120px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 28px;
+  align-items: start;
+}
+
+.registration-aside {
+  border-radius: var(--radius-xl);
+  background: radial-gradient(circle at 100% 0%, rgba(184, 243, 107, 0.18), transparent 45%),
+              linear-gradient(155deg, var(--nex-forest-dark) 0%, var(--nex-forest) 60%, var(--nex-forest-light) 100%);
+  color: #FFFFFF;
+  padding: 38px 32px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--nex-shadow-md);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.registration-aside h1 {
+  font-size: clamp(1.8rem, 2.5vw, 2.2rem);
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  margin: 12px 0;
+  color: #FFFFFF;
+  font-weight: 800;
+}
+
+.registration-benefits {
+  display: grid;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.registration-benefits > div {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  color: #FFFFFF;
+  font-size: 13px;
+}
+
+.registration-benefits span {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  background: rgba(184, 243, 107, 0.2);
+  color: var(--nex-lime);
+  font-weight: 800;
+  font-size: 15px;
+  flex-shrink: 0;
+  border: 1px solid rgba(184, 243, 107, 0.35);
+}
+
+.registration-form-card {
+  background: #FFFFFF;
+  border: 1px solid var(--nex-border);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  box-shadow: var(--nex-shadow-sm);
+}
+
+/* Selector de pestañas para cambiar entre Iniciar Sesión y Registrarse */
+.auth-mode-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  background: #F1F5F0;
+  padding: 5px;
+  border-radius: var(--radius-lg);
+  margin-bottom: 24px;
+  border: 1px solid var(--nex-border);
+}
+
+.auth-mode-tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--nex-text-secondary);
+  text-decoration: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid transparent;
+}
+
+.auth-mode-tab.active {
+  background: #FFFFFF;
+  color: var(--nex-forest);
+  box-shadow: 0 3px 10px rgba(22, 62, 43, 0.08);
+  border-color: rgba(22, 62, 43, 0.12);
+  transform: translateY(-1px);
+}
+
+.auth-mode-tab:hover:not(.active) {
+  color: var(--nex-forest);
+  background: rgba(255, 255, 255, 0.6);
+}
+
+/* Selector de rol de negocio */
+.role-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.role-option {
+  border: 2px solid var(--nex-border);
+  border-radius: var(--radius-lg);
+  background: var(--nex-surface);
+  padding: 16px;
+  cursor: pointer;
+  text-align: left;
+  transition: all var(--transition-fast);
+}
+
+.role-option strong {
+  display: block;
+  font-size: var(--font-size-md);
+  color: var(--nex-forest);
+  font-weight: 800;
+}
+
+.role-option small {
+  display: block;
+  margin-top: 4px;
+  color: var(--nex-text-secondary);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.role-option.active {
+  border-color: var(--nex-emerald);
+  background: var(--nex-lime-soft);
+  box-shadow: 0 4px 14px rgba(36, 107, 75, 0.12);
+}
+
+.role-option:hover:not(.active) {
+  border-color: var(--nex-border-strong);
+  background: var(--nex-surface-highlight);
+}
+
+/* Accesos rápidos de prueba (Demo personas) */
+.demo-personas-section {
+  background: #F4F9F2;
+  border: 1px solid #CFE2C4;
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.demo-personas-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.demo-personas-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--nex-forest);
+  background: var(--nex-lime-soft);
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--nex-lime);
+}
+
+.demo-personas-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.demo-persona-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  background: #FFFFFF;
+  border: 1.5px solid #D5E5CA;
+  border-radius: var(--radius-md);
+  padding: 14px 12px 12px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  min-height: 124px;
+}
+
+.demo-persona-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(27, 77, 54, 0.14);
+}
+
+.demo-persona-card:active {
+  transform: scale(0.97);
+}
+
+.demo-persona-card:focus-visible {
+  outline: 3px solid var(--nex-emerald);
+  outline-offset: 2px;
+}
+
+/* Variantes visuales por Rol para los botones de prueba */
+.demo-persona-card.role-tienda {
+  border-color: #BAE6FD;
+  background: linear-gradient(180deg, #F0F9FF 0%, #FFFFFF 100%);
+}
+.demo-persona-card.role-tienda:hover {
+  border-color: #0284C7;
+  box-shadow: 0 6px 18px rgba(2, 132, 199, 0.18);
+}
+
+.demo-persona-card.role-provider {
+  border-color: #BBF7D0;
+  background: linear-gradient(180deg, #F0FDF4 0%, #FFFFFF 100%);
+}
+.demo-persona-card.role-provider:hover {
+  border-color: #16A34A;
+  box-shadow: 0 6px 18px rgba(22, 163, 74, 0.18);
+}
+
+.demo-persona-card.role-admin {
+  border-color: #DDD6FE;
+  background: linear-gradient(180deg, #FAF5FF 0%, #FFFFFF 100%);
+}
+.demo-persona-card.role-admin:hover {
+  border-color: #7C3AED;
+  box-shadow: 0 6px 18px rgba(124, 58, 237, 0.18);
+}
+
+.persona-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.demo-persona-card .persona-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.persona-role-pill {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.persona-role-pill.b2b {
+  background: #E0F2FE;
+  color: #0369A1;
+}
+
+.persona-role-pill.provider {
+  background: #DCFCE7;
+  color: #15803D;
+}
+
+.persona-role-pill.admin {
+  background: #EDE9FE;
+  color: #6D28D9;
+}
+
+.demo-persona-card .persona-info strong {
+  display: block;
+  font-size: 12.5px;
+  color: var(--nex-forest);
+  font-weight: 800;
+  line-height: 1.25;
+  margin-bottom: 2px;
+}
+
+.demo-persona-card .persona-info small {
+  display: block;
+  font-size: 10.5px;
+  color: var(--nex-text-secondary);
+  line-height: 1.3;
+}
+
+/* Micro botón interactivo dentro de la tarjeta demo */
+.persona-action-btn {
+  margin-top: 10px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--nex-text-primary);
+  transition: all 0.2s ease;
+}
+
+.demo-persona-card.role-tienda .persona-action-btn {
+  background: #E0F2FE;
+  color: #0369A1;
+}
+.demo-persona-card.role-tienda:hover .persona-action-btn {
+  background: #0284C7;
+  color: #FFFFFF;
+}
+
+.demo-persona-card.role-provider .persona-action-btn {
+  background: #DCFCE7;
+  color: #15803D;
+}
+.demo-persona-card.role-provider:hover .persona-action-btn {
+  background: #16A34A;
+  color: #FFFFFF;
+}
+
+.demo-persona-card.role-admin .persona-action-btn {
+  background: #EDE9FE;
+  color: #6D28D9;
+}
+.demo-persona-card.role-admin:hover .persona-action-btn {
+  background: #7C3AED;
+  color: #FFFFFF;
+}
+
+/* Botón alternar visibilidad de contraseña */
+.password-toggle-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  font-size: 15px;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.password-toggle-btn:hover {
+  opacity: 1;
+}
+
+/* Opciones secundarias del formulario */
+.form-options-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 14px;
+  font-size: 13px;
+}
+
+.form-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: var(--nex-text-secondary);
+  font-size: 13px;
+  user-select: none;
+}
+
+.form-checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--nex-emerald);
+  cursor: pointer;
+}
+
+.forgot-password-link {
+  color: var(--nex-text-secondary);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.forgot-password-link:hover {
+  color: var(--nex-emerald);
+  text-decoration: underline;
+}
+
+/* Divisor estético */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 20px 0;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--nex-border);
+}
+  text-align: center;
+  margin: 20px 0;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--nex-border);
+}
+
+.auth-divider span {
+  padding: 0 12px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--nex-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Campos de formulario */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.field.full {
+  grid-column: 1 / -1;
+}
+
+.field label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--nex-forest);
+}
+
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 12px;
+  font-size: 14px;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.input-with-icon input {
+  padding-left: 36px !important;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  border: 1px solid var(--nex-border);
+  border-radius: var(--radius-md);
+  background: var(--nex-surface);
+  padding: 12px 14px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--nex-text-primary);
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.field textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--nex-emerald);
+  box-shadow: 0 0 0 3px rgba(36, 107, 75, 0.15);
+  background: #FFFFFF;
+}
+
+.conditional {
+  display: none;
+}
+
+.conditional.visible {
+  display: grid;
+}
+
+/* Mensajes de retroalimentación */
+.form-message {
+  display: none;
+  margin-bottom: 16px;
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.form-message.visible {
+  display: block;
+}
+
+.form-message.success {
+  background: #EDF8DC;
+  color: #2F6118;
+  border: 1px solid #CEE8A8;
+}
+
+.form-message.error {
+  background: #FFF1F0;
+  color: #991B1B;
+  border: 1px solid #FCA5A5;
+}
+
+.submit-registration {
+  cursor: pointer;
+  box-shadow: var(--nex-shadow-sm);
+  transition: all var(--transition-fast);
+}
+
+.submit-registration:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--nex-shadow-md);
+}
+
+/* =============================================================================
+   BOTÓN PRINCIPAL DE LOGIN (JERARQUÍA NIVEL 1: ACCIÓN PRIMARIA HERO)
+   ============================================================================= */
+.btn-login-submit {
+  width: 100%;
+  min-height: 52px;
+  margin-top: 22px;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #163E2B 0%, #1F9D55 100%);
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(31, 157, 85, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  letter-spacing: 0.3px;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-login-submit::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s ease;
+}
+
+.btn-login-submit:hover:not(:disabled) {
+  background: linear-gradient(135deg, #112F20 0%, #168045 100%);
+  box-shadow: 0 8px 24px rgba(31, 157, 85, 0.45);
+  transform: translateY(-2px);
+}
+
+.btn-login-submit:hover:not(:disabled)::after {
+  left: 100%;
+}
+
+.btn-login-submit:hover:not(:disabled) .btn-arrow {
+  transform: translateX(4px);
+}
+
+.btn-login-submit .btn-arrow {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.btn-login-submit:active:not(:disabled) {
+  transform: translateY(1px) scale(0.99);
+  box-shadow: 0 2px 6px rgba(31, 157, 85, 0.25);
+}
+
+.btn-login-submit:focus-visible {
+  outline: 3px solid var(--nex-lime);
+  outline-offset: 3px;
+}
+
+.btn-login-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* =============================================================================
+   CAJA DE REGISTRO SECUNDARIA (JERARQUÍA NIVEL 2: ACCIÓN SECUNDARIA DESTACADA)
+   ============================================================================= */
+.auth-register-box {
+  margin-top: 26px;
+  padding: 16px 20px;
+  background: #F9FAF7;
+  border: 1.5px solid var(--nex-border);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.auth-register-info strong {
+  display: block;
+  font-size: 13.5px;
+  color: var(--nex-forest);
+  font-weight: 800;
+  margin-bottom: 2px;
+}
+
+.auth-register-info p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--nex-text-secondary);
+  line-height: 1.4;
+}
+
+.auth-register-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 18px;
+  background: #FFFFFF;
+  border: 1.5px solid var(--nex-forest);
+  border-radius: var(--radius-md);
+  color: var(--nex-forest);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.auth-register-btn:hover {
+  background: var(--nex-forest);
+  color: #FFFFFF;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(22, 62, 43, 0.2);
+}
+
+.auth-register-btn:active {
+  transform: scale(0.98);
+}
+
+.auth-register-btn:focus-visible {
+  outline: 3px solid var(--nex-emerald);
+  outline-offset: 2px;
+}
+
+@media (max-width: 900px) {
+  .registration-shell {
+    grid-template-columns: 1fr;
+  }
+  .demo-personas-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .registration-page {
+    padding: 20px 4% 60px;
+  }
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .field.full {
+    grid-column: auto;
+  }
+  .role-switch {
+    grid-template-columns: 1fr;
+  }
+  .registration-form-card {
+    padding: 20px;
+  }
+}

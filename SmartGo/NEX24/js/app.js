@@ -2,12 +2,29 @@
  * NEX24 — Lógica de Marketplace Inteligente, Abastecimiento B2B/B2C y Dashboard
  */
 
-// Iconos temáticos por categoría
-const CATEGORY_ICONS = {
-  cafe: '☕', queso: '🧀', miel: '🍯', mezcal: '🥃', panaderia: '🥖', pan: '🥖',
-  salsas: '🌶️', cuero: '👜', cosmetica: '🧴', dulces: '🍬', botana: '🥨',
-  bebidas: '🥤', carnes: '🥩', artesania: '🧶', tortillas: '🫓'
+const appIcon = (name, size = 18, extraStyle = "") => {
+  const styleAttr = extraStyle ? ` style="${extraStyle}"` : "";
+  if (typeof window !== "undefined" && typeof window.createLucideIcon === "function") {
+    return window.createLucideIcon(name, { size, style: extraStyle });
+  }
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-${name}"${styleAttr}><circle cx="12" cy="12" r="10"/></svg>`;
 };
+
+// Resolutor inteligente de iconos con soporte de Lucide y Fallback a emojis para insumos sin icono
+const resolveProductIcon = (itemOrKey, size = 26, extraStyle = "") => {
+  if (typeof window !== "undefined" && typeof window.getProductIcon === "function") {
+    if (typeof itemOrKey === "object" && itemOrKey !== null) {
+      return window.getProductIcon(itemOrKey.categoria || itemOrKey.nombre || 'general', { size, style: extraStyle });
+    }
+    return window.getProductIcon(itemOrKey, { size, style: extraStyle });
+  }
+  return appIcon('shopping-bag', size, extraStyle);
+};
+
+// Proxy para compatibilidad total con accesos CATEGORY_ICONS[cat]
+const CATEGORY_ICONS = new Proxy({}, {
+  get: (_, prop) => resolveProductIcon(String(prop), 26)
+});
 
 const money = (val) => {
   const n = Number(val);
@@ -132,7 +149,7 @@ async function renderStore() {
   if (!products.length) {
     grid.innerHTML = `
       <div class="nex-empty-state" style="grid-column:1/-1;padding:48px 20px;">
-        <span class="nex-empty-icon" style="display:block;margin-bottom:10px;">⚠️</span>
+        <span class="nex-empty-icon" style="margin-bottom:10px;display:flex;justify-content:center;color:var(--nex-warning);"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-alert-triangle"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg></span>
         <div class="nex-empty-title">No fue posible cargar el catálogo comercial</div>
         <p class="nex-empty-desc">Revisa tu conexión a Internet o intenta nuevamente.</p>
         <button type="button" class="nex-btn nex-btn-primary nex-btn-sm" onclick="renderStore()">Reintentar Carga</button>
@@ -335,17 +352,17 @@ function applyMarketFiltersAndRender() {
   if (!filtered.length) {
     grid.innerHTML = `
       <div class="nex-empty-state" style="grid-column:1/-1;">
-        <span class="nex-empty-icon">🔎</span>
+        <span class="nex-empty-icon" style="margin-bottom:10px;display:flex;justify-content:center;color:var(--nex-text-muted);"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
         <h3 class="nex-empty-title">Sin coincidencias para los filtros actuales</h3>
         <p class="nex-empty-desc">Prueba limpiando la búsqueda o seleccionando otra categoría.</p>
-        <button type="button" class="nex-btn nex-btn-secondary" onclick="resetMarketFilters()">Restablecer filtros</button>
+        <button type="button" class="nex-btn nex-btn-secondary" onclick="resetMarketFilters()">${appIcon('rotate-ccw', 13, 'margin-right:4px;vertical-align:-0.15em;')} Restablecer filtros</button>
       </div>
     `;
     return;
   }
 
   grid.innerHTML = filtered.map((item) => {
-    const icon = CATEGORY_ICONS[item.categoria] || '🛒';
+    const icon = CATEGORY_ICONS[item.categoria] || appIcon('shopping-bag', 26);
     const savings = Math.max(0, item.precio_menudeo - item.precio_mayoreo);
     const savingsPct = Math.round((savings / item.precio_menudeo) * 100);
 
@@ -357,18 +374,18 @@ function applyMarketFiltersAndRender() {
             <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px;">
               <span class="nex-badge nex-badge-b2c">Menudeo</span>
               <span class="nex-badge nex-badge-b2b">Mayoreo (-${savingsPct}%)</span>
-              ${item.verificado ? '<span class="nex-badge nex-badge-verified">✓ Verificado</span>' : ''}
+              ${item.verificado ? '<span class="nex-badge nex-badge-verified"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check" style="margin-right:4px;"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>Verificado</span>' : ''}
             </div>
             <h3 class="nex-market-card-title">${item.nombre}</h3>
-            <span class="nex-market-producer">🌱 ${item.productorNombre} · 📍 ${item.zona}</span>
+            <span class="nex-market-producer"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sprout" style="margin-right:3px;vertical-align:-0.15em;"><path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/></svg>${item.productorNombre} · <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin" style="margin-right:3px;vertical-align:-0.15em;"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>${item.zona}</span>
           </div>
         </div>
 
         <p class="nex-market-card-desc">${item.descripcion}</p>
 
         <div class="nex-market-specs">
-          <div>Capacidad semanal: <span>${item.capacidad}</span></div>
-          <div>Entrega: <span>${item.rutas[0] || 'Centro'}</span></div>
+          <div>${appIcon('package', 13, 'margin-right:4px;vertical-align:-0.15em;')}Capacidad: <span>${item.capacidad}</span></div>
+          <div>${appIcon('truck', 13, 'margin-right:4px;vertical-align:-0.15em;')}Entrega: <span>${item.rutas[0] || 'Centro'}</span></div>
         </div>
 
         <div class="nex-market-pricing-box">
@@ -387,7 +404,7 @@ function applyMarketFiltersAndRender() {
             ${mode === 'b2b' ? '+ Cotizar mayoreo' : '+ Al pedido'}
           </button>
           <button type="button" class="nex-btn nex-btn-secondary nex-btn-sm" onclick="addToSupplyList('${item.id}')" title="Guardar en lista recurrente">
-            📋 Abasto
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-list" style="margin-right:4px;"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg> Abasto
           </button>
           <button type="button" class="nex-btn nex-btn-outline nex-btn-sm" onclick="openProductDetail('${item.id}')" title="Ver ficha técnica">
             Ficha ↗
@@ -460,7 +477,7 @@ function renderSupplyListModal() {
   if (!list.length) {
     container.innerHTML = `
       <div class="nex-empty-state" style="padding:28px 14px;border:none;">
-        <span style="font-size:2rem;display:block;margin-bottom:6px;">📋</span>
+        <span style="margin-bottom:8px;color:var(--nex-text-muted);display:flex;justify-content:center;"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-list"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg></span>
         <strong>Aún no tienes insumos en tu lista</strong>
         <p style="font-size:12px;color:var(--nex-text-secondary);margin:6px 0 0;">
           Haz clic en "+ Lista de abasto" en cualquier producto para guardarlo aquí y cotizarlo periódicamente.
@@ -474,11 +491,11 @@ function renderSupplyListModal() {
     <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--nex-bg);border:1px solid var(--nex-border);border-radius:var(--radius-md);">
       <div>
         <strong style="display:block;font-size:14px;">${item.nombre}</strong>
-        <small style="color:var(--nex-emerald);">${item.productorNombre} · 📍 ${item.zona}</small>
+        <small style="color:var(--nex-emerald);"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sprout" style="margin-right:3px;vertical-align:-0.15em;"><path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/></svg>${item.productorNombre} · <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin" style="margin-right:3px;vertical-align:-0.15em;"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>${item.zona}</small>
       </div>
       <div style="display:flex;align-items:center;gap:12px;">
         <span style="font-weight:700;color:var(--nex-b2b);">${money(item.precio_mayoreo)} <small style="font-size:10px;">mayoreo</small></span>
-        <button type="button" class="nex-btn nex-btn-ghost nex-btn-sm" onclick="removeFromSupplyList('${item.id}')" title="Eliminar de lista" style="color:var(--nex-danger);">✕</button>
+        <button type="button" class="nex-btn nex-btn-ghost nex-btn-sm" onclick="removeFromSupplyList('${item.id}')" title="Eliminar de lista" style="color:var(--nex-danger);"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
       </div>
     </div>
   `).join('');
@@ -526,7 +543,7 @@ function renderQuotesHistoryModal() {
   if (!history.length) {
     container.innerHTML = `
       <div class="nex-empty-state" style="padding:28px 14px;border:none;">
-        <span style="font-size:2rem;display:block;margin-bottom:6px;">📜</span>
+        <span style="margin-bottom:8px;color:var(--nex-text-muted);display:flex;justify-content:center;"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-history"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg></span>
         <strong>Sin cotizaciones previas</strong>
         <p style="font-size:12px;color:var(--nex-text-secondary);margin:6px 0 0;">
           Tus cotizaciones emitidas formalmente se guardarán aquí con folio oficial para dar seguimiento.
@@ -547,7 +564,7 @@ function renderQuotesHistoryModal() {
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--nex-border);padding-top:8px;">
         <strong style="color:var(--nex-forest);font-size:14px;">Total: ${money(q.total)} MXN</strong>
-        <button type="button" class="nex-btn nex-btn-sm nex-btn-outline" onclick="reopenQuoteByFolio('${q.folio}')">Ver detalle ↗</button>
+        <button type="button" class="nex-btn nex-btn-sm nex-btn-outline" onclick="reopenQuoteByFolio('${q.folio}')">${appIcon('file-text', 13, 'margin-right:4px;vertical-align:-0.15em;')} Ver detalle</button>
       </div>
     </div>
   `).join('');
@@ -575,7 +592,7 @@ window.openProductDetail = function(productId) {
   const container = document.querySelector('#modalProductContent');
   if (!modal || !container) return;
 
-  const icon = CATEGORY_ICONS[item.categoria] || '🛒';
+  const icon = CATEGORY_ICONS[item.categoria] || appIcon('shopping-bag', 26);
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.zona + ', Durango, Mexico')}`;
   const whatsappUrl = item.whatsapp
     ? `https://wa.me/${item.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent('Hola ' + item.productorNombre + ', te contacto desde NEX24 por tu producto ' + item.nombre)}`
@@ -588,7 +605,7 @@ window.openProductDetail = function(productId) {
       <div style="font-size:3rem;background:var(--nex-bg);padding:14px;border-radius:var(--radius-lg);">${icon}</div>
       <div>
         <div style="display:flex;gap:6px;margin-bottom:6px;">
-          <span class="nex-badge nex-badge-verified">✓ Productor Verificado</span>
+          <span class="nex-badge nex-badge-verified"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check" style="margin-right:4px;"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>Productor Verificado</span>
           <span class="nex-badge nex-badge-lime">${item.categoria}</span>
         </div>
         <h2 style="margin:0 0 4px 0;font-size:1.5rem;">${item.nombre}</h2>
@@ -604,9 +621,9 @@ window.openProductDetail = function(productId) {
       <table class="nex-tier-table">
         <thead>
           <tr>
-            <th>Volumen de Compra</th>
-            <th>Tipo de Cliente</th>
-            <th>Precio Unitario</th>
+            <th>${appIcon('layers', 13, 'margin-right:4px;vertical-align:-0.15em;')} Volumen de Compra</th>
+            <th>${appIcon('user', 13, 'margin-right:4px;vertical-align:-0.15em;')} Tipo de Cliente</th>
+            <th>${appIcon('dollar-sign', 13, 'margin-right:4px;vertical-align:-0.15em;')} Precio Unitario</th>
           </tr>
         </thead>
         <tbody>
@@ -633,22 +650,22 @@ window.openProductDetail = function(productId) {
     <div class="nex-b2b-terms-box">
       <strong>Condiciones Comerciales y Logística</strong>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px;">
-        <div>• <strong>Capacidad:</strong> ${item.capacidad}</div>
-        <div>• <strong>Tiempo de entrega:</strong> 24 a 48 hrs hábiles</div>
-        <div>• <strong>Rutas:</strong> ${item.rutas.join(', ')}</div>
-        <div>• <strong>Pago:</strong> SPEI, Contra-entrega o Efectivo</div>
+        <div>${appIcon('package', 13, 'margin-right:4px;vertical-align:-0.15em;')} <strong>Capacidad:</strong> ${item.capacidad}</div>
+        <div>${appIcon('clock', 13, 'margin-right:4px;vertical-align:-0.15em;')} <strong>Tiempo de entrega:</strong> 24 a 48 hrs hábiles</div>
+        <div>${appIcon('truck', 13, 'margin-right:4px;vertical-align:-0.15em;')} <strong>Rutas:</strong> ${item.rutas.join(', ')}</div>
+        <div>${appIcon('dollar-sign', 13, 'margin-right:4px;vertical-align:-0.15em;')} <strong>Pago:</strong> SPEI, Contra-entrega o Efectivo</div>
       </div>
-      <div style="margin-top:6px;">• <strong>Ubicación del productor:</strong> ${item.zona}, Durango (<a href="${mapsUrl}" target="_blank" rel="noopener" style="color:var(--nex-b2b);font-weight:700;">Ver mapa ↗</a>)</div>
+      <div style="margin-top:6px;">${appIcon('map-pin', 13, 'margin-right:4px;vertical-align:-0.15em;')} <strong>Ubicación del productor:</strong> ${item.zona}, Durango (<a href="${mapsUrl}" target="_blank" rel="noopener" style="color:var(--nex-b2b);font-weight:700;">Ver mapa ${appIcon('external-link', 12, 'margin-left:2px;')}</a>)</div>
     </div>
 
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;">
       <button type="button" class="nex-btn nex-btn-primary" onclick="addToCart('${item.id}'); closeProductModalAction();" style="flex:1;">
-        + Agregar a mi pedido
+        ${appIcon('plus', 14, 'margin-right:4px;vertical-align:-0.15em;')} Agregar a mi pedido
       </button>
       <button type="button" class="nex-btn nex-btn-secondary" onclick="addToSupplyList('${item.id}');" title="Guardar para compras periódicas">
-        📋 Lista de abasto
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-list" style="margin-right:4px;"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg> Lista de abasto
       </button>
-      ${whatsappUrl ? `<a href="${whatsappUrl}" target="_blank" rel="noopener" class="nex-btn nex-btn-accent" style="background:#1F9D55;color:#fff;border-color:#1F9D55;">💬 WhatsApp</a>` : ''}
+      ${whatsappUrl ? `<a href="${whatsappUrl}" target="_blank" rel="noopener" class="nex-btn nex-btn-accent" style="background:#1F9D55;color:#fff;border-color:#1F9D55;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle" style="margin-right:4px;"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg> WhatsApp</a>` : ''}
     </div>
   `;
 
@@ -747,7 +764,7 @@ function renderCart() {
   if (!cart.length) {
     container.innerHTML = `
       <div class="nex-empty-state" style="padding:24px 12px;border:none;background:transparent;">
-        <span style="font-size:2rem;display:block;margin-bottom:6px;">🛒</span>
+        <span style="margin-bottom:8px;color:var(--nex-text-muted);display:flex;justify-content:center;"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg></span>
         <strong style="display:block;font-size:13px;color:var(--nex-text-primary);">Tu lista está vacía</strong>
         <small style="color:var(--nex-text-muted);">Agrega productos del catálogo para comprar o solicitar cotización.</small>
       </div>
@@ -783,9 +800,9 @@ function renderCart() {
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
           <div class="nex-cart-item-qty">
-            <button type="button" class="nex-qty-btn" onclick="updateCartQty('${c.id}', -1)">-</button>
+            <button type="button" class="nex-qty-btn" onclick="updateCartQty('${c.id}', -1)" aria-label="Disminuir">${appIcon('minus', 11)}</button>
             <span style="min-width:18px;text-align:center;font-weight:700;">${c.qty}</span>
-            <button type="button" class="nex-qty-btn" onclick="updateCartQty('${c.id}', 1)">+</button>
+            <button type="button" class="nex-qty-btn" onclick="updateCartQty('${c.id}', 1)" aria-label="Aumentar">${appIcon('plus', 11)}</button>
           </div>
           <strong style="font-size:12px;color:var(--nex-forest);">${money(lineTotal)}</strong>
         </div>
@@ -862,7 +879,7 @@ function openQuoteSummaryModal(total, savings, existingFolio = null) {
         <h2 style="margin:0;font-size:1.4rem;">Cotización Comercial Formal</h2>
         <span style="font-size:12px;color:var(--nex-text-muted);">Folio ${folio} · ${dateStr}</span>
       </div>
-      <div style="font-size:1.6rem;font-weight:900;color:var(--nex-forest);">NEX<span style="color:var(--nex-lime);">24</span></div>
+      <img src="/public/Logo.png" alt="NEX24" style="height:44px;width:auto;object-fit:contain;">
     </div>
 
     <div style="margin-bottom:16px;font-size:13px;line-height:1.5;">
@@ -908,8 +925,8 @@ function openQuoteSummaryModal(total, savings, existingFolio = null) {
     </div>
 
     <div style="display:flex;gap:10px;justify-content:flex-end;">
-      <button type="button" class="nex-btn nex-btn-secondary" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
-      <button type="button" class="nex-btn nex-btn-primary" onclick="sendCartToWhatsApp(${total})">💬 Enviar a Proveedor</button>
+      <button type="button" class="nex-btn nex-btn-secondary" onclick="window.print()"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-printer" style="margin-right:4px;"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>Imprimir / Guardar PDF</button>
+      <button type="button" class="nex-btn nex-btn-primary" onclick="sendCartToWhatsApp(${total})"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle" style="margin-right:4px;"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg> Enviar a Proveedor</button>
     </div>
   `;
 
@@ -932,7 +949,7 @@ async function renderLanding() {
   }
 
   grid.innerHTML = products.map((item) => {
-    const icon = CATEGORY_ICONS[item.categoria] || '🌱';
+    const icon = CATEGORY_ICONS[item.categoria] || appIcon('sprout', 24);
     return `
       <article class="product-card" style="display:flex;flex-direction:column;justify-content:space-between;text-align:left;">
         <div>
@@ -942,15 +959,15 @@ async function renderLanding() {
           </div>
           <h3 style="margin:4px 0 2px;font-size:15px;">${item.nombre}</h3>
           <p style="font-size:12px;color:var(--nex-text-secondary);margin:0 0 8px;">${item.descripcion}</p>
-          <strong style="color:var(--nex-emerald);font-size:12px;">🌱 ${item.productorNombre}</strong>
-          <small style="display:block;color:var(--nex-text-muted);font-size:11px;">📍 ${item.zona}</small>
+          <strong style="color:var(--nex-emerald);font-size:12px;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sprout" style="margin-right:3px;vertical-align:-0.15em;"><path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/></svg>${item.productorNombre}</strong>
+          <small style="display:block;color:var(--nex-text-muted);font-size:11px;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin" style="margin-right:3px;vertical-align:-0.15em;"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>${item.zona}</small>
         </div>
         <div style="margin-top:14px;padding-top:10px;border-top:1px solid var(--nex-border);display:flex;justify-content:space-between;align-items:center;">
           <div>
             <span style="font-size:10px;color:var(--nex-text-muted);display:block;">Menudeo / Mayoreo</span>
             <b style="color:var(--nex-forest);">${money(item.precio_menudeo)}</b> / <b style="color:var(--nex-b2b);">${money(item.precio_mayoreo)}</b>
           </div>
-          <a class="nex-btn nex-btn-sm nex-btn-accent" href="/tienda">Comprar →</a>
+          <a class="nex-btn nex-btn-sm nex-btn-accent" href="/tienda">${appIcon('shopping-cart', 13, 'margin-right:4px;vertical-align:-0.15em;')} Comprar</a>
         </div>
       </article>
     `;
@@ -979,22 +996,22 @@ async function renderLocations(query = '') {
     ? filtered.map((r) => {
         const maps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((r.zona_durango || 'Durango') + ', Durango, Mexico')}`;
         const whatsapp = r.whatsapp ? r.whatsapp.replace(/\D/g, '') : '';
-        const icon = CATEGORY_ICONS[r.categoria] || '📍';
+        const icon = CATEGORY_ICONS[r.categoria] || appIcon('map-pin', 24);
 
         return `
           <article class="location-card" style="background:#fff;border-radius:12px;border:1px solid var(--nex-border);padding:18px;">
             <div class="location-card-top" style="display:flex;justify-content:space-between;margin-bottom:8px;">
               <span class="location-icon" style="font-size:1.4rem;">${icon}</span>
-              <span class="nex-badge nex-badge-verified">● Verificado</span>
+              <span class="nex-badge nex-badge-verified">${appIcon('shield-check', 12, 'margin-right:3px;')} Verificado</span>
             </div>
             <h3 style="margin:0 0 4px;font-size:16px;">${r.nombre}</h3>
-            <p class="location-area" style="font-size:12px;color:var(--nex-emerald);font-weight:700;margin:0 0 6px;">📍 ${r.zona_durango || 'Durango'}</p>
+            <p class="location-area" style="font-size:12px;color:var(--nex-emerald);font-weight:700;margin:0 0 6px;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin" style="margin-right:3px;vertical-align:-0.15em;"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg> ${r.zona_durango || 'Durango'}</p>
             <p style="font-size:12px;color:var(--nex-text-secondary);margin:0 0 10px;">${r.descripcion || 'Productor local verificado.'}</p>
             <div class="location-meta" style="display:flex;justify-content:space-between;align-items:center;font-size:12px;border-top:1px solid var(--nex-border);padding-top:10px;">
               <span class="nex-badge nex-badge-b2b" style="font-size:10px;">${r.capacidad_semanal || 'Suministro semanal'}</span>
               <div style="display:flex;gap:8px;">
-                ${whatsapp ? `<a href="https://wa.me/${whatsapp}" target="_blank" rel="noopener" style="color:#1F9D55;font-weight:700;">WhatsApp ↗</a>` : ''}
-                <a href="${maps}" target="_blank" rel="noopener" style="color:var(--nex-emerald);font-weight:700;">Cómo llegar ↗</a>
+                ${whatsapp ? `<a href="https://wa.me/${whatsapp}" target="_blank" rel="noopener" style="color:#1F9D55;font-weight:700;">${appIcon('message-circle', 12, 'margin-right:3px;')} WhatsApp</a>` : ''}
+                <a href="${maps}" target="_blank" rel="noopener" style="color:var(--nex-emerald);font-weight:700;">${appIcon('map-pin', 12, 'margin-right:3px;')} Cómo llegar</a>
               </div>
             </div>
           </article>
@@ -1015,66 +1032,6 @@ function setupLocations() {
       document.querySelector('.location-list')?.scrollIntoView({ behavior: 'smooth' });
     });
   });
-}
-
-// -----------------------------------------------------------------------------
-// SIMULACIÓN 3D (/simulacion)
-// -----------------------------------------------------------------------------
-function setupSimulation() {
-  const model = document.querySelector('#storeModel');
-  if (!model) return;
-  const toggle = document.querySelector('#toggleRotation');
-  const output = document.querySelector('#rotationValue');
-  let rotation = 0;
-  let spinning = true;
-  let dragging = false;
-  let startX = 0;
-  let startRotation = 0;
-
-  const update = () => {
-    model.style.setProperty('--rotation', `${rotation}deg`);
-    if (output) output.value = `Vista 3D · ${Math.round((rotation % 360 + 360) % 360)}°`;
-  };
-
-  const frame = () => {
-    if (spinning && !dragging) {
-      rotation = (rotation + 0.18) % 360;
-      update();
-    }
-    requestAnimationFrame(frame);
-  };
-
-  if (toggle) {
-    toggle.addEventListener('click', () => {
-      spinning = !spinning;
-      toggle.textContent = spinning ? 'Pausar giro' : 'Reanudar giro';
-    });
-  }
-
-  model.addEventListener('pointerdown', (event) => {
-    dragging = true;
-    startX = event.clientX;
-    startRotation = rotation;
-    model.setPointerCapture(event.pointerId);
-  });
-  model.addEventListener('pointermove', (event) => {
-    if (dragging) {
-      rotation = startRotation + (event.clientX - startX) * 0.65;
-      update();
-    }
-  });
-  model.addEventListener('pointerup', () => { dragging = false; });
-  model.addEventListener('pointercancel', () => { dragging = false; });
-  model.addEventListener('keydown', (event) => {
-    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-      event.preventDefault();
-      rotation += event.key === 'ArrowRight' ? 12 : -12;
-      update();
-    }
-  });
-
-  update();
-  frame();
 }
 
 // -----------------------------------------------------------------------------
@@ -1131,14 +1088,14 @@ async function setupProviderPanel(profile) {
     : 'Gestión de catálogo, capacidad de suministro, pedidos y cotizaciones B2B.';
   if (statusEl) {
     const isApproved = profile.status === 'approved';
-    statusEl.textContent = isApproved ? '✓ Verificado' : 'En revisión';
+    statusEl.innerHTML = isApproved ? '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check" style="margin-right:4px;"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>Verificado' : 'En revisión';
     statusEl.className = `nex-badge ${isApproved ? 'nex-badge-verified' : 'nex-badge-warning'}`;
   }
   if (bannerEl) {
     bannerEl.innerHTML = `
       <strong>${profile.responsible_name}</strong><span> · ${profile.email}</span>
       <button id="logoutAccount" type="button" class="nex-btn nex-btn-ghost nex-btn-sm" style="margin-left:12px;color:var(--nex-danger);">
-        Cerrar sesión
+        ${appIcon('log-out', 13, 'margin-right:4px;vertical-align:-0.15em;')} Cerrar sesión
       </button>
     `;
     document.querySelector('#logoutAccount')?.addEventListener('click', () => {
@@ -1163,52 +1120,34 @@ async function setupProviderPanel(profile) {
     if (isAdmin) {
       navTabsContainer.innerHTML = `
         <button type="button" class="nex-panel-tab active" data-tab="tabAdminOverview" role="tab" aria-selected="true">
-          📊 Resumen y Auditoría
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bar-chart-3" style="margin-right:6px;"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>Resumen y Auditoría
         </button>
         <button type="button" class="nex-panel-tab" data-tab="tabAdminModeration" role="tab" aria-selected="false">
-          🛡️ Bandeja de Moderación
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check" style="margin-right:6px;"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>Bandeja de Moderación
         </button>
         <button type="button" class="nex-panel-tab" data-tab="tabAdminBadges" role="tab" aria-selected="false">
-          🏅 Sellos de Confianza
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check" style="margin-right:6px;"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>Sellos de Confianza
         </button>
         <button type="button" class="nex-panel-tab" data-tab="tabSettings" role="tab" aria-selected="false">
-          ⚙️ Datos del Negocio
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings" style="margin-right:6px;"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>Datos del Negocio
         </button>
       `;
     } else if (isStore) {
       navTabsContainer.innerHTML = `
         <button type="button" class="nex-panel-tab active" data-tab="tabBuyerDashboard" role="tab" aria-selected="true">
-          📊 Resumen y Abasto
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bar-chart-3" style="margin-right:6px;"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>Resumen y Abasto
         </button>
         <button type="button" class="nex-panel-tab" data-tab="tabBuyerSupply" role="tab" aria-selected="false">
-          ⚖️ Comparador Multi-Proveedor
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-scale" style="margin-right:6px;"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>Comparador Multi-Proveedor
         </button>
         <button type="button" class="nex-panel-tab" data-tab="tabBuyerOrders" role="tab" aria-selected="false">
-          📜 Mis Cotizaciones
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-history" style="margin-right:6px;"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>Mis Cotizaciones
         </button>
         <button type="button" class="nex-panel-tab" data-tab="tabBuyerFavorites" role="tab" aria-selected="false">
-          🏢 Productores de Durango
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-building" style="margin-right:6px;"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>Productores de Durango
         </button>
         <button type="button" class="nex-panel-tab" data-tab="tabSettings" role="tab" aria-selected="false">
-          ⚙️ Datos del Negocio
-        </button>
-      `;
-    } else {
-      navTabsContainer.innerHTML = `
-        <button type="button" class="nex-panel-tab active" data-tab="tabDashboard" role="tab" aria-selected="true">
-          📊 Resumen General
-        </button>
-        <button type="button" class="nex-panel-tab" data-tab="tabCatalog" role="tab" aria-selected="false">
-          📦 Catálogo de Productos
-        </button>
-        <button type="button" class="nex-panel-tab" data-tab="tabInventory" role="tab" aria-selected="false">
-          🚚 Capacidad y Rutas
-        </button>
-        <button type="button" class="nex-panel-tab" data-tab="tabOrders" role="tab" aria-selected="false">
-          📋 Pedidos Recibidos
-        </button>
-        <button type="button" class="nex-panel-tab" data-tab="tabSettings" role="tab" aria-selected="false">
-          ⚙️ Datos del Negocio
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings" style="margin-right:6px;"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>Datos del Negocio
         </button>
       `;
     }
@@ -1270,6 +1209,36 @@ async function setupProviderPanel(profile) {
     if (sumZone) sumZone.textContent = profile.zone;
     showPanelAlert('Información comercial del negocio actualizada correctamente.');
   });
+
+  if (profile.role === 'proveedor') {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('tab') === 'tabCatalog' || params.get('publicar') === '1') {
+      document.querySelectorAll('.nex-panel-tab').forEach((tab) => {
+        const active = tab.dataset.tab === 'tabCatalog';
+        tab.classList.toggle('active', active);
+        tab.setAttribute('aria-selected', String(active));
+      });
+      document.querySelectorAll('.nex-panel-tab-content').forEach((section) => {
+        section.classList.toggle('active', section.id === 'tabCatalog');
+      });
+
+      if (params.get('publicar') === '1') {
+        setTimeout(() => {
+          document.querySelector('#productEditForm')?.reset();
+          if (document.querySelector('#prodEditId')) document.querySelector('#prodEditId').value = '';
+          const modal = document.querySelector('#productFormModal');
+          const title = document.querySelector('#modalFormTitle');
+          if (title) title.textContent = 'Publicar Nuevo Producto';
+          if (modal) modal.hidden = false;
+        }, 120);
+      }
+
+      params.delete('tab');
+      params.delete('publicar');
+      const cleanSearch = params.toString();
+      history.replaceState(null, '', `/emprendedores${cleanSearch ? `?${cleanSearch}` : ''}`);
+    }
+  }
 }
 
 function setupProviderSuite(profile) {
@@ -1336,8 +1305,8 @@ function setupProviderSuite(profile) {
           </span>
         </td>
         <td style="text-align:right;">
-          <button type="button" class="nex-btn nex-btn-ghost nex-btn-sm" onclick="editProviderProduct('${p.id}')">Editar</button>
-          <button type="button" class="nex-btn nex-btn-ghost nex-btn-sm" style="color:var(--nex-danger);" onclick="deleteProviderProduct('${p.id}')">Eliminar</button>
+          <button type="button" class="nex-btn nex-btn-ghost nex-btn-sm" onclick="editProviderProduct('${p.id}')">${appIcon('sliders', 12, 'margin-right:3px;')} Editar</button>
+          <button type="button" class="nex-btn nex-btn-ghost nex-btn-sm" style="color:var(--nex-danger);" onclick="deleteProviderProduct('${p.id}')">${appIcon('trash-2', 12, 'margin-right:3px;')} Eliminar</button>
         </td>
       </tr>
     `).join('');
@@ -1511,7 +1480,7 @@ function setupProviderSuite(profile) {
           </td>
           <td style="text-align:right;">
             <a href="${waUrl}" target="_blank" rel="noopener" class="nex-btn nex-btn-accent nex-btn-sm" style="background:#1F9D55;color:#fff;border-color:#1F9D55;">
-              💬 Responder
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle" style="margin-right:4px;"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg> Responder
             </a>
           </td>
         </tr>
@@ -1576,7 +1545,7 @@ async function setupBuyerSuite(profile) {
             Aún no tienes cotizaciones registradas.
           </p>
           <a href="/tienda?tipo=mayoreo" class="nex-btn nex-btn-sm nex-btn-primary">
-            Explorar Insumos Mayoreo →
+            ${appIcon('shopping-bag', 13, 'margin-right:4px;')} Explorar Insumos Mayoreo
           </a>
         </div>
       `;
@@ -1592,7 +1561,7 @@ async function setupBuyerSuite(profile) {
           </div>
           <div style="text-align:right;">
             <strong style="color:var(--nex-forest);display:block;">${money(q.total)}</strong>
-            <button type="button" class="nex-btn nex-btn-ghost nex-btn-sm" style="padding:2px 6px;font-size:11px;" onclick="reopenQuoteByFolio('${q.folio}')">Ver folio</button>
+            <button type="button" class="nex-btn nex-btn-ghost nex-btn-sm" style="padding:2px 6px;font-size:11px;" onclick="reopenQuoteByFolio('${q.folio}')">${appIcon('file-text', 11, 'margin-right:2px;')} Ver folio</button>
           </div>
         </div>
       `).join('');
@@ -1605,13 +1574,13 @@ async function setupBuyerSuite(profile) {
     if (!supplyList.length) {
       comparatorBox.innerHTML = `
         <div class="nex-empty-state" style="padding:48px 24px;border:none;">
-          <span style="font-size:2.8rem;display:block;margin-bottom:10px;">📋</span>
+          <span style="margin-bottom:10px;color:var(--nex-text-muted);display:flex;justify-content:center;"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-list"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg></span>
           <h4 style="margin:0 0 8px;color:var(--nex-forest);">Tu lista de abastecimiento recurrente está vacía</h4>
           <p style="font-size:13px;color:var(--nex-text-secondary);max-width:540px;margin:0 auto 18px;line-height:1.6;">
             Añade productos desde el catálogo B2B para comparar productores de Durango, calcular ahorros directos por volumen y solicitar cotizaciones oficiales en un solo clic.
           </p>
           <a href="/tienda?tipo=mayoreo" class="nex-btn nex-btn-primary">
-            + Agregar Insumos desde el Catálogo
+            ${appIcon('plus', 13, 'margin-right:4px;')} Agregar Insumos desde el Catálogo
           </a>
         </div>
       `;
@@ -1649,10 +1618,10 @@ async function setupBuyerSuite(profile) {
                   </td>
                   <td>
                     <span style="font-weight:600;color:var(--nex-forest);">${prodName}</span>
-                    <span class="nex-badge nex-badge-verified" style="display:inline-block;margin-left:4px;font-size:10px;">✓ Verificado</span>
+                    <span class="nex-badge nex-badge-verified" style="display:inline-block;margin-left:4px;font-size:10px;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check" style="margin-right:4px;"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>Verificado</span>
                   </td>
                   <td>
-                    <span style="font-size:12px;">📍 ${item.zona || full.zona || 'Durango'}</span>
+                    <span style="font-size:12px;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin" style="margin-right:3px;vertical-align:-0.15em;"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>${item.zona || full.zona || 'Durango'}</span>
                     <small style="display:block;color:var(--nex-text-muted);font-size:10px;">${(full.rutas || ['Centro']).join(', ')}</small>
                   </td>
                   <td><del style="color:var(--nex-text-muted);">${money(menudeo)}</del></td>
@@ -1662,10 +1631,10 @@ async function setupBuyerSuite(profile) {
                   </td>
                   <td style="text-align:right;white-space:nowrap;">
                     <a href="${waUrl}" target="_blank" rel="noopener" class="nex-btn nex-btn-accent nex-btn-sm" style="background:#1F9D55;color:#fff;border-color:#1F9D55;margin-right:6px;">
-                      💬 Pedir Mayoreo
+                      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle" style="margin-right:4px;"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg> Pedir Mayoreo
                     </a>
                     <button type="button" class="nex-btn nex-btn-ghost nex-btn-sm" onclick="removeSupplyItemAndRefresh('${item.id}', '${profile.id}')" style="color:var(--nex-danger);" title="Eliminar insumo">
-                      ✕
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                     </button>
                   </td>
                 </tr>
@@ -1701,7 +1670,7 @@ async function setupBuyerSuite(profile) {
           <td><span class="nex-badge nex-badge-lime">${money(q.savings || 0)}</span></td>
           <td style="text-align:right;">
             <button type="button" class="nex-btn nex-btn-outline nex-btn-sm" onclick="reopenQuoteByFolio('${q.folio}')">
-              Ver Folio ↗
+              ${appIcon('file-text', 12, 'margin-right:3px;')} Ver Folio
             </button>
           </td>
         </tr>
@@ -1723,24 +1692,24 @@ async function setupBuyerSuite(profile) {
           <div>
             <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
               <h4 style="margin:0;font-size:15px;color:var(--nex-forest);">${p.nombre}</h4>
-              <span class="nex-badge nex-badge-verified" style="font-size:10px;">✓ Verificado</span>
+              <span class="nex-badge nex-badge-verified" style="font-size:10px;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check" style="margin-right:4px;"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>Verificado</span>
             </div>
             <span class="nex-badge nex-badge-neutral" style="margin-bottom:10px;text-transform:capitalize;">${p.categoria || 'Agroalimentario'}</span>
             <p style="font-size:12px;color:var(--nex-text-secondary);line-height:1.5;margin:0 0 12px;">
               ${p.descripcion || 'Productor local verificado del estado de Durango con capacidad de suministro comercial.'}
             </p>
             <div style="font-size:12px;display:grid;gap:4px;color:var(--nex-text-primary);margin-bottom:14px;background:var(--nex-bg);padding:10px;border-radius:var(--radius-sm);">
-              <div>📍 <strong>Zona:</strong> ${p.zona_durango || 'Durango'}</div>
-              <div>📦 <strong>Capacidad:</strong> ${p.capacidad_semanal || 'Bajo pedido'}</div>
-              <div>🚚 <strong>Rutas:</strong> ${(p.rutas_entrega || ['Centro']).join(', ')}</div>
+              <div><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin" style="margin-right:3px;vertical-align:-0.15em;"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg><strong>Zona:</strong> ${p.zona_durango || 'Durango'}</div>
+              <div><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-package" style="margin-right:4px;"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg><strong>Capacidad:</strong> ${p.capacidad_semanal || 'Bajo pedido'}</div>
+              <div><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-truck" style="margin-right:4px;"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg><strong>Rutas:</strong> ${(p.rutas_entrega || ['Centro']).join(', ')}</div>
             </div>
           </div>
           <div style="display:flex;gap:8px;margin-top:auto;">
             <a href="${waUrl}" target="_blank" rel="noopener" class="nex-btn nex-btn-accent nex-btn-sm" style="flex:1;background:#1F9D55;color:#fff;border-color:#1F9D55;text-align:center;">
-              💬 Contactar
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle" style="margin-right:4px;"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg> Contactar
             </a>
             <a href="${catalogUrl}" class="nex-btn nex-btn-outline nex-btn-sm" style="flex:1;text-align:center;">
-              Ver Insumos
+              ${appIcon('shopping-bag', 12, 'margin-right:3px;')} Ver Insumos
             </a>
           </div>
         </div>
@@ -1805,10 +1774,10 @@ async function setupAdminSuite(profile) {
         : '<span class="nex-badge nex-badge-neutral" style="font-size:10px;">Tiendita</span>';
 
       const statusBadge = isApproved
-        ? '<span class="nex-badge nex-badge-verified" style="font-size:11px;">✓ Verificado</span>'
+        ? '<span class="nex-badge nex-badge-verified" style="font-size:11px;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check" style="margin-right:4px;"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>Verificado</span>'
         : isPending
-        ? '<span class="nex-badge nex-badge-warning" style="font-size:11px;">⏳ En Revisión</span>'
-        : '<span class="nex-badge nex-badge-danger" style="font-size:11px;">✕ Rechazado</span>';
+        ? '<span class="nex-badge nex-badge-warning" style="font-size:11px;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clock" style="margin-right:3px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>En Revisión</span>'
+        : '<span class="nex-badge nex-badge-danger" style="font-size:11px;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x" style="margin-right:3px;"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>Rechazado</span>';
 
       const waClean = String(b.phone || '').replace(/\D/g, '');
       const waUrl = `https://wa.me/${waClean}?text=${encodeURIComponent(`Hola ${b.responsible_name}, te contacto desde el equipo de Verificación y Confianza Comercial de NEX24 Durango respecto a tu cuenta "${b.business_name}".`)}`;
@@ -1824,7 +1793,7 @@ async function setupAdminSuite(profile) {
             <span style="font-size:12px;font-weight:600;">${b.responsible_name}</span>
             <small style="display:block;color:var(--nex-text-secondary);font-size:11px;">Tel: ${b.phone || '—'}</small>
           </td>
-          <td><span style="font-size:12px;">📍 ${b.zone || 'Durango'}</span></td>
+          <td><span style="font-size:12px;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin" style="margin-right:3px;vertical-align:-0.15em;"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>${b.zone || 'Durango'}</span></td>
           <td>
             <span style="font-size:12px;">${b.capacity || b.category || 'Comercial'}</span>
             ${b.products ? `<small style="display:block;color:var(--nex-text-muted);font-size:10px;">${b.products.slice(0, 30)}...</small>` : ''}
@@ -1833,15 +1802,15 @@ async function setupAdminSuite(profile) {
           <td style="text-align:right;white-space:nowrap;">
             ${isApproved ? `
               <button type="button" class="nex-btn nex-btn-ghost nex-btn-sm" style="font-size:11px;color:var(--nex-warning);" onclick="updateBusinessStatus('${b.id}', 'pending')">
-                Revisar
+                ${appIcon('clock', 12, 'margin-right:3px;')} Revisar
               </button>
             ` : `
               <button type="button" class="nex-btn nex-btn-primary nex-btn-sm" style="font-size:11px;padding:4px 10px;" onclick="updateBusinessStatus('${b.id}', 'approved')">
-                ✓ Aprobar
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check" style="margin-right:3px;"><path d="M20 6 9 17l-5-5"/></svg> Aprobar
               </button>
             `}
             <a href="${waUrl}" target="_blank" rel="noopener" class="nex-btn nex-btn-accent nex-btn-sm" style="background:#1F9D55;color:#fff;border-color:#1F9D55;font-size:11px;padding:4px 8px;margin-left:4px;">
-              💬 WA
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle" style="margin-right:4px;"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg> WA
             </a>
           </td>
         </tr>
@@ -1881,28 +1850,16 @@ async function setupAdminSuite(profile) {
   await loadAdminBusinesses();
 }
 
-function showPanelAlert(text, type = 'success') {
-  const box = document.querySelector('#panelAlertBox');
-  if (box) {
-    box.textContent = text;
-    box.hidden = false;
-    setTimeout(() => { box.hidden = true; }, 4000);
-  }
-  window.nexToast?.show(text, type);
-}
-
 // Inicialización controlada
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     setupLocations();
-    setupSimulation();
     renderLanding();
     renderStore();
     protectBusinessDashboard();
   });
 } else {
   setupLocations();
-  setupSimulation();
   renderLanding();
   renderStore();
   protectBusinessDashboard();

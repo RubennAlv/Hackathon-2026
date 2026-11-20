@@ -420,3 +420,353 @@
 | **Fase 10** | Responsive Design y Accesibilidad | ✅ Completada | WCAG 2.1 AA: `:focus-visible` contrastado, skip link accesible, control de modales por tecla `Escape` y touch targets de 44px. |
 | **Fase 11** | Optimización y Seguridad | ✅ Completada | Cabeceras de seguridad (CSP, nosniff, SAMEORIGIN), bloqueo 403 a rutas sensibles, Cache-Control y preconexión de fuentes. |
 | **Fase 12** | QA, Pruebas y Validación Final | ✅ Completada | 66 validaciones automatizadas en `npm run qa`, 17 pruebas unitarias en `npm test`, build verificado y sign-off maestro. |
+
+---
+
+# MIGRACIÓN MAESTRA A REACT + TYPESCRIPT + VITE
+
+## FASE 1: AUDITORÍA COMPLETA DEL PROYECTO (AUDIT ONLY)
+
+### 1.1. Resumen Ejecutivo de la Auditoría
+- **Objetivo:** Migración integral del frontend de NEX24 desde Vanilla HTML5/CSS3/JavaScript modular a una arquitectura escalable y moderna basada en React 18+ / TypeScript / TSX / Vite, preservando el 100% de la funcionalidad actual, el backend Express en Node.js, las integraciones con Google Gemini Vision, Leaflet y Supabase, y garantizando cero regresiones funcionales.
+- **Estado Actual:** 100% de pruebas unitarias (`npm test`: 17/17) y pruebas de aceptación QA (`npm run qa`: 66/66) pasando satisfactoriamente.
+- **Principio Innegociable:** Cero pérdida de funcionalidades existentes. No se modificó ningún archivo del sistema durante esta fase de auditoría.
+
+---
+
+### 1.2. Inventario Exhaustivo de Módulos y Funcionalidades
+
+| Módulo Original | Archivo(s) Origen | Dependencias Actuales | Funcionalidad Clave | Riesgo de Migración | Complejidad |
+|---|---|---|---|---|---|
+| **Sistema de Navegación & Shell** | `js/navigation.js`<br>`css/loader.css`<br>`css/design-system.css` | `localStorage`<br>DOM Nativo | - Barra adaptativa según 4 experiencias (Pública, Tiendita, Proveedor, Admin).<br>- Píldora única de autenticación (`Acceso / Registro` vs perfil activo).<br>- Menú lateral móvil accesible (ARIA + `Escape`).<br>- Sistema de carga global `window.nexLoader`.<br>- Sistema universal de notificaciones `window.nexToast` (4 variantes).<br>- Footer corporativo de 4 columnas con enlace a "¿Cómo funciona?".<br>- Monitoreo de conectividad online/offline. | Bajo: Fácil abstracción en `Navbar.tsx`, `Footer.tsx`, `ToastContext` y `AuthContext`. | Media |
+| **Landing Page** | `index.html`<br>`css/design.css`<br>`css/design-system.css` | `js/navigation.js`<br>`productores.json` | - 12 secciones corporativas estructuradas.<br>- Hero empresarial con buscador que enlaza a `/tienda?q=...`.<br>- Banner de Lens IA con chips de prueba rápida.<br>- Grid de 8 categorías duranguenses.<br>- Tarjetas de productos destacados con precios menudeo/mayoreo.<br>- Segmentación comparativa B2B vs B2C.<br>- Flujo de 3 pasos y cobertura territorial en Durango. | Bajo: Mapeo directo a componentes funcionales TSX en `modules/landing`. | Baja |
+| **Marketplace Inteligente (Tienda)** | `pages/tienda.html`<br>`js/app.js`<br>`css/styles.css`<br>`css/design.css` | `/api/catalogo`<br>`localStorage`<br>WhatsApp API | - Switcher en tiempo real B2B vs B2C.<br>- Filtro en tiempo real por búsqueda, 14 categorías y zonas de Durango.<br>- Precios escalonados (tiers: menudeo, mayoreo -20%, distribuidor).<br>- Modal de ficha técnica y comercial con enlace a Google Maps.<br>- Cotizador y carrito de abastecimiento.<br>- Lista de abastecimiento recurrente (`nex24-b2b-supply-list`).<br>- Historial de cotizaciones con folios `NEX-XXXXXX` (`nex24-quotes-history`).<br>- Generador de cotizaciones en PDF e integración con WhatsApp. | Medio: Gran cantidad de estado local; requiere consolidar hooks `useCart`, `useSupplyList` y `useQuotes`. | Alta |
+| **Lens IA (Visión Artificial)** | `pages/lens.html`<br>`js/lens.js`<br>`css/lens.css`<br>`vision.js`<br>`matcher.js` | `POST /api/lens/scan`<br>Canvas API<br>HTML5 Geolocation<br>Gemini Vision | - Drag & drop y captura con cámara móvil (`capture="environment"`).<br>- Compresión canvas en cliente a 1280px para optimizar ancho de banda.<br>- Detección de GPS con cálculo de distancia Haversine a productores.<br>- Chips de demo de 1 clic (`cafe`, `miel`, `queso`, `pan`, `mezcal`).<br>- Motor Gemini `gemini-3.5-flash-lite` con fallback mock determinista.<br>- Tarjetas de coincidencia con precios B2B/B2C, rutas, enlace a tienda y WhatsApp. | Medio: Requiere manejo de canvas y file inputs en React sin fugas de memoria. | Alta |
+| **Mapa Interactivo** | `pages/mapa.html`<br>`js/mapa.js`<br>`css/mapa.css` | Leaflet (`L`)<br>`/api/catalogo`<br>Geolocation API | - Mapa de Durango con pines personalizados y emojis por categoría.<br>- Popups enriquecidos con datos B2B/B2C, distancia y contacto.<br>- Búsqueda en vivo y filtro por categoría.<br>- Botón de geolocalización "Mi ubicación" y "Ver Durango".<br>- Resaltado dinámico por parámetro URL `?sugerencia=p01`.<br>- Lista lateral sincronizada bidireccionalmente con marcadores.<br>- Motor fallback offline si falla Leaflet CDN. | Medio-Alto: Manejo del ciclo de vida de Leaflet en React (`useEffect`, `useRef`, limpieza `map.remove()`). | Alta |
+| **Puntos de Abasto & Ubicaciones** | `pages/ubicaciones.html`<br>`js/app.js` | `/api/catalogo` | - Directorio de productores y puntos de abasto.<br>- Mapa esquemático interactivo con pines clicables.<br>- Chips de filtro rápido por zonas y municipios de Durango.<br>- Búsqueda y listado reactivo. | Bajo: Componentes declarativos simples en React. | Media |
+| **Propuesta & "¿Cómo funciona?"** | `pages/propuesta.html` | Estático / CSS | - Métricas de impacto de la red comercial.<br>- Flujo de 3 pasos (Escanea -> Compara -> Abastécete).<br>- Pilares por rol comercial.<br>- Tabla comparativa de mercado.<br>- Acordeón interactivo FAQ accesible (`<details>` y `<summary>`). | Bajo: Contenido visual puro. | Baja |
+| **Catálogo de Productos** | `pages/productos.html`<br>`js/app.js` | `/api/catalogo` | - Grid visual de los 14 productores locales de Durango. | Muy Bajo: Compartirá componentes con el Marketplace. | Baja |
+| **Panel de Emprendedores** | `pages/emprendedores.html`<br>`js/app.js`<br>`css/panel.css` | `/api/auth/me`<br>`/api/admin/negocios`<br>`localStorage` | - Renderizado dinámico según rol (`proveedor`, `tiendita`, `admin`):<br>  1. *Proveedor:* Dashboard métricas, CRUD de catálogo (`#productFormModal`), control de capacidad y rutas, gestión de cotizaciones recibidas con WhatsApp.<br>  2. *Tiendita:* Dashboard de abasto, comparador multi-proveedor, historial de cotizaciones emitidas, productores favoritos.<br>  3. *Admin:* Dashboard de auditoría, bandeja de moderación con aprobación/rechazo de comercios en tiempo real. | Medio-Alto: Múltiples formularios, modales y tablas por rol; requiere dividir en submódulos especializados. | Muy Alta |
+| **Portal de Login** | `pages/login.html`<br>`js/login.js`<br>`css/registro.css` | `/api/auth/login`<br>`localStorage` | - Formulario de correo y contraseña.<br>- Botón para alternar visibilidad de contraseña (👁️ / 🙈).<br>- Manejo de token JWT y almacenamiento de perfil.<br>- Redirección automática a `/emprendedores`. | Bajo: Mapeo estándar a `LoginForm.tsx` y `useAuth`. | Baja |
+| **Portal de Registro** | `pages/registro.html`<br>`js/registro.js`<br>`css/registro.css` | `/api/registros`<br>`/api/auth/login`<br>`data/local_db.json`<br>Supabase | - Selector interactivo de rol comercial (`tiendita` vs `proveedor`).<br>- Campos dinámicos condicionales según el rol.<br>- Validación de contraseñas coincidentes.<br>- Registro local resiliente + sincronización Supabase.<br>- Autologin inmediato y redirección al panel. | Bajo: Mapeo a `RegisterForm.tsx` con validación de estado. | Media |
+| **Backend Express & APIs** | `server.js`<br>`matcher.js`<br>`vision.js`<br>`productores.json`<br>`data/local_db.json` | Express<br>Multer<br>Dotenv<br>Supabase JS<br>Gemini API | - Contratos de API: `/api/catalogo`, `/api/lens/scan`, `/api/registros`, `/api/auth/login`, `/api/auth/me`, `/api/admin/negocios`, `/api/admin/negocios/:id/status`.<br>- Seguridad: CSP, `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, bloqueo 403 a `.env` y archivos sensibles.<br>- Persistencia híbrida resiliente (`data/local_db.json` + Supabase). | Ninguno: El backend se conserva 100% intacto, sirviendo la API a través del proxy de Vite en desarrollo. | Baja (Conservación) |
+
+---
+
+### 1.3. Mapa de Dependencias y Flujos de Datos
+
+```
+[ Navegador del Usuario ]
+       │
+       ▼
+[ React Router (router.tsx) ]
+       │
+  ┌────┴────────────────────────┬─────────────────────────┬──────────────────────┐
+  ▼                             ▼                         ▼                      ▼
+Landing / Propuesta     Marketplace / Tienda         Lens IA / Mapa       Panel Emprendedores / Auth
+  │                             │                         │                      │
+  │                     ┌───────┴──────┐                  │                      │
+  │                     ▼              ▼                  ▼                      ▼
+  │               useCart.ts    useSupplyList.ts     useLensScanner.ts       useAuth.ts
+  │                     │              │                  │                      │
+  └─────────────────────┴──────────────┴──────────────────┴──────────────────────┘
+                                       │
+                                       ▼
+                       [ Api Service (src/services/api.ts) ]
+                                       │
+                              (Vite Dev Proxy: /api)
+                                       │
+                                       ▼
+                     [ Express Backend (server.js: 3001) ]
+                                       │
+            ┌──────────────────────────┼─────────────────────────┐
+            ▼                          ▼                         ▼
+   Catálogo & Matcher          Gemini Vision API         Persistencia Híbrida
+   (productores.json)         (gemini-3.5-flash-lite)   (local_db.json & Supabase)
+```
+
+#### Almacenamiento Local (`localStorage`):
+- `nex24-supabase-session`: Token JWT de autenticación.
+- `nex24-current-account`: Perfil del negocio autenticado (`role`, `business_name`, etc.).
+- `nex24-cart`: Artículos en cotización / carrito.
+- `nex24-b2b-supply-list`: Lista recurrente de abastecimiento B2B.
+- `nex24-quotes-history`: Historial de cotizaciones comerciales emitidas con folios.
+- `lensApi`: Configuración de URL override para API.
+
+---
+
+### 1.4. Arquitectura Modular Objetivo para React + TypeScript
+
+```
+src/
+  app/
+    App.tsx                       # Contenedor raíz con Providers
+    router.tsx                    # Definición declarativa de rutas con React Router
+    providers.tsx                 # Composición de Context Providers (Auth, Toast, Cart)
+  components/
+    ui/
+      Button.tsx                  # Botones semánticos (.nex-btn, variantes primary, accent, b2b)
+      Input.tsx                   # Inputs accesibles con validación y labels
+      Modal.tsx                   # Modal accesible con Escape, backdrop y focus trap
+      Loader.tsx                  # Loader institucional verde con animación 3-body
+      Badge.tsx                   # Badges de estado (Verificado, B2B, B2C, Lime)
+      Alert.tsx                   # Mensajes de alerta semántica
+      Card.tsx                    # Contenedor de tarjeta estandarizada
+      Toast.tsx                   # Notificaciones flotantes toast
+      Skeleton.tsx                # Skeletons de carga animados
+      EmptyState.tsx              # Estados vacíos con icono, título y CTA
+    layout/
+      Navbar.tsx                  # Navegación unificada para las 4 experiencias
+      Footer.tsx                  # Pie de página de 4 columnas corporativas
+      MainLayout.tsx              # Shell envolvente con SkipLink y accesibilidad
+      SkipLink.tsx                # Salto al contenido principal para teclado
+    shared/
+      CommercialBadge.tsx         # Sello de verificación local de Durango
+      WhatsAppButton.tsx          # Botón formateador deep-link a WhatsApp
+      PriceTag.tsx                # Desglose claro de precios menudeo vs mayoreo
+  modules/
+    auth/
+      components/
+        LoginForm.tsx             # Formulario con show/hide password y remember me
+        RegisterForm.tsx          # Formulario de alta con selector de rol
+        RoleSelector.tsx          # Selector tiendita vs proveedor
+      pages/
+        LoginPage.tsx             # Vista de login (/login)
+        RegisterPage.tsx          # Vista de registro (/registro)
+      services/
+        authService.ts            # Peticiones a /api/auth/login, /api/auth/me y /api/registros
+      hooks/
+        useAuth.ts                # Hook para consumir AuthContext
+      types/
+        auth.types.ts             # Interfaces TypeScript para User, Profile, Session
+    landing/
+      components/
+        HeroSection.tsx           # Hero con buscador comercial integrado
+        LensBanner.tsx            # Banner destacado con demos rápidas
+        CategoryGrid.tsx          # Grid de 8 categorías duranguenses
+        FeaturedProducts.tsx      # Productos destacados con precios B2B/B2C
+        B2BSegmentation.tsx       # Comparativa dual de valor comercial
+        StepProcess.tsx           # Flujo de 3 pasos
+        CoverageSection.tsx       # Cobertura regional de Durango
+      pages/
+        LandingPage.tsx           # Vista principal (/)
+    products/
+      components/
+        ProductCard.tsx           # Tarjeta de producto con detalles
+        ProductGrid.tsx           # Grid responsivo de catálogo
+      pages/
+        ProductsPage.tsx          # Vista de catálogo (/productos)
+      services/
+        catalogService.ts         # Consulta a /api/catalogo
+      types/
+        catalog.types.ts          # Interfaces Productor, Producto, Categoría
+    store/
+      components/
+        StoreToolbar.tsx          # Buscador, selectores de orden y zona
+        ModeSwitcher.tsx          # Switcher interactivo B2B vs B2C
+        CategoryFilterChips.tsx   # Chips interactivos de las 14 categorías
+        ProductDetailModal.tsx    # Ficha técnica y comercial completa
+        CartDrawer.tsx            # Cotizador lateral / carrito
+        QuoteModal.tsx            # Visor e impresor de cotizaciones oficiales en PDF
+        SupplyListModal.tsx       # Gestor de insumos de abastecimiento recurrente
+      pages/
+        StorePage.tsx             # Vista de mercado (/tienda)
+      hooks/
+        useCart.ts                # Gestión de carrito y cálculo de mayoreo
+        useSupplyList.ts          # Gestión de lista de abasto recurrente
+        useQuotes.ts              # Historial y emisión de folios NEX-XXXXXX
+      types/
+        store.types.ts            # Interfaces CartItem, Quote, SupplyItem
+    entrepreneurs/
+      components/
+        ProviderDashboard.tsx     # Métricas y resumen operativo del proveedor
+        ProviderCatalogManager.tsx # CRUD de catálogo con formulario modal
+        ProviderSupplyEditor.tsx  # Editor de capacidad semanal y rutas
+        ProviderOrdersTable.tsx   # Cotizaciones recibidas y cambio de estado
+        BuyerDashboard.tsx        # Métricas de abasto y ahorro acumulado
+        BuyerComparatorTable.tsx  # Comparador multi-proveedor de insumos
+        BuyerQuotesTable.tsx      # Historial de cotizaciones emitidas
+        BuyerFavoritesGrid.tsx    # Productores locales verificados
+        AdminAuditDashboard.tsx   # Métricas de auditoría institucional
+        AdminBusinessTable.tsx    # Bandeja de moderación (Aprobar/Suspender)
+      pages/
+        EntrepreneursPage.tsx     # Vista del panel (/emprendedores)
+      services/
+        adminService.ts           # Consultas a /api/admin/negocios
+      types/
+        entrepreneurs.types.ts    # Tipos de métricas, pedidos y moderación
+    lens/
+      components/
+        LensHero.tsx              # Cabecera con estatus de API en vivo
+        ImageDropzone.tsx         # Drag & drop y selector de cámara
+        DemoQuickChips.tsx        # Chips de prueba rápida (cafe, miel, queso, etc.)
+        ScanResultsView.tsx       # Contenedor de diagnóstico IA y coincidencias
+        ProducerMatchCard.tsx     # Tarjeta de productor con precios y WhatsApp
+      pages/
+        LensPage.tsx              # Vista de Lens IA (/lens)
+      hooks/
+        useLensScanner.ts         # Hook de compresión canvas y escaneo
+      services/
+        lensService.ts            # Petición multipart a /api/lens/scan
+      types/
+        lens.types.ts             # Tipos de diagnóstico y coincidencias
+    map/
+      components/
+        LeafletMapWrapper.tsx     # Wrapper seguro de Leaflet con limpieza de memoria
+        MapFilterToolbar.tsx      # Buscador, filtro de categoría y geolocalización
+        CategoryLegend.tsx        # Leyenda de categorías con iconos
+        ProducerSidebarList.tsx   # Lista sincronizada con marcadores
+      pages/
+        MapPage.tsx               # Vista de mapa (/mapa)
+      hooks/
+        useGeolocation.ts         # Hook de geolocalización HTML5
+      services/
+        mapService.ts             # Lógica de cálculo de distancias
+      types/
+        map.types.ts              # Tipos de coordenadas, pines y filtros
+    locations/
+      components/
+        LocationToolbar.tsx       # Búsqueda y chips rápidos por zona
+        SchematicMap.tsx          # Mapa esquemático interactivo
+        LocationList.tsx          # Lista de puntos y productores
+      pages/
+        LocationsPage.tsx         # Vista de ubicaciones (/ubicaciones)
+    propuesta/
+      pages/
+        PropuestaPage.tsx         # Vista informativa "¿Cómo funciona?" (/propuesta)
+  services/
+    api.ts                        # Cliente Axios o Fetch centralizado con interceptores
+    supabase.ts                   # Cliente Supabase JS configurado
+  context/
+    AuthContext.tsx               # Proveedor de estado de sesión global
+    ToastContext.tsx              # Proveedor de notificaciones toast
+    CartContext.tsx               # Proveedor de carrito y cotizaciones
+  hooks/
+    useToast.ts                   # Hook de acceso a toasts
+    useLocalStorage.ts            # Hook reactivo de sincronización con localStorage
+  styles/
+    tokens.css                    # Variables y tokens de design-system.css
+    global.css                    # Estilos globales y reset
+  main.tsx                        # Punto de entrada de la aplicación Vite
+```
+
+---
+
+### 1.5. Matriz de Trazabilidad: Funcionalidad Actual → Módulo React → Pruebas Asociadas
+
+| Funcionalidad Actual | Archivo(s) Actuales | Futuro Módulo / Componente React | Suite de Pruebas de Validación |
+|---|---|---|---|
+| Navbar con 4 roles y botón único auth | `js/navigation.js` | `src/components/layout/Navbar.tsx`<br>`src/context/AuthContext.tsx` | QA Suite: Tests 1-6 (Navegación unificada, rol en sesión) |
+| Sistema global de toasts | `js/navigation.js` | `src/context/ToastContext.tsx`<br>`src/components/ui/Toast.tsx` | Verificación de feedback en tienda, panel y login |
+| Sistema de loader global | `css/loader.css`<br>`js/navigation.js` | `src/components/ui/Loader.tsx` | Verificación visual en navegación y peticiones API |
+| Landing page corporativa (12 secciones) | `index.html`<br>`css/design.css` | `src/modules/landing/pages/LandingPage.tsx` | QA Suite: Tests 1-4 (Carga 200, título, semántica) |
+| Catálogo unificado (/api/catalogo) | `server.js`<br>`productores.json` | `src/services/catalogService.ts`<br>`src/modules/products` | QA Suite: Tests 34-40 (14 productores, precios numéricos) |
+| Marketplace B2B/B2C con cotizador | `pages/tienda.html`<br>`js/app.js` | `src/modules/store/pages/StorePage.tsx`<br>`src/modules/store/hooks/useCart.ts` | QA Suite: Tests 5-8 (Respuesta 200, navegación, filtros) |
+| Precios escalonados (-20% mayoreo) | `js/app.js` | `src/modules/store/components/ProductDetailModal.tsx` | Pruebas de cálculo de subtotales por volumen |
+| Lista de abastecimiento recurrente | `js/app.js` | `src/modules/store/hooks/useSupplyList.ts` | Persistencia en `localStorage: nex24-b2b-supply-list` |
+| Historial de cotizaciones emitidas | `js/app.js` | `src/modules/store/hooks/useQuotes.ts` | Persistencia en `localStorage: nex24-quotes-history` |
+| Deep-links a WhatsApp con formato | `js/app.js`<br>`js/lens.js` | `src/components/shared/WhatsAppButton.tsx` | Verificación de URI encoding de números y mensajes |
+| Escaneo visual y compresión canvas | `js/lens.js` | `src/modules/lens/hooks/useLensScanner.ts` | Verificación de upload multipart y tamaño máx 1280px |
+| Motor Gemini Vision con fallback demo | `vision.js`<br>`server.js` | `src/modules/lens/services/lensService.ts` | Unit Tests: 11-17 (Demos mock); QA Tests: 41-55 |
+| Matching semántico y Haversine | `matcher.js` | `server.js` (Backend intacto) | Unit Tests: 1-10 (Distancia km, coincidencia exacta) |
+| Mapa interactivo de Durango (Leaflet) | `pages/mapa.html`<br>`js/mapa.js` | `src/modules/map/pages/MapPage.tsx`<br>`src/modules/map/components/LeafletMapWrapper.tsx` | Verificación de carga de tiles, 14 marcadores y popups |
+| Puntos de abasto y ubicaciones | `pages/ubicaciones.html` | `src/modules/locations/pages/LocationsPage.tsx` | Verificación de renderizado de lista y mapa esquemático |
+| Propuesta "¿Cómo funciona?" | `pages/propuesta.html` | `src/modules/propuesta/pages/PropuestaPage.tsx` | Verificación de acordeón FAQ y métricas |
+| Autenticación con roles | `pages/login.html`<br>`js/login.js` | `src/modules/auth/pages/LoginPage.tsx`<br>`src/modules/auth/hooks/useAuth.ts` | QA Suite: Tests 56-61 (Login proveedor, tiendita, admin) |
+| Registro comercial con rol dinámico | `pages/registro.html`<br>`js/registro.js` | `src/modules/auth/pages/RegisterPage.tsx`<br>`src/modules/auth/components/RoleSelector.tsx` | QA Suite: Tests 21-24; test_manual_registration.js |
+| Panel Proveedor (CRUD, Capacidad, Pedidos) | `pages/emprendedores.html`<br>`js/app.js` | `src/modules/entrepreneurs/components/Provider*` | Verificación de actualización de catálogo y cotizaciones |
+| Panel Tiendita (Abasto, Comparador) | `pages/emprendedores.html`<br>`js/app.js` | `src/modules/entrepreneurs/components/Buyer*` | Verificación de tabla comparativa multi-proveedor |
+| Panel Admin (Moderación comercial) | `pages/emprendedores.html`<br>`server.js` | `src/modules/entrepreneurs/components/Admin*` | QA Suite: Tests 62-66 (Consulta y aprobación PATCH) |
+
+---
+
+### 1.6. Análisis de Riesgos y Estrategias de Mitigación
+
+1. **Riesgo: Pérdida o Fragmentación del Estilo Visual Existente**
+   - *Severidad:* Alta.
+   - *Mitigación:* Se migrarán los tokens y clases utilitarias de `css/design-system.css`, `css/design.css` y `css/panel.css` directamente a la capa de estilos global de Vite (`src/styles/tokens.css` y `src/styles/global.css`). Los componentes TSX reutilizarán exactamente los nombres de clase semánticos (`.nex-btn`, `.nex-card`, `.nex-badge-b2b`, etc.), asegurando coherencia visual idéntica sin reescrituras innecesarias.
+2. **Riesgo: Colisión de Ciclo de Vida en Leaflet Map**
+   - *Severidad:* Alta.
+   - *Mitigación:* Leaflet muta el DOM directamente. En React, si el componente se desmonta y remonta sin destruir la instancia anterior, lanza el error `Map container is already initialized`. Se encapsulará en `LeafletMapWrapper.tsx` con `useRef` y `map.remove()` explícito en el return de limpieza del hook `useEffect`. Además se mantendrá el fallback de renderizado local offline existente.
+3. **Riesgo: Pérdida de Estado entre Sesiones (`localStorage`)**
+   - *Severidad:* Media.
+   - *Mitigación:* Se mantendrán idénticas todas las claves de `localStorage` (`nex24-supabase-session`, `nex24-current-account`, `nex24-cart`, `nex24-b2b-supply-list`, `nex24-quotes-history`). Se implementará un hook `useLocalStorage.ts` tipado que garantice sincronización reactiva entre pestañas y componentes.
+4. **Riesgo: Pérdida de Conexión entre Vite Frontend y Express Backend**
+   - *Severidad:* Media.
+   - *Mitigación:* En el archivo `vite.config.ts`, se configurará el servidor de desarrollo para proxificar de manera transparente todas las llamadas `/api/*` hacia `http://localhost:3001`, manteniendo todas las rutas backend exactamente como están sin necesidad de alterar `server.js`.
+5. **Riesgo: Regresión en Tests Automatizados Existentes**
+   - *Severidad:* Crítica.
+   - *Mitigación:* Mantendremos los scripts de test existentes (`npm test` y `npm run qa`) ejecutándose contra el backend Express, y añadiremos scripts específicos de TypeScript (`npm run typecheck`, `npm run build:react`) para garantizar cero errores en compilación.
+
+---
+
+### 1.7. Estrategia y Orden Recomendado de Migración por Fases
+
+1. **Fase 1: Auditoría del Proyecto** *(FASE ACTUAL — COMPLETADA Y VERIFICADA)*.
+2. **Fase 2: Configuración del Entorno React + TypeScript + Vite:**
+   - Instalar dependencias esenciales (`react`, `react-dom`, `react-router-dom`, `@types/react`, `@types/react-dom`, `vite`, `@vitejs/plugin-react`, `typescript`).
+   - Configurar `vite.config.ts` con proxy a `/api` (puerto 3001) y alias `@/`.
+   - Configurar `tsconfig.json` y `tsconfig.node.json`.
+   - Crear estructura modular en `src/` y verificar arranque en desarrollo.
+3. **Fase 3: Sistema Visual y Biblioteca de Componentes UI Reutilizables:**
+   - Integración de tokens CSS.
+   - Creación de componentes atómicos: `Button`, `Input`, `Modal`, `Loader`, `Toast`, `Badge`, `Card`, `Skeleton`, `EmptyState`.
+   - Creación de Layout: `Navbar`, `Footer`, `MainLayout`.
+4. **Fase 4: Módulo de Autenticación y Gestión de Sesión:**
+   - Implementar `AuthContext`, `useAuth`, `authService`.
+   - Migrar `LoginPage` y `RegisterPage` con validaciones y roles.
+5. **Fase 5: Módulo de Productos y Marketplace Inteligente (Tienda B2B / B2C):**
+   - Implementar `CartContext`, `useCart`, `useSupplyList`, `useQuotes`.
+   - Migrar catálogo interactivo, filtros, tiers de mayoreo, modal de ficha técnica y visor de cotizaciones en PDF.
+6. **Fase 6: Módulo de Emprendedores y Administración:**
+   - Migrar suite del Proveedor (CRUD de catálogo, control de capacidad, pedidos).
+   - Migrar suite de la Tiendita (Dashboard de abasto, comparador multi-proveedor).
+   - Migrar suite de Administración (Bandeja de moderación y auditoría de sellos).
+7. **Fase 7: Módulo de Mapas y Ubicaciones:**
+   - Implementar `LeafletMapWrapper` con geolocalización, sincronización de lista y fallback offline.
+   - Migrar vista de Puntos de Abasto y mapa esquemático.
+8. **Fase 8: Módulo Lens IA y Visión Artificial:**
+   - Migrar escáner visual con dropzone, captura móvil, compresión en canvas y tarjetas de coincidencias.
+9. **Fase 9: Páginas Informativas e Integración Global:**
+   - Migrar Landing Page corporativa (12 secciones).
+   - Migrar página de Propuesta "¿Cómo funciona?".
+10. **Fase 10: Optimización, Accesibilidad y QA Final:**
+    - Auditoría de TypeScript (`tsc --noEmit`).
+    - Verificación completa con `npm test` y `npm run qa`.
+    - Build de producción con Vite.
+
+---
+
+### 1.8. Estado de la Fase 1
+- **Auditoría de código:** 100% completada.
+- **Modificaciones de código en aplicación:** 0 (estricto cumplimiento de regla de auditoría previa).
+- **Pruebas de baseline ejecutadas:**
+  - `npm test`: 17 / 17 pruebas exitosas.
+  - `npm run qa`: 66 / 66 pruebas de aceptación exitosas.
+- **Próximo Paso:** Esperar autorización explícita del usuario para iniciar la **FASE 2: CONFIGURACIÓN DE REACT**.
+
+---
+
+### 1.9. Estandarización Visual: Reemplazo Completo de Emojis por Lucide Icons / Heroicons
+- **Objetivo:** Erradicar todos los emojis del sistema para otorgar una identidad visual SaaS moderna, empresarial y corporativa.
+- **Módulo de Iconografía:** Creación de `js/icons.js` con soporte nativo para SVG de Lucide Icons / Heroicons (`window.createLucideIcon`, `window.getCategoryLucideIcon`, `window.renderLucideIcons`).
+- **Tokens y Estilos:** Incorporación de reglas `.lucide`, `.lucide-xs`, `.lucide-sm`, `.lucide-md`, `.lucide-lg`, `.lucide-xl` en `css/design-system.css`.
+- **Archivos Depurados y Migrados a SVG (0 emojis restantes):**
+  - `index.html` (Buscador, categorías, tarjetas de productos destacados, flujo y beneficios).
+  - `pages/tienda.html` (Chips de categorías, modo B2B/B2C, listas de abasto, cotizaciones y modales).
+  - `pages/lens.html` (Hero, dropzone de cámara, geolocalizador y visor de diagnóstico).
+  - `pages/mapa.html` (Pines georreferenciados por categoría, buscador, leyenda y marcadores Leaflet).
+  - `pages/ubicaciones.html` (Directorio y chips rápidos de zonas).
+  - `pages/propuesta.html` (Flujo operativo, pilares por rol y comparativa).
+  - `pages/productos.html` (Favicon e identidad).
+  - `pages/emprendedores.html` (Dashboard comercial, sellos de confianza y modales).
+  - `pages/login.html` & `pages/registro.html` (Inputs, tabs de acceso, roles y botones primarios).
+  - `js/navigation.js` (Navbar unificada, notificaciones toast, loader y pie de página).
+  - `js/app.js` (Generador dinámico de tarjetas, comparador, modales y pedidos WhatsApp).
+  - `js/lens.js` (Diagnóstico visual IA y tarjetas de coincidencia comercial).
+  - `js/mapa.js` (Marcadores Leaflet divIcon y lista sincronizada).
+  - `js/login.js` (Alternador de contraseñas y botones dinámicos).
+- **Verificación Automática:** 0 emojis detectados en todo el árbol de código.
+- **Pruebas de Regresión:** `npm test` (17/17 OK), `npm run qa` (66/66 OK).
+
+

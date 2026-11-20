@@ -11,7 +11,8 @@
     "dev": "node --watch server.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js",
-    "qa": "node scripts/qa_verification.js"
+    "qa": "node scripts/qa_verification.js",
+    "reset:env": "node scripts/reset_test_env.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.119.2",

@@ -7,11 +7,25 @@
   const baseFallback = `${location.protocol}//${location.hostname || "localhost"}:3001`;
   let API_BASE = override ?? (location.protocol === "file:" ? baseFallback : "");
 
-  const ICONOS = {
-    cafe: "☕", queso: "🧀", miel: "🍯", mezcal: "🥃", panaderia: "🥖",
-    salsas: "🌶️", cuero: "👜", cosmetica: "🧴", dulces: "🍬", botana: "🥨",
-    bebidas: "🥤", carnes: "🥩", artesania: "🧶", tortillas: "🫓",
+  const svgPinIcon = (name, size = 18) => {
+    if (typeof window !== "undefined" && typeof window.createLucideIcon === "function") {
+      return window.createLucideIcon(name, { size });
+    }
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-${name}"><circle cx="12" cy="12" r="10"/></svg>`;
   };
+
+  const svgDefaultPin = svgPinIcon("map-pin", 18);
+
+  const resolvePinIcon = (key, size = 18) => {
+    if (typeof window !== "undefined" && typeof window.getProductIcon === "function") {
+      return window.getProductIcon(key, { size });
+    }
+    return svgPinIcon("map-pin", size);
+  };
+
+  const ICONOS = new Proxy({}, {
+    get: (_, prop) => resolvePinIcon(String(prop), 18)
+  });
 
   const ETIQUETAS = {
     cafe: "Café", queso: "Queso", miel: "Miel", mezcal: "Mezcal",
@@ -100,7 +114,7 @@
   function icono(p) {
     return L.divIcon({
       className: "pin-lens",
-      html: `<span>${ICONOS[p.categoria] || "📍"}</span>`,
+      html: `<span>${ICONOS[p.categoria] || svgDefaultPin}</span>`,
       iconSize: [38, 38],
       iconAnchor: [19, 19],
       popupAnchor: [0, -17],
@@ -115,15 +129,15 @@
       `Hola ${p.nombre}, te contacto desde NEX24 Mapa Lens. Me interesa ${(p.productos || [])[0] || "tu producto"}.`
     );
     return `<article class="popup-card">
-      <small>${esc(etiqueta(p.categoria))} · ${esc(p.zona_durango)} · ⌖ ${km(distanciaKm(origen, p))}</small>
-      <h3>${esc(p.nombre)} ${p.verificado ? '<span class="verif">✓</span>' : ""}</h3>
+      <small>${esc(etiqueta(p.categoria))} · ${esc(p.zona_durango)} · <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.1em;"><circle cx="12" cy="12" r="10"/><line x1="22" x2="18" y1="12" y2="12"/><line x1="6" x2="2" y1="12" y2="12"/><line x1="12" x2="12" y1="6" y2="2"/><line x1="12" x2="12" y1="22" y2="18"/></svg> ${km(distanciaKm(origen, p))}</small>
+      <h3>${esc(p.nombre)} ${p.verificado ? '<span class="verif"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg></span>' : ""}</h3>
       <p>${esc(p.descripcion)}</p>
       <div class="popup-tags">${productos}</div>
       <div class="popup-precios">
         <div><small>Menudeo</small><b>${dinero(p.precio_menudeo)}</b></div>
         <div><small>Mayoreo</small><b>${dinero(p.precio_mayoreo)}</b></div>
       </div>
-      ${whatsapp ? `<a class="popup-wa" href="https://wa.me/${whatsapp}?text=${mensaje}" target="_blank" rel="noopener">WhatsApp ↗</a>` : ""}
+      ${whatsapp ? `<a class="popup-wa" href="https://wa.me/${whatsapp}?text=${mensaje}" target="_blank" rel="noopener">${svgPinIcon("message-circle", 12)} WhatsApp</a>` : ""}
     </article>`;
   }
 
@@ -173,13 +187,13 @@
       const d = distanciaKm(origen, p);
       return `<article class="mapa-item" data-id="${esc(p.id)}" tabindex="0" role="button">
         <div class="mapa-item-head">
-          <span class="mapa-item-icon">${ICONOS[p.categoria] || "📍"}</span>
-          <div><h3>${esc(p.nombre)} ${p.verificado ? '<span class="verif">✓</span>' : ""}</h3>
-          <small>${esc(etiqueta(p.categoria))} · ${esc(p.zona_durango)} · ⌖ ${km(d)}</small></div>
+          <span class="mapa-item-icon">${ICONOS[p.categoria] || svgDefaultPin}</span>
+          <div><h3>${esc(p.nombre)} ${p.verificado ? '<span class="verif"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg></span>' : ""}</h3>
+          <small>${esc(etiqueta(p.categoria))} · ${esc(p.zona_durango)} · <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.1em;"><circle cx="12" cy="12" r="10"/><line x1="22" x2="18" y1="12" y2="12"/><line x1="6" x2="2" y1="12" y2="12"/><line x1="12" x2="12" y1="6" y2="2"/><line x1="12" x2="12" y1="22" y2="18"/></svg> ${km(d)}</small></div>
         </div>
         <div class="mapa-item-foot">
           <span><b>${dinero(p.precio_menudeo)}</b> / ${esc(p.unidad)}</span>
-          ${whatsapp ? `<a href="https://wa.me/${whatsapp}" target="_blank" rel="noopener" onclick="event.stopPropagation()">WhatsApp ↗</a>` : ""}
+          ${whatsapp ? `<a href="https://wa.me/${whatsapp}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${svgPinIcon("message-circle", 12)} WhatsApp</a>` : ""}
         </div>
       </article>`;
     }).join("") || '<p class="vacio">No hay productores con esos filtros.</p>';
@@ -201,7 +215,7 @@
     const cats = [...new Set(productores.map((p) => p.categoria))];
     leyenda.innerHTML = cats.map((c) =>
       `<button type="button" data-cat="${esc(c)}" class="${categoria === c ? "active" : ""}">
-        <span>${ICONOS[c] || "📍"}</span> ${esc(etiqueta(c))}
+        <span>${ICONOS[c] || svgDefaultPin}</span> ${esc(etiqueta(c))}
       </button>`
     ).join("");
   }
@@ -316,7 +330,7 @@
       className: "lens-sugerencia",
     }).addTo(mapa);
 
-    desdeLensTexto.innerHTML = `📍 Sugerido por Lens IA: <b>${esc(p.nombre)}</b> · ${esc(p.zona_durango)} · ⌖ ${km(distanciaKm(origen, p))}`;
+    desdeLensTexto.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin" style="margin-right:4px;vertical-align:-0.15em;"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>Sugerido por Lens IA: <b>${esc(p.nombre)}</b> · ${esc(p.zona_durango)} · <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.1em;"><circle cx="12" cy="12" r="10"/><line x1="22" x2="18" y1="12" y2="12"/><line x1="6" x2="2" y1="12" y2="12"/><line x1="12" x2="12" y1="6" y2="2"/><line x1="12" x2="12" y1="22" y2="18"/></svg> ${km(distanciaKm(origen, p))}`;
     desdeLens.hidden = false;
 
     mapa.flyTo([p.lat, p.lng], 15, { duration: 1 });
@@ -374,7 +388,7 @@
       return;
     }
     botonUbicacion.disabled = true;
-    botonUbicacion.textContent = "⌖ Buscando…";
+    botonUbicacion.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-crosshair" style="margin-right:4px;"><circle cx="12" cy="12" r="10"/><line x1="22" x2="18" y1="12" y2="12"/><line x1="6" x2="2" y1="12" y2="12"/><line x1="12" x2="12" y1="6" y2="2"/><line x1="12" x2="12" y1="22" y2="18"/></svg>Buscando…`;
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         origen = { lat: pos.coords.latitude, lng: pos.coords.longitude };
@@ -383,7 +397,7 @@
           radius: 9, color: "#14251f", weight: 3, fillColor: "#c6f36b", fillOpacity: 1,
         }).bindPopup("Tú estás aquí").addTo(mapa);
         botonUbicacion.dataset.listos = "true";
-        botonUbicacion.textContent = "⌖ Ubicación lista";
+        botonUbicacion.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check" style="margin-right:4px;"><path d="M20 6 9 17l-5-5"/></svg>Ubicación lista`;
         mapa.setView([origen.lat, origen.lng], 13);
         actualizar();
       },
@@ -394,7 +408,7 @@
     );
     setTimeout(() => {
       botonUbicacion.disabled = false;
-      if (!botonUbicacion.dataset.listos) botonUbicacion.textContent = "⌖ Mi ubicación";
+      if (!botonUbicacion.dataset.listos) botonUbicacion.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-crosshair" style="margin-right:4px;"><circle cx="12" cy="12" r="10"/><line x1="22" x2="18" y1="12" y2="12"/><line x1="6" x2="2" y1="12" y2="12"/><line x1="12" x2="12" y1="6" y2="2"/><line x1="12" x2="12" y1="22" y2="18"/></svg>Mi ubicación`;
     }, 11000);
   });
 
@@ -405,7 +419,7 @@
       marcaUsuario = null;
     }
     delete botonUbicacion.dataset.listos;
-    botonUbicacion.textContent = "⌖ Mi ubicación";
+    botonUbicacion.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-crosshair" style="margin-right:4px;"><circle cx="12" cy="12" r="10"/><line x1="22" x2="18" y1="12" y2="12"/><line x1="6" x2="2" y1="12" y2="12"/><line x1="12" x2="12" y1="6" y2="2"/><line x1="12" x2="12" y1="22" y2="18"/></svg>Mi ubicación`;
     mapa.setView([DEFAULT.lat, DEFAULT.lng], 12);
     actualizar();
   });
@@ -445,7 +459,7 @@
         const el = document.createElement("button");
         el.type = "button";
         el.className = "pin-lens local-pin";
-        el.innerHTML = opciones.icon?.html || '<span>📍</span>';
+        el.innerHTML = opciones.icon?.html || `<span>${svgDefaultPin}</span>`;
         el.title = opciones.icon?.title || "Productor";
         let popupHtml = "";
         const p = proyectar(coords[0], coords[1]);

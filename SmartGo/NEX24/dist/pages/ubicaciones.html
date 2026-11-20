@@ -1,9 +1,146 @@
 <!doctype html>
 <html lang="es">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ubicaciones | NEX24</title><link rel="stylesheet" href="../css/styles.css"><link rel="stylesheet" href="../css/design.css"></head>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Puntos de Abasto y Ubicaciones | NEX24 Durango</title>
+  <meta name="description" content="Localiza los puntos de distribución, tienditas aliadas y productores locales en Durango. Puntos de autoservicio y suministro B2B.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B8F36B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0'/%3E%3Ccircle cx='12' cy='10' r='3'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/design-system.css">
+  <link rel="stylesheet" href="../css/design.css">
+  <style>
+    .ubicaciones-hero {
+      background: linear-gradient(135deg, #0D261A 0%, #163826 60%, #1D4732 100%);
+      color: #FFFFFF;
+      padding: clamp(36px, 5vw, 60px) 0;
+      position: relative;
+    }
+    .ubicaciones-hero h1 {
+      font-size: clamp(2rem, 3.5vw, 2.8rem);
+      font-weight: 800;
+      line-height: 1.2;
+      margin: 8px 0 12px;
+      color: #FFFFFF;
+    }
+    .ubicaciones-hero h1 em {
+      color: var(--nex-lime);
+      font-style: normal;
+    }
+    .ubicaciones-hero p {
+      color: #C7D8CF;
+      font-size: 15px;
+      max-width: 680px;
+      margin: 0;
+      line-height: 1.6;
+    }
+    .zone-quick-chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 16px 0;
+    }
+    .zone-chip-btn {
+      background: #FFFFFF;
+      border: 1px solid var(--nex-border);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--nex-forest);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .zone-chip-btn:hover {
+      background: var(--nex-surface-subtle);
+      border-color: var(--nex-emerald);
+      color: var(--nex-emerald);
+    }
+  </style>
+</head>
 <body>
+
+<!-- 1. NAVBAR DINÁMICO CENTRALIZADO -->
 <header class="nav" data-nex-navigation></header>
-<main><section class="section locations"><small>ENCUÉNTRANOS CERCA</small><h1>Tu punto NEX24 más cercano.</h1><p>Consulta nuestros puntos de autoservicio y descubre productos de emprendedores locales.</p><div class="location-tools"><label for="locationSearch">Buscar por ciudad o colonia<input id="locationSearch" type="search" placeholder="Ej. Centro, Durango"></label><button id="locationSearchButton" class="btn green">Buscar punto</button></div><div class="location-layout"><div class="map-card"><div class="map-grid"></div><span class="map-road road-one"></span><span class="map-road road-two"></span><button class="map-pin pin-one" data-location="Centro">●<small>Centro</small></button><button class="map-pin pin-two" data-location="Jardines">●<small>Jardines</small></button><button class="map-pin pin-three" data-location="Tecnológico">●<small>Tecnológico</small></button><div class="map-label">DURANGO, DGO.</div></div><div class="location-list" id="locationList"></div></div></section></main>
-<footer><a class="logo" href="/">NEX<span>24</span></a><p>Impulsando lo local, las 24 horas.</p><small>Durango, México · Prototipo Hackathon</small></footer>
-<script src="../js/navigation.js"></script><script src="../js/app.js"></script>
-</body></html>
+
+<!-- 2. CABECERA CORPORATIVA -->
+<div class="ubicaciones-hero">
+  <div class="nex-container">
+    <span class="nex-badge nex-badge-lime" style="letter-spacing:1px;font-weight:700;">RED LOGÍSTICA REGIONAL</span>
+    <h1>Puntos de Abasto y <em>Productores en Durango</em></h1>
+    <p>
+      Consulta la presencia comercial de nuestros 14 productores verificados, puntos de abasto en la capital y municipios vecinos con capacidad de suministro semanal.
+    </p>
+    <div style="margin-top:18px;display:flex;gap:12px;flex-wrap:wrap;">
+      <a class="nex-btn nex-btn-accent" href="/mapa">Abrir Mapa Interactivo Lens IA <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map" style="margin-left:6px;"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6z"/><path d="M9 3v15"/><path d="M15 6v15"/></svg></a>
+      <a class="nex-btn nex-btn-outline" style="color:#FFFFFF;border-color:rgba(255,255,255,0.3);" href="/tienda">Ver Catálogo B2B / B2C →</a>
+    </div>
+  </div>
+</div>
+
+<main class="nex-container" style="padding-top:var(--space-8);padding-bottom:var(--space-16);">
+  <section class="section locations" style="padding:0;">
+    <!-- Barra de Herramientas de Búsqueda -->
+    <div class="nex-market-toolbar" style="margin-bottom:24px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:12px;">
+        <h2 style="font-size:1.3rem;margin:0;color:var(--nex-forest);">Filtrar por Zona o Productor</h2>
+        <span style="font-size:12px;color:var(--nex-text-secondary);">Haz clic en un pin o escribe abajo</span>
+      </div>
+
+      <div class="location-tools" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <div style="flex-grow:1;min-width:240px;position:relative;">
+          <input id="locationSearch" type="search" class="nex-search-input" style="width:100%;padding:12px 16px;border-radius:var(--radius-md);border:1px solid var(--nex-border);" placeholder="Buscar por colonia o municipio: Centro, Nuevo Ideal, Nombre de Dios, Canatlán..." aria-label="Buscar por ciudad o colonia">
+        </div>
+        <button id="locationSearchButton" type="button" class="nex-btn nex-btn-primary">Filtrar ubicación</button>
+      </div>
+
+      <!-- Accesos Rápidos de Zonas -->
+      <div class="zone-quick-chips">
+        <span style="font-size:12px;color:var(--nex-text-muted);align-self:center;">Zonas rápidas:</span>
+        <button type="button" class="zone-chip-btn map-pin" data-location="Centro"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin" style="margin-right:4px;"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>Centro</button>
+        <button type="button" class="zone-chip-btn map-pin" data-location="Jardines"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin" style="margin-right:4px;"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>Fracc. Jardines</button>
+        <button type="button" class="zone-chip-btn map-pin" data-location="Tecnológico"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin" style="margin-right:4px;"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>Tecnológico</button>
+        <button type="button" class="zone-chip-btn map-pin" data-location="Nuevo Ideal"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cheese" style="margin-right:4px;"><path d="m3 13 18-5v11H3z"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="12" r="1.5"/><circle cx="12" cy="16" r="1.2"/></svg>Nuevo Ideal</button>
+        <button type="button" class="zone-chip-btn map-pin" data-location="Nombre de Dios"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-flame" style="margin-right:4px;"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>Nombre de Dios</button>
+        <button type="button" class="zone-chip-btn map-pin" data-location="Canatlán"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-apple" style="margin-right:4px;"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z"/><path d="M10 2c1 .5 2 2 2 5"/></svg>Canatlán</button>
+        <button type="button" class="zone-chip-btn map-pin" data-location="El Mezquital"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-droplet" style="margin-right:4px;"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>El Mezquital</button>
+        <button type="button" class="zone-chip-btn" onclick="document.querySelector('#locationSearch').value='';document.querySelector('#locationSearchButton').click();">Mostrar todos</button>
+      </div>
+    </div>
+
+    <!-- Layout: Mini Mapa Esquemático + Listado de Resultados -->
+    <div class="location-layout">
+      <!-- Mapa Esquemático -->
+      <div class="map-card" style="border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-md);">
+        <div class="map-grid"></div>
+        <span class="map-road road-one"></span>
+        <span class="map-road road-two"></span>
+        <button type="button" class="map-pin pin-one" data-location="Centro" aria-label="Seleccionar Centro">●<small>Centro</small></button>
+        <button type="button" class="map-pin pin-two" data-location="Jardines" aria-label="Seleccionar Jardines">●<small>Jardines</small></button>
+        <button type="button" class="map-pin pin-three" data-location="Tecnológico" aria-label="Seleccionar Tecnológico">●<small>Tecnológico</small></button>
+        <div class="map-label">DURANGO, DGO. · RED REGIONAL</div>
+      </div>
+
+      <!-- Lista Dinámica de Proveedores / Puntos de Abasto -->
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <h3 style="font-size:16px;margin:0;color:var(--nex-forest);">Puntos y Proveedores Coincidentes</h3>
+          <span style="font-size:12px;color:var(--nex-emerald);font-weight:700;">● Red Verificada</span>
+        </div>
+        <div class="location-list" id="locationList" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:16px;">
+          <p style="color:var(--nex-text-muted);">Cargando puntos de abasto en Durango...</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- FOOTER CENTRALIZADO DINÁMICO -->
+<footer class="nex-footer" data-nex-footer="true"></footer>
+
+<script src="../js/navigation.js"></script>
+<script src="../js/app.js"></script>
+</body>
+</html>

@@ -14,8 +14,10 @@ for (const nombre of requeridos) {
 fs.rmSync(salida, { recursive: true, force: true });
 fs.mkdirSync(salida, { recursive: true });
 
-for (const nombre of ['index.html', 'pages', 'css', 'js']) {
-  fs.cpSync(path.join(raiz, nombre), path.join(salida, nombre), { recursive: true });
+for (const nombre of ['index.html', 'pages', 'css', 'js', 'data', 'public']) {
+  if (fs.existsSync(path.join(raiz, nombre))) {
+    fs.cpSync(path.join(raiz, nombre), path.join(salida, nombre), { recursive: true });
+  }
 }
 
 const archivosPrincipales = fs.readdirSync(raiz)

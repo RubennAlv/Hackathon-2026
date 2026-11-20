@@ -12,11 +12,23 @@
   // Si abres el HTML con Live Server o file://, comprobarApi() cae al puerto 3001.
   let API_BASE = override ?? (location.protocol === "file:" ? baseFallback : "");
 
-  const ICONOS = {
-    cafe: "☕", queso: "🧀", miel: "🍯", mezcal: "🥃", panaderia: "🥖", pan: "🥖",
-    salsas: "🌶️", cuero: "👜", cosmetica: "🧴", dulces: "🍬", botana: "🥨",
-    bebidas: "🥤", carnes: "🥩", artesania: "🧶", tortillas: "🫓",
+  const svgIcon = (name, size = 28) => {
+    if (typeof window !== "undefined" && typeof window.createLucideIcon === "function") {
+      return window.createLucideIcon(name, { size });
+    }
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-${name}"><circle cx="12" cy="12" r="10"/></svg>`;
   };
+
+  const resolveIcon = (key, size = 28) => {
+    if (typeof window !== "undefined" && typeof window.getProductIcon === "function") {
+      return window.getProductIcon(key, { size });
+    }
+    return svgIcon("shopping-bag", size);
+  };
+
+  const ICONOS = new Proxy({}, {
+    get: (_, prop) => resolveIcon(String(prop), 28)
+  });
 
   const $ = (selector, root = document) => root.querySelector(selector);
 
@@ -179,7 +191,7 @@
     const deteccion = data.deteccion || {};
     const resultados = Array.isArray(data.resultados) ? data.resultados : [];
     const modo = data.modo || "mock";
-    const icono = ICONOS[deteccion.categoria] || "🛒";
+    const icono = ICONOS[deteccion.categoria] || svgIcon("shopping-bag");
     const confianza = Number(deteccion.confianza) || 0;
     const producto = deteccion.producto || "Producto sin identificar";
     const productoBonito = producto.charAt(0).toUpperCase() + producto.slice(1);
@@ -199,7 +211,7 @@
     const tarjetas = resultados
       .map((p) => {
         const productos = (p.productos || []).map((x) => `<span>${esc(x)}</span>`).join("");
-        const verificado = p.verificado ? '<span class="verified">✓ Verificado</span>' : "";
+        const verificado = p.verificado ? '<span class="verified"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check" style="margin-right:4px;"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>Verificado</span>' : "";
         const whatsapp = String(p.whatsapp || "").replace(/\D/g, "");
         const mensaje = encodeURIComponent(
           `Hola ${p.nombre}, te contacto desde NEX24 Lens. Me interesa ${(p.productos && p.productos[0]) || "tu producto"}.`
@@ -211,8 +223,8 @@
         const ahorroPct = menudeo > 0 ? Math.round((ahorro / menudeo) * 100) : 0;
         const badgeAhorro = ahorro > 0 ? `<span class="nex-badge nex-badge-lime" style="font-weight:700;font-size:10px;margin-left:6px;">-${ahorroPct}% Mayoreo</span>` : "";
 
-        const capacidad = p.capacidad_semanal ? `📦 Suministro: <strong>${esc(p.capacidad_semanal)}/sem</strong>` : "";
-        const rutas = (Array.isArray(p.rutas_entrega) && p.rutas_entrega.length) ? `🚚 Rutas: <strong>${esc(p.rutas_entrega.join(", "))}</strong>` : "";
+        const capacidad = p.capacidad_semanal ? `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-package" style="margin-right:4px;"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>Suministro: <strong>${esc(p.capacidad_semanal)}/sem</strong>` : "";
+        const rutas = (Array.isArray(p.rutas_entrega) && p.rutas_entrega.length) ? `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-truck" style="margin-right:4px;"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>Rutas: <strong>${esc(p.rutas_entrega.join(", "))}</strong>` : "";
         const logistics = (capacidad || rutas) ? `
           <div class="logistics-info">
             ${capacidad ? `<span>${capacidad}</span>` : ""}
@@ -247,13 +259,13 @@
           </div>
           ${logistics}
           <div class="producer-footer">
-            <span class="distance">📍 ${esc(p.zona_durango)} (${km(p.distancia_km)})</span>
-            <a class="btn-catalog" href="${tiendaUrl}">🛒 Ver en Tienda</a>
-            ${whatsapp ? `<a class="wa" href="https://wa.me/${whatsapp}?text=${mensaje}" target="_blank" rel="noopener">💬 WhatsApp</a>` : ""}
-            <a class="map" href="/mapa?productor=${encodeURIComponent(p.id)}">Ver en mapa ↗</a>
-            <a class="map map-ext" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${p.lat},${p.lng}`)}" target="_blank" rel="noopener">GMaps</a>
+            <span class="distance"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin" style="margin-right:4px;"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>${esc(p.zona_durango)} (${km(p.distancia_km)})</span>
+            <a class="btn-catalog" href="${tiendaUrl}"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart" style="margin-right:4px;"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>Ver en Tienda</a>
+            ${whatsapp ? `<a class="wa" href="https://wa.me/${whatsapp}?text=${mensaje}" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle" style="margin-right:4px;"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>WhatsApp</a>` : ""}
+            <a class="map" href="/mapa?productor=${encodeURIComponent(p.id)}">${svgIcon("map-pin", 12)} Ver en mapa</a>
+            <a class="map map-ext" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${p.lat},${p.lng}`)}" target="_blank" rel="noopener">${svgIcon("external-link", 11)} GMaps</a>
           </div>
-          ${p.razon ? `<small class="reason">🔍 ${esc(p.razon)}</small>` : ""}
+          ${p.razon ? `<small class="reason"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search" style="margin-right:4px;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>${esc(p.razon)}</small>` : ""}
         </article>`;
       })
       .join("");
@@ -277,7 +289,7 @@
       <div class="match-line">
         <span class="match-pill ${esc(data.match_type)}">${esc(matchTexto)}</span>
         <span>${resultados.length} productor${resultados.length === 1 ? "" : "es"} · ${donde}${ms ? ` · ${(ms / 1000).toFixed(1)} s` : ""}</span>
-        <a class="map-all" href="mapa.html">🗺️ Ver todos en el mapa</a>
+        <a class="map-all" href="mapa.html"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map" style="margin-right:4px;"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6z"/><path d="M9 3v15"/><path d="M15 6v15"/></svg>Ver todos en el mapa</a>
       </div>
       ${notaFallback}
       <div class="producer-list">${tarjetas || '<p class="fallback-note">No hay productores para mostrar.</p>'}</div>
@@ -441,7 +453,7 @@
         ubicacion = { lat: posicion.coords.latitude, lng: posicion.coords.longitude };
         locationStatus.textContent = `Ubicación lista (±${Math.round(posicion.coords.accuracy)} m).`;
         useLocation.disabled = false;
-        useLocation.textContent = "⌖ Ubicación lista";
+        useLocation.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check" style="margin-right:4px;"><path d="M20 6 9 17l-5-5"/></svg>Ubicación lista`;
       },
       (error) => {
         ubicacion = null;
