@@ -31,6 +31,18 @@ const money = (val) => {
   return Number.isFinite(n) ? `$${n.toFixed(2)}` : '—';
 };
 
+// Avisos contextuales del panel comercial (éxito, advertencia o error)
+function showPanelAlert(message, variant = 'success') {
+  const box = document.querySelector('#panelAlertBox');
+  if (!box) return;
+  const estilos = { success: 'success', warning: 'warning', danger: 'danger' };
+  box.textContent = message;
+  box.className = `nex-alert nex-alert-${estilos[variant] || 'success'}`;
+  box.hidden = false;
+  clearTimeout(showPanelAlert.timer);
+  showPanelAlert.timer = setTimeout(() => { box.hidden = true; }, 5000);
+}
+
 // --- Identidad del proveedor (perfil en cards de abasto) ----------------------
 const escTexto = (valor) => String(valor ?? '').replace(/[&<>"']/g, (c) => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -50,6 +62,110 @@ function colorProveedor(clave) {
   return Math.abs(hash) % 6;
 }
 
+// --- Imágenes y autenticación para el catálogo del proveedor -------------------
+function nexAuthHeaders() {
+  const session = JSON.parse(localStorage.getItem('nex24-supabase-session') || 'null');
+  return session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {};
+}
+
+function invalidarCatalogo() {
+  allProducts = [];
+  allProducers = [];
+}
+
+async function comprimirImagenProducto(archivo) {
+  if (!archivo?.type?.startsWith('image/')) {
+    throw new Error('Selecciona un archivo de imagen válido (JPG, PNG o WEBP).');
+  }
+  if (archivo.size > 8 * 1024 * 1024) {
+    throw new Error('La imagen supera el límite de 8 MB.');
+  }
+  if (typeof Image === 'undefined' || typeof document.createElement !== 'function') return archivo;
+
+  const urlTemporal = URL.createObjectURL(archivo);
+  try {
+    const imagen = new Image();
+    await new Promise((resolve, reject) => {
+      imagen.onload = resolve;
+      imagen.onerror = () => reject(new Error('No se pudo leer la imagen seleccionada.'));
+      imagen.src = urlTemporal;
+    });
+
+    const LADO_MAX = 1280;
+    const escala = Math.min(1, LADO_MAX / Math.max(imagen.naturalWidth, imagen.naturalHeight));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(imagen.naturalWidth * escala));
+    canvas.height = Math.max(1, Math.round(imagen.naturalHeight * escala));
+    const contexto = canvas.getContext('2d');
+    contexto.fillStyle = '#ffffff';
+    contexto.fillRect(0, 0, canvas.width, canvas.height);
+    contexto.drawImage(imagen, 0, 0, canvas.width, canvas.height);
+
+    const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.82));
+    return blob || archivo;
+  } finally {
+    URL.revokeObjectURL(urlTemporal);
+  }
+}
+
+// Bloque de imagen reutilizable en mercado, catálogo simple, ficha y perfil.
+function imagenProductoHtml(item, icono, claseExtra = '') {
+  const url = String(item?.imagen || '');
+  const alt = `Fotografía de ${escTexto(item?.nombre || 'producto')}`;
+  if (url) {
+    return `
+      <div class="nex-product-image ${claseExtra}">
+        <span class="nex-product-image-fallback" aria-hidden="true">${icono}</span>
+        <img src="${escTexto(url)}" alt="${alt}" loading="lazy" onerror="this.style.display='none'">
+      </div>
+    `;
+  }
+  return `
+    <div class="nex-product-image nex-product-image-vacio ${claseExtra}" aria-hidden="true">
+      <span class="nex-product-image-fallback">${icono}</span>
+    </div>
+  `;
+}
+
+function actualizarVistaPreviaImagen(input) {
+  const vista = document.querySelector('#prodEditImagePreview');
+  const marca = document.querySelector('#prodEditImagePlaceholder');
+  const botonQuitar = document.querySelector('#removeProductImageBtn');
+  if (!vista) return;
+
+  const archivo = input?.files?.[0];
+  const actual = document.querySelector('#productEditForm')?.dataset.imagenActual || '';
+  if (vista.dataset.objectUrl) {
+    URL.revokeObjectURL(vista.dataset.objectUrl);
+    delete vista.dataset.objectUrl;
+  }
+  if (archivo) {
+    vista.dataset.objectUrl = URL.createObjectURL(archivo);
+    vista.src = vista.dataset.objectUrl;
+    vista.hidden = false;
+    if (marca) marca.hidden = true;
+    if (botonQuitar) botonQuitar.hidden = false;
+  } else if (actual) {
+    vista.src = actual;
+    vista.hidden = false;
+    if (marca) marca.hidden = true;
+    if (botonQuitar) botonQuitar.hidden = false;
+  } else {
+    vista.removeAttribute('src');
+    vista.hidden = true;
+    if (marca) marca.hidden = false;
+    if (botonQuitar) botonQuitar.hidden = true;
+  }
+}
+
+function limpiarImagenProductoForm() {
+  const form = document.querySelector('#productEditForm');
+  if (form) form.dataset.imagenActual = '';
+  const input = document.querySelector('#prodEditImage');
+  if (input) input.value = '';
+  actualizarVistaPreviaImagen(input);
+}
+
 // Estado global de productos y carrito
 let allProducts = [];
 let allProducers = [];
@@ -59,7 +175,37 @@ function saveCart() {
   localStorage.setItem('nex24-cart', JSON.stringify(cart));
 }
 
-// Carga del catálogo unificado (Productores locales + Supabase si existe)
+// Convierte cada entrada del catálogo (texto legacy u objeto publicado) en un producto
+function normalizarEntradaCatalogo(productor, entrada, indice) {
+  const esPublicado = entrada && typeof entrada === 'object';
+  const nombre = esPublicado ? entrada.nombre : entrada;
+  if (!nombre) return null;
+
+  return {
+    id: (esPublicado && entrada.id) || `${productor.id}_${indice}`,
+    nombre,
+    productorId: (esPublicado && entrada.proveedorId) || productor.id,
+    productorNombre: productor.nombre,
+    categoria: ((esPublicado ? entrada.categoria : productor.categoria) || 'general').toLowerCase(),
+    precio_menudeo: Number(esPublicado ? entrada.precio_menudeo : productor.precio_menudeo) || 85,
+    precio_mayoreo: Number(esPublicado ? entrada.precio_mayoreo : productor.precio_mayoreo) || 68,
+    unidad: (esPublicado ? entrada.unidad : productor.unidad) || 'unidad',
+    capacidad: productor.capacidad_semanal || 'Bajo pedido',
+    zona: productor.zona_durango || 'Durango',
+    whatsapp: productor.whatsapp || '',
+    rutas: Array.isArray(productor.rutas_entrega) ? productor.rutas_entrega : ['Centro'],
+    verificado: productor.verificado !== false,
+    destacado: Boolean(productor.destacado),
+    esSupabase: Boolean(productor.es_supabase),
+    descripcion: (esPublicado && entrada.descripcion) || productor.descripcion || 'Producto elaborado por productores de Durango.',
+    descripcionProveedor: productor.descripcion || 'Producto elaborado por productores de Durango.',
+    imagen: (esPublicado && entrada.imagen) || '',
+    lat: productor.lat,
+    lng: productor.lng
+  };
+}
+
+// Carga del catálogo unificado (Productores locales + Supabase + publicados)
 async function fetchUnifiedCatalog() {
   if (allProducts.length && allProducers.length) {
     return { products: allProducts, producers: allProducers };
@@ -75,27 +221,9 @@ async function fetchUnifiedCatalog() {
 
     producersList.forEach((p) => {
       const items = Array.isArray(p.productos) ? p.productos : [];
-      items.forEach((prodName, idx) => {
-        allProducts.push({
-          id: `${p.id}_${idx}`,
-          nombre: prodName,
-          productorId: p.id,
-          productorNombre: p.nombre,
-          categoria: (p.categoria || 'general').toLowerCase(),
-          precio_menudeo: Number(p.precio_menudeo) || 85,
-          precio_mayoreo: Number(p.precio_mayoreo) || 68,
-          unidad: p.unidad || 'unidad',
-          capacidad: p.capacidad_semanal || 'Bajo pedido',
-          zona: p.zona_durango || 'Durango',
-          whatsapp: p.whatsapp || '',
-          rutas: Array.isArray(p.rutas_entrega) ? p.rutas_entrega : ['Centro'],
-          verificado: p.verificado !== false,
-          destacado: Boolean(p.destacado),
-          esSupabase: Boolean(p.es_supabase),
-          descripcion: p.descripcion || 'Producto elaborado por productores de Durango.',
-          lat: p.lat,
-          lng: p.lng
-        });
+      items.forEach((entrada, idx) => {
+        const producto = normalizarEntradaCatalogo(p, entrada, idx);
+        if (producto) allProducts.push(producto);
       });
     });
 
@@ -108,27 +236,9 @@ async function fetchUnifiedCatalog() {
       allProducers = producersList;
       allProducts = [];
       producersList.forEach((p) => {
-        (p.productos || []).forEach((prodName, idx) => {
-          allProducts.push({
-            id: `${p.id}_${idx}`,
-            nombre: prodName,
-            productorId: p.id,
-            productorNombre: p.nombre,
-            categoria: (p.categoria || 'general').toLowerCase(),
-            precio_menudeo: Number(p.precio_menudeo) || 85,
-            precio_mayoreo: Number(p.precio_mayoreo) || 68,
-            unidad: p.unidad || 'unidad',
-            capacidad: p.capacidad_semanal || 'Bajo pedido',
-            zona: p.zona_durango || 'Durango',
-            whatsapp: p.whatsapp || '',
-            rutas: p.rutas_entrega || ['Centro'],
-            verificado: p.verificado !== false,
-            destacado: Boolean(p.destacado),
-          esSupabase: Boolean(p.es_supabase),
-            descripcion: p.descripcion || '',
-            lat: p.lat,
-            lng: p.lng
-          });
+        (Array.isArray(p.productos) ? p.productos : []).forEach((entrada, idx) => {
+          const producto = normalizarEntradaCatalogo(p, entrada, idx);
+          if (producto) allProducts.push(producto);
         });
       });
       return { products: allProducts, producers: allProducers };
@@ -392,9 +502,11 @@ function applyMarketFiltersAndRender() {
     const waUrl = waNum
       ? `https://wa.me/${waNum}?text=${encodeURIComponent('Hola ' + item.productorNombre + ', te contacto desde NEX24 para abastecerme de ' + item.nombre)}`
       : '';
+    const imagenHtml = imagenProductoHtml(item, icon, 'nex-market-card-image');
 
     return `
       <article class="nex-market-card">
+        ${imagenHtml}
         <div class="nex-market-card-header">
           <div class="nex-market-icon" aria-hidden="true">${icon}</div>
           <div style="flex:1;min-width:0;">
@@ -403,8 +515,8 @@ function applyMarketFiltersAndRender() {
               <span class="nex-badge nex-badge-b2b">Mayoreo (-${savingsPct}%)</span>
               ${item.verificado ? '<span class="nex-badge nex-badge-verified"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check" style="margin-right:4px;"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>Verificado</span>' : ''}
             </div>
-            <h3 class="nex-market-card-title">${item.nombre}</h3>
-            <button type="button" class="nex-market-producer" onclick="openSupplierProfile('${item.productorId}')" title="Ver perfil del proveedor"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sprout" style="margin-right:3px;vertical-align:-0.15em;"><path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/></svg>${item.productorNombre} · <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin" style="margin-right:3px;vertical-align:-0.15em;"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>${item.zona}</button>
+            <h3 class="nex-market-card-title">${escTexto(item.nombre)}</h3>
+            <button type="button" class="nex-market-producer" onclick="openSupplierProfile('${item.productorId}')" title="Ver perfil del proveedor"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sprout" style="margin-right:3px;vertical-align:-0.15em;"><path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/></svg>${escTexto(item.productorNombre)} · <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin" style="margin-right:3px;vertical-align:-0.15em;"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>${escTexto(item.zona)}</button>
           </div>
         </div>
 
@@ -417,7 +529,7 @@ function applyMarketFiltersAndRender() {
             </div>
             ${waUrl ? `<a class="nex-supplier-wa" href="${waUrl}" target="_blank" rel="noopener" title="Hablar con ${escTexto(item.productorNombre)} por WhatsApp">${appIcon('message-circle', 13, 'margin-right:4px;vertical-align:-0.15em;')}Contactar</a>` : ''}
           </div>
-          <p class="nex-supplier-desc">${escTexto(item.descripcion)}</p>
+          <p class="nex-supplier-desc">${escTexto(item.descripcionProveedor || item.descripcion)}</p>
           <div class="nex-supplier-facts">
             <span>${appIcon('map-pin', 12, 'margin-right:3px;vertical-align:-0.15em;')}${escTexto(item.zona)}</span>
             <span>${appIcon('package', 12, 'margin-right:3px;vertical-align:-0.15em;')}${escTexto(item.capacidad)}</span>
@@ -728,18 +840,18 @@ window.openProductDetail = function(productId) {
 
   container.innerHTML = `
     <div style="display:flex;align-items:flex-start;gap:16px;margin-bottom:16px;">
-      <div style="font-size:3rem;background:var(--nex-bg);padding:14px;border-radius:var(--radius-lg);">${icon}</div>
+      ${imagenProductoHtml(item, icon, 'nex-detail-image')}
       <div>
         <div style="display:flex;gap:6px;margin-bottom:6px;">
           <span class="nex-badge nex-badge-verified"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check" style="margin-right:4px;"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>Productor Verificado</span>
           <span class="nex-badge nex-badge-lime">${item.categoria}</span>
         </div>
-        <h2 style="margin:0 0 4px 0;font-size:1.5rem;">${item.nombre}</h2>
-        <span style="font-weight:700;color:var(--nex-emerald);">${item.productorNombre}</span>
+        <h2 style="margin:0 0 4px 0;font-size:1.5rem;">${escTexto(item.nombre)}</h2>
+        <span style="font-weight:700;color:var(--nex-emerald);">${escTexto(item.productorNombre)}</span>
       </div>
     </div>
 
-    <p style="color:var(--nex-text-secondary);line-height:1.6;margin-bottom:16px;">${item.descripcion}</p>
+    <p style="color:var(--nex-text-secondary);line-height:1.6;margin-bottom:16px;">${escTexto(item.descripcion)}</p>
 
     <!-- Tabla de Precios Escalonados B2B / B2C -->
     <div>
@@ -1079,12 +1191,12 @@ async function renderLanding() {
     return `
       <article class="product-card" style="display:flex;flex-direction:column;justify-content:space-between;text-align:left;">
         <div>
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-            <span style="font-size:2rem;">${icon}</span>
-            <span class="nex-badge nex-badge-lime" style="font-size:10px;">${item.categoria}</span>
+          ${imagenProductoHtml(item, icon, 'nex-catalog-card-image')}
+          <div style="display:flex;justify-content:flex-end;align-items:center;margin-bottom:8px;">
+            <span class="nex-badge nex-badge-lime" style="font-size:10px;">${escTexto(item.categoria)}</span>
           </div>
-          <h3 style="margin:4px 0 2px;font-size:15px;">${item.nombre}</h3>
-          <p style="font-size:12px;color:var(--nex-text-secondary);margin:0 0 8px;">${item.descripcion}</p>
+          <h3 style="margin:4px 0 2px;font-size:15px;">${escTexto(item.nombre)}</h3>
+          <p style="font-size:12px;color:var(--nex-text-secondary);margin:0 0 8px;">${escTexto(item.descripcion)}</p>
           <a class="nex-card-supplier" href="/proveedor?id=${encodeURIComponent(item.productorId)}" title="Ver perfil de ${escTexto(item.productorNombre)}">
             <span class="nex-sup-avatar nex-sup-avatar-sm c${colorProveedor(item.productorId || item.productorNombre)}" aria-hidden="true">${inicialesProveedor(item.productorNombre)}</span>
             <span class="nex-card-supplier-name">${escTexto(item.productorNombre)}</span>
@@ -1281,25 +1393,58 @@ async function setupProviderPanel(profile) {
           <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings" style="margin-right:6px;"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>Datos del Negocio
         </button>
       `;
+    } else {
+      // Pestañas del proveedor (restauradas): resumen, catálogo, logística, pedidos y datos
+      navTabsContainer.innerHTML = `
+        <button type="button" class="nex-panel-tab active" data-tab="tabDashboard" role="tab" aria-selected="true">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bar-chart-3" style="margin-right:6px;"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>Resumen General
+        </button>
+        <button type="button" class="nex-panel-tab" data-tab="tabCatalog" role="tab" aria-selected="false">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-package" style="margin-right:6px;"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>Catálogo de Productos <span class="nex-tab-count" id="tabCatalogCount">0</span>
+        </button>
+        <button type="button" class="nex-panel-tab" data-tab="tabInventory" role="tab" aria-selected="false">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-truck" style="margin-right:6px;"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>Capacidad y Rutas
+        </button>
+        <button type="button" class="nex-panel-tab" data-tab="tabOrders" role="tab" aria-selected="false">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-list" style="margin-right:6px;"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>Pedidos Recibidos <span class="nex-tab-count" id="tabOrdersCount">0</span>
+        </button>
+        <button type="button" class="nex-panel-tab" data-tab="tabSettings" role="tab" aria-selected="false">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings" style="margin-right:6px;"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>Datos del Negocio
+        </button>
+      `;
     }
   }
 
-  // Activar listeners en pestañas
-  const tabs = document.querySelectorAll('.nex-panel-tab');
-  tabs.forEach((tab) => {
-    tab.addEventListener('click', () => {
-      tabs.forEach((t) => {
-        t.classList.remove('active');
-        t.setAttribute('aria-selected', 'false');
-      });
-      document.querySelectorAll('.nex-panel-tab-content').forEach((c) => c.classList.remove('active'));
+  // Activación centralizada de pestañas (sincroniza la URL para recargas y enlaces directos)
+  const activatePanelTab = (tabId, updateUrl = true) => {
+    const tab = document.querySelector(`.nex-panel-tab[data-tab="${tabId}"]`);
+    const panel = document.getElementById(tabId);
+    if (!tab || !panel) return false;
 
-      tab.classList.add('active');
-      tab.setAttribute('aria-selected', 'true');
-      const targetId = tab.dataset.tab;
-      const targetEl = document.querySelector(`#${targetId}`);
-      if (targetEl) targetEl.classList.add('active');
+    document.querySelectorAll('.nex-panel-tab').forEach((t) => {
+      const active = t === tab;
+      t.classList.toggle('active', active);
+      t.setAttribute('aria-selected', String(active));
     });
+    document.querySelectorAll('.nex-panel-tab-content').forEach((c) => {
+      c.classList.toggle('active', c === panel);
+    });
+
+    if (updateUrl) {
+      const url = new URL(window.location.href);
+      const tabPorDefecto = document.querySelector('.nex-panel-tab')?.dataset.tab;
+      if (tabId === tabPorDefecto) url.searchParams.delete('tab');
+      else url.searchParams.set('tab', tabId);
+      history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
+    }
+    return true;
+  };
+
+  document.querySelectorAll('.nex-panel-tab').forEach((tab) => {
+    tab.addEventListener('click', () => activatePanelTab(tab.dataset.tab));
+  });
+  document.querySelectorAll('[data-go-tab]').forEach((button) => {
+    button.addEventListener('click', () => activatePanelTab(button.dataset.goTab));
   });
 
   // 4. Inicializar suite según rol
@@ -1308,7 +1453,7 @@ async function setupProviderPanel(profile) {
   } else if (isStore) {
     await setupBuyerSuite(profile);
   } else {
-    setupProviderSuite(profile);
+    await setupProviderSuite(profile);
   }
 
   // 5. Formulario de Configuración (común a ambos)
@@ -1341,120 +1486,182 @@ async function setupProviderPanel(profile) {
     showPanelAlert('Información comercial del negocio actualizada correctamente.');
   });
 
-  if (profile.role === 'proveedor') {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('tab') === 'tabCatalog' || params.get('publicar') === '1') {
-      document.querySelectorAll('.nex-panel-tab').forEach((tab) => {
-        const active = tab.dataset.tab === 'tabCatalog';
-        tab.classList.toggle('active', active);
-        tab.setAttribute('aria-selected', String(active));
-      });
-      document.querySelectorAll('.nex-panel-tab-content').forEach((section) => {
-        section.classList.toggle('active', section.id === 'tabCatalog');
-      });
+  // Restaurar la pestaña solicitada por URL y soportar el acceso directo "+ Publicar producto"
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('tab')) activatePanelTab(params.get('tab'), false);
 
-      if (params.get('publicar') === '1') {
-        setTimeout(() => {
-          document.querySelector('#productEditForm')?.reset();
-          if (document.querySelector('#prodEditId')) document.querySelector('#prodEditId').value = '';
-          const modal = document.querySelector('#productFormModal');
-          const title = document.querySelector('#modalFormTitle');
-          if (title) title.textContent = 'Publicar Nuevo Producto';
-          if (modal) modal.hidden = false;
-        }, 120);
-      }
+  if (params.get('publicar') === '1') {
+    activatePanelTab('tabCatalog', false);
+    setTimeout(() => {
+      document.querySelector('#productEditForm')?.reset();
+      if (document.querySelector('#prodEditId')) document.querySelector('#prodEditId').value = '';
+      limpiarImagenProductoForm();
+      const modal = document.querySelector('#productFormModal');
+      const title = document.querySelector('#modalFormTitle');
+      if (title) title.textContent = 'Publicar Nuevo Producto';
+      if (modal) modal.hidden = false;
+    }, 120);
+  }
 
-      params.delete('tab');
-      params.delete('publicar');
-      const cleanSearch = params.toString();
-      history.replaceState(null, '', `/emprendedores${cleanSearch ? `?${cleanSearch}` : ''}`);
-    }
+  if (params.has('publicar')) {
+    params.delete('publicar');
+    const cleanSearch = params.toString();
+    history.replaceState(null, '', `/emprendedores${cleanSearch ? `?${cleanSearch}` : ''}`);
   }
 }
 
-function setupProviderSuite(profile) {
-  // Almacenamiento local de productos del proveedor
+async function setupProviderSuite(profile) {
+  // El servidor es la fuente de verdad; localStorage solo sirve como respaldo.
   const storageKey = `nex24-provider-products_${profile.id}`;
-  let providerProducts = JSON.parse(localStorage.getItem(storageKey) || 'null');
+  let providerProducts = [];
 
-  if (!providerProducts) {
-    // Si no tiene productos aún, sembramos con base en su perfil o en el catálogo
-    providerProducts = [
-      {
-        id: 'prod_1',
-        nombre: 'Café tostado en grano 500g',
-        categoria: 'cafe',
-        precio_menudeo: 135,
-        precio_mayoreo: 108,
-        unidad: 'bolsa 500g',
-        estado: 'activo',
-        descripcion: 'Café de altura cultivado en la sierra y tostado artesanalmente.'
-      },
-      {
-        id: 'prod_2',
-        nombre: 'Café molido gourmet 250g',
-        categoria: 'cafe',
-        precio_menudeo: 80,
-        precio_mayoreo: 64,
-        unidad: 'bolsa 250g',
-        estado: 'activo',
-        descripcion: 'Molienda media para cafetera o prensa francesa.'
-      }
-    ];
+  function guardarCache() {
     localStorage.setItem(storageKey, JSON.stringify(providerProducts));
   }
 
-  // 4. Renderizar Catálogo del Proveedor
+  async function cargarProductos() {
+    try {
+      const response = await fetch('/api/proveedor/productos', { headers: nexAuthHeaders() });
+      if (!response.ok) throw new Error('No se pudo sincronizar el catálogo');
+      const data = await response.json();
+      providerProducts = Array.isArray(data.productos) ? data.productos : [];
+      guardarCache();
+    } catch (_e) {
+      try {
+        const respaldo = JSON.parse(localStorage.getItem(storageKey) || '[]') || [];
+        // Se descartan los productos demo de versiones anteriores.
+        providerProducts = respaldo.filter((p) => !['prod_1', 'prod_2'].includes(p.id));
+      } catch {
+        providerProducts = [];
+      }
+    }
+  }
+
+  await cargarProductos();
+
+  // 4. Renderizar Catálogo del Proveedor con búsqueda, filtro y control de publicación
+  const catalogSearch = document.querySelector('#providerCatalogSearch');
+  const catalogStatus = document.querySelector('#providerCatalogStatus');
+  const catalogCount = document.querySelector('#providerCatalogCount');
+
   function renderProviderCatalog() {
     const tableBody = document.querySelector('#providerCatalogTable');
     const metricCount = document.querySelector('#metricProductsCount');
+    const tabCount = document.querySelector('#tabCatalogCount');
     if (metricCount) metricCount.textContent = String(providerProducts.length);
+    if (tabCount) tabCount.textContent = String(providerProducts.length);
+
+    const termino = (catalogSearch?.value || '').trim().toLowerCase();
+    const estado = catalogStatus?.value || 'todos';
+    const visibles = providerProducts.filter((p) => {
+      const coincideTexto = !termino || [p.nombre, p.categoria, p.unidad, p.descripcion]
+        .some((valor) => String(valor || '').toLowerCase().includes(termino));
+      const coincideEstado = estado === 'todos' ||
+        (estado === 'activo' ? p.estado !== 'pausado' : p.estado === 'pausado');
+      return coincideTexto && coincideEstado;
+    });
+
+    if (catalogCount) {
+      catalogCount.textContent = visibles.length === providerProducts.length
+        ? `${providerProducts.length} productos`
+        : `${visibles.length} de ${providerProducts.length} productos`;
+    }
 
     if (!tableBody) return;
 
-    if (!providerProducts.length) {
+    if (!visibles.length) {
       tableBody.innerHTML = `
         <tr>
           <td colspan="7" style="text-align:center;padding:24px;color:var(--nex-text-muted);">
-            No tienes productos registrados todavía. Pulsa "+ Publicar Nuevo Producto" para comenzar.
+            ${providerProducts.length
+              ? 'No hay productos que coincidan con la búsqueda o el filtro seleccionado.'
+              : 'No tienes productos registrados todavía. Pulsa "+ Publicar Nuevo Producto" para comenzar.'}
           </td>
         </tr>
       `;
       return;
     }
 
-    tableBody.innerHTML = providerProducts.map((p, idx) => `
+    tableBody.innerHTML = visibles.map((p) => `
       <tr>
-        <td><strong>${p.nombre}</strong></td>
-        <td><span class="nex-badge nex-badge-lime">${p.categoria}</span></td>
+        <td>
+          <div class="nex-provider-product-cell">
+            ${p.imagen
+              ? `<img class="nex-provider-thumb" src="${escTexto(p.imagen)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`
+              : `<span class="nex-provider-thumb nex-provider-thumb-empty" aria-hidden="true">${appIcon('package', 14)}</span>`}
+            <strong>${escTexto(p.nombre)}</strong>
+          </div>
+        </td>
+        <td><span class="nex-badge nex-badge-lime">${escTexto(p.categoria)}</span></td>
         <td><b>${money(p.precio_menudeo)}</b></td>
         <td><b style="color:var(--nex-b2b);">${money(p.precio_mayoreo)}</b></td>
-        <td>${p.unidad}</td>
+        <td>${escTexto(p.unidad)}</td>
         <td>
-          <span class="nex-badge ${p.estado === 'activo' ? 'nex-badge-verified' : 'nex-badge-warning'}">
-            ${p.estado === 'activo' ? 'Activo' : 'En pausa'}
+          <span class="nex-badge ${p.estado === 'pausado' ? 'nex-badge-warning' : 'nex-badge-verified'}">
+            ${p.estado === 'pausado' ? 'En pausa' : 'Activo'}
           </span>
         </td>
         <td style="text-align:right;">
-          <button type="button" class="nex-btn nex-btn-ghost nex-btn-sm" onclick="editProviderProduct('${p.id}')">${appIcon('sliders', 12, 'margin-right:3px;')} Editar</button>
-          <button type="button" class="nex-btn nex-btn-ghost nex-btn-sm" style="color:var(--nex-danger);" onclick="deleteProviderProduct('${p.id}')">${appIcon('trash-2', 12, 'margin-right:3px;')} Eliminar</button>
+          <button type="button" class="nex-btn nex-btn-ghost nex-btn-sm" onclick="toggleProviderProductStatus('${escTexto(p.id)}')">${p.estado === 'pausado' ? 'Activar' : 'Pausar'}</button>
+          <button type="button" class="nex-btn nex-btn-ghost nex-btn-sm" onclick="editProviderProduct('${escTexto(p.id)}')">${appIcon('sliders', 12, 'margin-right:3px;')} Editar</button>
+          <button type="button" class="nex-btn nex-btn-ghost nex-btn-sm" style="color:var(--nex-danger);" onclick="deleteProviderProduct('${escTexto(p.id)}')">${appIcon('trash-2', 12, 'margin-right:3px;')} Eliminar</button>
         </td>
       </tr>
     `).join('');
   }
 
-  window.deleteProviderProduct = function(id) {
+  catalogSearch?.addEventListener('input', renderProviderCatalog);
+  catalogStatus?.addEventListener('change', renderProviderCatalog);
+
+  window.deleteProviderProduct = async function(id) {
     if (!confirm('¿Estás seguro de eliminar este producto del catálogo?')) return;
-    providerProducts = providerProducts.filter((p) => p.id !== id);
-    localStorage.setItem(storageKey, JSON.stringify(providerProducts));
-    renderProviderCatalog();
-    showPanelAlert('Producto eliminado del catálogo correctamente.');
+    try {
+      const response = await fetch(`/api/proveedor/productos/${encodeURIComponent(id)}`, {
+        method: 'DELETE',
+        headers: nexAuthHeaders(),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.ok) throw new Error(data.error || 'No se pudo eliminar el producto');
+
+      providerProducts = providerProducts.filter((p) => p.id !== id);
+      guardarCache();
+      invalidarCatalogo();
+      renderProviderCatalog();
+      showPanelAlert('Producto eliminado del catálogo correctamente.');
+    } catch (error) {
+      showPanelAlert(error.message || 'No se pudo eliminar el producto', 'danger');
+    }
+  };
+
+  window.toggleProviderProductStatus = async function(id) {
+    const item = providerProducts.find((p) => p.id === id);
+    if (!item) return;
+    const estado = item.estado === 'pausado' ? 'activo' : 'pausado';
+    try {
+      const response = await fetch(`/api/proveedor/productos/${encodeURIComponent(id)}/estado`, {
+        method: 'PATCH',
+        headers: { ...nexAuthHeaders(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ estado }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.ok) throw new Error(data.error || 'No se pudo actualizar el estado');
+
+      item.estado = estado;
+      guardarCache();
+      invalidarCatalogo();
+      renderProviderCatalog();
+      showPanelAlert(`"${item.nombre}" ${estado === 'pausado' ? 'se pausó' : 'volvió a estar activo'} en tu catálogo.`);
+    } catch (error) {
+      showPanelAlert(error.message || 'No se pudo actualizar el estado', 'danger');
+    }
   };
 
   window.editProviderProduct = function(id) {
     const item = providerProducts.find((p) => p.id === id);
     if (!item) return;
 
+    const form = document.querySelector('#productEditForm');
+    if (form) form.dataset.imagenActual = item.imagen || '';
     document.querySelector('#prodEditId').value = item.id;
     document.querySelector('#prodEditName').value = item.nombre;
     document.querySelector('#prodEditCategory').value = item.categoria;
@@ -1463,6 +1670,7 @@ function setupProviderSuite(profile) {
     document.querySelector('#prodEditPriceB2B').value = item.precio_mayoreo;
     document.querySelector('#prodEditDesc').value = item.descripcion || '';
     document.querySelector('#modalFormTitle').textContent = 'Editar Producto';
+    actualizarVistaPreviaImagen(document.querySelector('#prodEditImage'));
 
     const modal = document.querySelector('#productFormModal');
     if (modal) modal.hidden = false;
@@ -1470,11 +1678,40 @@ function setupProviderSuite(profile) {
 
   renderProviderCatalog();
 
-  // 5. Manejo del Modal de Producto
+  // 5. Manejo del Modal de Producto (con foto y sincronización al servidor)
   const modalForm = document.querySelector('#productFormModal');
+  const inputImagen = document.querySelector('#prodEditImage');
+  const zonaImagen = document.querySelector('#productImageDrop');
+
+  inputImagen?.addEventListener('change', () => actualizarVistaPreviaImagen(inputImagen));
+  document.querySelector('#removeProductImageBtn')?.addEventListener('click', (evento) => {
+    evento.preventDefault();
+    limpiarImagenProductoForm();
+  });
+
+  ['dragenter', 'dragover'].forEach((evento) => {
+    zonaImagen?.addEventListener(evento, (e) => {
+      e.preventDefault();
+      zonaImagen.classList.add('arrastrando');
+    });
+  });
+  ['dragleave', 'drop'].forEach((evento) => {
+    zonaImagen?.addEventListener(evento, (e) => {
+      e.preventDefault();
+      zonaImagen.classList.remove('arrastrando');
+    });
+  });
+  zonaImagen?.addEventListener('drop', (e) => {
+    const archivo = e.dataTransfer?.files?.[0];
+    if (!archivo || !inputImagen) return;
+    inputImagen.files = e.dataTransfer.files;
+    actualizarVistaPreviaImagen(inputImagen);
+  });
+
   document.querySelector('#btnOpenNewProductModal')?.addEventListener('click', () => {
     document.querySelector('#productEditForm')?.reset();
     document.querySelector('#prodEditId').value = '';
+    limpiarImagenProductoForm();
     document.querySelector('#modalFormTitle').textContent = 'Publicar Nuevo Producto';
     if (modalForm) modalForm.hidden = false;
   });
@@ -1486,8 +1723,9 @@ function setupProviderSuite(profile) {
     if (modalForm) modalForm.hidden = true;
   });
 
-  document.querySelector('#productEditForm')?.addEventListener('submit', (e) => {
+  document.querySelector('#productEditForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
+    const form = e.currentTarget;
     const id = document.querySelector('#prodEditId').value;
     const nombre = document.querySelector('#prodEditName').value.trim();
     const categoria = document.querySelector('#prodEditCategory').value;
@@ -1496,50 +1734,106 @@ function setupProviderSuite(profile) {
     const precio_mayoreo = Number(document.querySelector('#prodEditPriceB2B').value);
     const descripcion = document.querySelector('#prodEditDesc').value.trim();
 
-    if (id) {
-      // Edición
-      const idx = providerProducts.findIndex((p) => p.id === id);
-      if (idx !== -1) {
-        providerProducts[idx] = { ...providerProducts[idx], nombre, categoria, unidad, precio_menudeo, precio_mayoreo, descripcion };
-      }
-      showPanelAlert(`Producto "${nombre}" actualizado con éxito.`);
-    } else {
-      // Nuevo
-      const nuevo = {
-        id: `prod_${Date.now()}`,
-        nombre,
-        categoria,
-        unidad,
-        precio_menudeo,
-        precio_mayoreo,
-        descripcion,
-        estado: 'activo'
-      };
-      providerProducts.push(nuevo);
-      showPanelAlert(`Producto "${nombre}" publicado exitosamente en NEX24.`);
+    if (!nombre) {
+      showPanelAlert('El nombre del producto es obligatorio.', 'danger');
+      return;
+    }
+    if (!(precio_menudeo > 0) || !(precio_mayoreo > 0)) {
+      showPanelAlert('Los precios deben ser mayores a cero.', 'danger');
+      return;
+    }
+    if (precio_mayoreo > precio_menudeo) {
+      showPanelAlert('El precio de mayoreo no puede ser mayor al precio de menudeo.', 'danger');
+      return;
     }
 
-    localStorage.setItem(storageKey, JSON.stringify(providerProducts));
-    renderProviderCatalog();
-    if (modalForm) modalForm.hidden = true;
+    const botonGuardar = document.querySelector('#saveProductBtn');
+    const textoOriginal = botonGuardar?.textContent || 'Guardar Producto en Catálogo';
+    if (botonGuardar) {
+      botonGuardar.disabled = true;
+      botonGuardar.textContent = 'Guardando…';
+    }
+
+    try {
+      const archivo = inputImagen?.files?.[0];
+      const imagen = archivo ? await comprimirImagenProducto(archivo) : null;
+      const cuerpo = new FormData();
+      cuerpo.append('nombre', nombre);
+      cuerpo.append('categoria', categoria);
+      cuerpo.append('unidad', unidad);
+      cuerpo.append('precio_menudeo', String(precio_menudeo));
+      cuerpo.append('precio_mayoreo', String(precio_mayoreo));
+      cuerpo.append('descripcion', descripcion);
+      cuerpo.append('imagenActual', form.dataset.imagenActual || '');
+      if (imagen) cuerpo.append('image', imagen, 'producto.jpg');
+
+      const response = await fetch(
+        id ? `/api/proveedor/productos/${encodeURIComponent(id)}` : '/api/proveedor/productos',
+        { method: id ? 'PUT' : 'POST', headers: nexAuthHeaders(), body: cuerpo }
+      );
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.ok) throw new Error(data.error || 'No se pudo guardar el producto');
+
+      const producto = data.producto;
+      const idx = providerProducts.findIndex((p) => p.id === producto.id);
+      if (idx !== -1) providerProducts[idx] = producto;
+      else providerProducts.unshift(producto);
+
+      guardarCache();
+      invalidarCatalogo();
+      renderProviderCatalog();
+      form.reset();
+      document.querySelector('#prodEditId').value = '';
+      limpiarImagenProductoForm();
+      if (modalForm) modalForm.hidden = true;
+      showPanelAlert(`Producto "${nombre}" ${id ? 'actualizado' : 'publicado'} en NEX24. Ya aparece en el mercado con su imagen.`);
+    } catch (error) {
+      showPanelAlert(error.message || 'No se pudo guardar el producto', 'danger');
+    } finally {
+      if (botonGuardar) {
+        botonGuardar.disabled = false;
+        botonGuardar.textContent = textoOriginal;
+      }
+    }
   });
 
-  // 6. Configuración de Suministro y Capacidad
+  // 6. Configuración de Suministro y Capacidad (persistente entre sesiones)
+  const opsKey = `nex24-provider-ops_${profile.id}`;
+  let opsGuardadas = {};
+  try { opsGuardadas = JSON.parse(localStorage.getItem(opsKey) || '{}') || {}; } catch { opsGuardadas = {}; }
+
   const capacityInput = document.querySelector('#capacidadInput');
+  const disponibilidadInput = document.querySelector('#disponibilidadSelect');
   const rutasInput = document.querySelector('#rutasInput');
   const metricCap = document.querySelector('#metricCapacity');
   const metricRoutes = document.querySelector('#metricRoutesCount');
 
-  if (capacityInput) capacityInput.value = profile.capacity || '120 kg / semana';
-  if (rutasInput) rutasInput.value = 'Centro, Zona Industrial, Fracc. Guadalupe';
-  if (metricCap) metricCap.textContent = profile.capacity || '120 kg';
+  const capacidadInicial = opsGuardadas.capacidad || profile.capacity || '120 kg / semana';
+  const rutasIniciales = opsGuardadas.rutas || 'Centro, Zona Industrial, Fracc. Guadalupe';
+  if (capacityInput) capacityInput.value = capacidadInicial;
+  if (disponibilidadInput && opsGuardadas.disponibilidad) disponibilidadInput.value = opsGuardadas.disponibilidad;
+  if (rutasInput) rutasInput.value = rutasIniciales;
+  if (metricCap) metricCap.textContent = capacidadInicial;
+  if (metricRoutes) metricRoutes.textContent = String(rutasIniciales.split(',').map((r) => r.trim()).filter(Boolean).length || 1);
 
   document.querySelector('#capacityForm')?.addEventListener('submit', (e) => {
     e.preventDefault();
     const cap = capacityInput.value.trim();
     const rutas = rutasInput.value.trim();
+    if (!cap) {
+      showPanelAlert('Indica la capacidad semanal antes de guardar.', 'warning');
+      return;
+    }
+    const operacion = {
+      capacidad: cap,
+      disponibilidad: disponibilidadInput?.value || 'inmediata',
+      rutas
+    };
+    localStorage.setItem(opsKey, JSON.stringify(operacion));
+    profile.capacity = cap;
+    localStorage.setItem('nex24-current-account', JSON.stringify(profile));
     if (metricCap) metricCap.textContent = cap;
-    if (metricRoutes) metricRoutes.textContent = String(rutas.split(',').filter(Boolean).length || 1);
+    if (metricRoutes) metricRoutes.textContent = String(rutas.split(',').map((r) => r.trim()).filter(Boolean).length || 1);
     showPanelAlert('Capacidad operativa y rutas actualizadas con éxito.');
   });
 
@@ -1571,39 +1865,65 @@ function setupProviderSuite(profile) {
     localStorage.setItem(ordersKey, JSON.stringify(providerOrders));
   }
 
+  const ordersFilter = document.querySelector('#providerOrdersFilter');
+
   function renderProviderOrders() {
     const ordersTable = document.querySelector('#providerOrdersTable');
     const counter = document.querySelector('#ordersCounter');
     const metricQuotes = document.querySelector('#metricQuotesCount');
     const recentActivity = document.querySelector('#recentActivityList');
+    const pendientes = providerOrders.filter((o) => o.estado === 'Pendiente').length;
 
-    if (counter) counter.textContent = `${providerOrders.length} solicitud${providerOrders.length === 1 ? '' : 'es'}`;
+    if (counter) {
+      counter.textContent = `${providerOrders.length} solicitud${providerOrders.length === 1 ? '' : 'es'} · ${pendientes} pendientes`;
+    }
     if (metricQuotes) metricQuotes.textContent = String(providerOrders.length);
+    const tabCount = document.querySelector('#tabOrdersCount');
+    if (tabCount) {
+      tabCount.textContent = String(pendientes);
+      tabCount.classList.toggle('is-alert', pendientes > 0);
+    }
+    const quickPending = document.querySelector('#quickPendingOrders');
+    if (quickPending) quickPending.textContent = String(pendientes);
 
     if (recentActivity) {
       recentActivity.innerHTML = providerOrders.slice(0, 3).map((o) => `
         <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--nex-bg);border-radius:var(--radius-sm);">
           <div>
-            <strong>${o.cliente}</strong>
-            <small style="display:block;color:var(--nex-text-muted);">${o.productos} · ${o.fecha}</small>
+            <strong>${escTexto(o.cliente)}</strong>
+            <small style="display:block;color:var(--nex-text-muted);">${escTexto(o.productos)} · ${escTexto(o.fecha)}</small>
           </div>
-          <span class="nex-badge ${o.estado === 'Confirmado' ? 'nex-badge-verified' : 'nex-badge-warning'}">${o.estado}</span>
+          <span class="nex-badge ${o.estado === 'Confirmado' ? 'nex-badge-verified' : 'nex-badge-warning'}">${escTexto(o.estado)}</span>
         </div>
       `).join('');
     }
 
     if (!ordersTable) return;
 
-    ordersTable.innerHTML = providerOrders.map((o, idx) => {
-      const waUrl = `https://wa.me/${o.contacto}?text=${encodeURIComponent(`Hola ${o.cliente}, te contacto respecto a tu cotización ${o.folio} en NEX24.`)}`;
+    const filtro = ordersFilter?.value || 'todos';
+    const visibles = providerOrders.filter((o) => filtro === 'todos' || o.estado === filtro);
+
+    if (!visibles.length) {
+      ordersTable.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align:center;padding:24px;color:var(--nex-text-muted);">
+            No hay solicitudes con este estado.
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    ordersTable.innerHTML = visibles.map((o) => {
+      const waUrl = `https://wa.me/${encodeURIComponent(o.contacto || '')}?text=${encodeURIComponent(`Hola ${o.cliente}, te contacto respecto a tu cotización ${o.folio} en NEX24.`)}`;
       return `
         <tr>
-          <td><span class="nex-badge nex-badge-b2b">${o.folio}</span></td>
-          <td><strong>${o.cliente}</strong></td>
-          <td><small>${o.productos}</small></td>
+          <td><span class="nex-badge nex-badge-b2b">${escTexto(o.folio)}</span></td>
+          <td><strong>${escTexto(o.cliente)}</strong></td>
+          <td><small>${escTexto(o.productos)}</small></td>
           <td><b>${money(o.total)}</b></td>
           <td>
-            <select class="nex-toolbar-select" style="padding:4px 8px;font-size:11px;" onchange="updateOrderStatus(${idx}, this.value)">
+            <select class="nex-toolbar-select" style="padding:4px 8px;font-size:11px;" onchange="updateOrderStatus('${escTexto(o.folio)}', this.value)" aria-label="Estado de la solicitud ${escTexto(o.folio)}">
               <option value="Pendiente" ${o.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
               <option value="Confirmado" ${o.estado === 'Confirmado' ? 'selected' : ''}>Confirmado</option>
               <option value="Entregado" ${o.estado === 'Entregado' ? 'selected' : ''}>Entregado</option>
@@ -1619,13 +1939,15 @@ function setupProviderSuite(profile) {
     }).join('');
   }
 
-  window.updateOrderStatus = function(idx, newStatus) {
-    if (providerOrders[idx]) {
-      providerOrders[idx].estado = newStatus;
-      localStorage.setItem(ordersKey, JSON.stringify(providerOrders));
-      renderProviderOrders();
-      showPanelAlert(`Estado del pedido ${providerOrders[idx].folio} actualizado a "${newStatus}".`);
-    }
+  ordersFilter?.addEventListener('change', renderProviderOrders);
+
+  window.updateOrderStatus = function(folio, newStatus) {
+    const orden = providerOrders.find((o) => o.folio === folio);
+    if (!orden) return;
+    orden.estado = newStatus;
+    localStorage.setItem(ordersKey, JSON.stringify(providerOrders));
+    renderProviderOrders();
+    showPanelAlert(`Estado del pedido ${orden.folio} actualizado a "${newStatus}".`);
   };
 
   renderProviderOrders();

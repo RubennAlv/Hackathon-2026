@@ -15,6 +15,13 @@ const RAIZ = path.dirname(fileURLToPath(import.meta.url));
 const PUERTO = Number(process.env.PORT) || 3001;
 const MAX_BYTES = 8 * 1024 * 1024;
 const MIME_OK = new Set(['image/jpeg', 'image/png', 'image/webp']);
+const UPLOAD_DIR = path.join(RAIZ, 'public', 'uploads');
+const UPLOAD_URL = '/public/uploads/';
+const EXTENSIONES_IMAGEN = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+};
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
@@ -88,6 +95,13 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json({ limit: '12mb' }));
+
+// Las fotos de productos publicados se sirven como estáticos desde /public/uploads.
+try {
+  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+} catch (error) {
+  console.error('[uploads] No se pudo preparar la carpeta de imágenes:', error.message);
+}
 
 const subirImagen = multer({
   storage: multer.memoryStorage(),
@@ -284,6 +298,30 @@ function leerImagenJson(body) {
   };
 }
 
+// --- Imágenes de productos publicados por proveedores -------------------------
+function guardarImagenProducto(imagen) {
+  if (!imagen?.buffer?.length || !MIME_OK.has(imagen.mimeType)) return null;
+  const extension = EXTENSIONES_IMAGEN[imagen.mimeType] || 'jpg';
+  const nombre = `producto-${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${extension}`;
+  fs.writeFileSync(path.join(UPLOAD_DIR, nombre), imagen.buffer);
+  return `${UPLOAD_URL}${nombre}`;
+}
+
+function eliminarImagenProducto(url) {
+  if (typeof url !== 'string' || !url.startsWith(UPLOAD_URL)) return;
+  const nombre = path.basename(url);
+  if (!/^producto-[\w-]+\.(jpg|png|webp)$/.test(nombre)) return;
+  try {
+    fs.unlinkSync(path.join(UPLOAD_DIR, nombre));
+  } catch (_e) {}
+}
+
+function urlImagenSegura(valor) {
+  if (typeof valor !== 'string' || !valor.startsWith(UPLOAD_URL)) return '';
+  const nombre = path.basename(valor);
+  return /^producto-[\w-]+\.(jpg|png|webp)$/.test(nombre) ? `${UPLOAD_URL}${nombre}` : '';
+}
+
 function leerUbicacion(...fuentes) {
   for (const fuente of fuentes) {
     const lat = Number(fuente?.lat);
@@ -298,17 +336,16 @@ app.get('/health', (_req, res) => {
 });
 
 app.get('/api/productores', async (_req, res) => {
-  let lista = productores;
+  let lista = [...productores, ...productoresLocalesAprobados()];
   if (supabaseConfigurado()) {
     try {
       const { data, error } = await supabaseAdmin.from('profiles').select('*').eq('status', 'approved');
       if (!error && Array.isArray(data) && data.length) {
-        const locales = perfilesAProductores(await backfillGeoPerfiles(data));
-        if (locales.length) lista = [...productores, ...locales];
+        lista = [...lista, ...perfilesAProductores(await backfillGeoPerfiles(data))];
       }
     } catch (_e) {}
   }
-  res.json(lista);
+  res.json(inyectarProductosPublicados(lista));
 });
 
 app.get('/api/catalogo', async (_req, res) => {
@@ -318,10 +355,11 @@ app.get('/api/catalogo', async (_req, res) => {
       const { data } = await supabaseAdmin.from('profiles').select('*').eq('status', 'approved');
       if (data && data.length) adicionales = perfilesAProductores(await backfillGeoPerfiles(data));
     }
-    const lista = [...productores, ...adicionales];
+    const lista = inyectarProductosPublicados([...productores, ...productoresLocalesAprobados(), ...adicionales]);
     res.json({ ok: true, total: lista.length, productores: lista });
   } catch (_error) {
-    res.json({ ok: true, total: productores.length, productores });
+    const lista = inyectarProductosPublicados([...productores, ...productoresLocalesAprobados()]);
+    res.json({ ok: true, total: lista.length, productores: lista });
   }
 });
 
@@ -405,6 +443,59 @@ function saveLocalDb(data) {
   }
 }
 
+// --- Productos publicados desde el panel de proveedores -----------------------
+function todosLosProductosPublicados() {
+  const db = loadLocalDb();
+  return Array.isArray(db.products) ? db.products : [];
+}
+
+function guardarProductosPublicados(productos) {
+  const db = loadLocalDb();
+  db.products = productos;
+  saveLocalDb(db);
+}
+
+function productosDeProveedor(proveedorId) {
+  return todosLosProductosPublicados()
+    .filter((p) => String(p.proveedorId) === String(proveedorId));
+}
+
+function normalizarNombre(texto) {
+  return String(texto || '').trim().toLowerCase();
+}
+
+// Los proveedores aprobados en la base local también deben aparecer en el mercado.
+function productoresLocalesAprobados() {
+  const db = loadLocalDb();
+  const aprobados = (db.users || []).filter(
+    (u) => u.role === 'proveedor' && u.status === 'approved'
+  );
+  return perfilesAProductores(aprobados);
+}
+
+// Inyecta los productos publicados en cada productor del catálogo para que el
+// frontend los muestre con su foto, precio y descripción propios.
+function inyectarProductosPublicados(lista) {
+  const publicados = todosLosProductosPublicados();
+  if (!publicados.length) return lista;
+
+  return lista.map((productor) => {
+    const propios = publicados.filter(
+      (p) => String(p.proveedorId) === String(productor.id) && p.estado !== 'pausado'
+    );
+    if (!propios.length) return productor;
+
+    const nombres = new Set(propios.map((p) => normalizarNombre(p.nombre)));
+    const base = Array.isArray(productor.productos) ? productor.productos : [];
+    const restantes = base.filter((entrada) => {
+      const nombre = typeof entrada === 'object' && entrada !== null ? entrada.nombre : entrada;
+      return !nombres.has(normalizarNombre(nombre));
+    });
+
+    return { ...productor, productos: [...propios, ...restantes] };
+  });
+}
+
 // Inicializar base de datos local con cuentas limpias si no existe
 if (!fs.existsSync(DB_PATH)) {
   saveLocalDb({
@@ -465,6 +556,36 @@ if (!fs.existsSync(DB_PATH)) {
 }
 
 const activeSessions = new Map();
+
+// Resuelve el perfil autenticado para los endpoints del panel (local o Supabase).
+async function perfilDeSesion(req) {
+  const token = String(req.headers.authorization || '').replace(/^Bearer\s+/i, '');
+  if (!token) return null;
+
+  if (activeSessions.has(token)) return activeSessions.get(token);
+
+  const matchRole = token.match(/^(?:nex|demo)-token-(admin|proveedor|tiendita)/);
+  if (matchRole) {
+    const db = loadLocalDb();
+    const user = db.users.find((u) => u.role === matchRole[1]);
+    if (user) {
+      const { password: _, ...profile } = user;
+      return profile;
+    }
+  }
+
+  if (supabaseConfigurado()) {
+    try {
+      const { data: authData, error: authError } = await supabaseAdmin.auth.getUser(token);
+      if (!authError && authData?.user) {
+        const { data: profile, error } = await supabaseAdmin.from('profiles').select('*').eq('id', authData.user.id).single();
+        if (!error && profile) return profile;
+      }
+    } catch (_e) {}
+  }
+
+  return null;
+}
 
 app.get('/api/registros', async (_req, res) => {
   const db = loadLocalDb();
@@ -662,35 +783,188 @@ app.post('/api/auth/login', async (req, res) => {
 });
 
 app.get('/api/auth/me', async (req, res) => {
-  const token = String(req.headers.authorization || '').replace(/^Bearer\s+/i, '');
-  if (!token) return fallo(res, 401, 'Sesión requerida');
+  const profile = await perfilDeSesion(req);
+  if (!profile) return fallo(res, 401, 'Sesión inválida o expirada');
+  return res.json({ ok: true, profile });
+});
 
-  if (activeSessions.has(token)) {
-    return res.json({ ok: true, profile: activeSessions.get(token) });
+// --- API del catálogo del proveedor -------------------------------------------
+function datosProducto(cuerpo) {
+  const texto = (valor) => typeof valor === 'string' ? valor.trim() : '';
+  const nombre = texto(cuerpo.nombre);
+  const categoria = texto(cuerpo.categoria) || 'general';
+  const unidad = texto(cuerpo.unidad) || 'unidad';
+  const descripcion = texto(cuerpo.descripcion);
+  const precio_menudeo = Number(cuerpo.precio_menudeo);
+  const precio_mayoreo = Number(cuerpo.precio_mayoreo);
+
+  if (!nombre) return { error: 'El nombre del producto es obligatorio.' };
+  if (!Number.isFinite(precio_menudeo) || precio_menudeo <= 0 ||
+      !Number.isFinite(precio_mayoreo) || precio_mayoreo <= 0) {
+    return { error: 'Los precios deben ser mayores a cero.' };
+  }
+  if (precio_mayoreo > precio_menudeo) {
+    return { error: 'El precio de mayoreo no puede ser mayor al precio de menudeo.' };
   }
 
-  const matchRole = token.match(/^(?:nex|demo)-token-(admin|proveedor|tiendita)/);
-  if (matchRole) {
-    const role = matchRole[1];
-    const db = loadLocalDb();
-    const user = db.users.find((u) => u.role === role);
-    if (user) {
-      const { password: _, ...profile } = user;
-      return res.json({ ok: true, profile });
+  return { datos: { nombre, categoria, unidad, descripcion, precio_menudeo, precio_mayoreo } };
+}
+
+function productoPertenece(producto, proveedorId) {
+  return producto && String(producto.proveedorId) === String(proveedorId);
+}
+
+app.get('/api/proveedor/productos', async (req, res) => {
+  const perfil = await perfilDeSesion(req);
+  if (!perfil || perfil.role !== 'proveedor') {
+    return fallo(res, 401, 'Sesión de proveedor requerida');
+  }
+  res.json({ ok: true, productos: productosDeProveedor(perfil.id) });
+});
+
+app.post('/api/proveedor/productos', (req, res) => {
+  subirImagen(req, res, async (errorMulter) => {
+    if (errorMulter) {
+      const mensaje = errorMulter.code === 'LIMIT_FILE_SIZE'
+        ? 'La imagen supera el límite de 8 MB'
+        : `No se pudo leer la imagen: ${errorMulter.message}`;
+      return fallo(res, 400, mensaje);
     }
-  }
 
-  if (supabaseConfigurado()) {
     try {
-      const { data: authData, error: authError } = await supabaseAdmin.auth.getUser(token);
-      if (!authError && authData?.user) {
-        const { data: profile, error } = await supabaseAdmin.from('profiles').select('*').eq('id', authData.user.id).single();
-        if (!error && profile) return res.json({ ok: true, profile });
+      const perfil = await perfilDeSesion(req);
+      if (!perfil || perfil.role !== 'proveedor') {
+        return fallo(res, 401, 'Sesión de proveedor requerida');
       }
-    } catch (_e) {}
-  }
 
-  return fallo(res, 401, 'Sesión inválida o expirada');
+      const resultado = datosProducto(req.body || {});
+      if (resultado.error) return fallo(res, 400, resultado.error);
+
+      const imagen = req.file
+        ? { buffer: req.file.buffer, mimeType: normalizarMime(req.file.mimetype) }
+        : leerImagenJson(req.body);
+      if (imagen && !MIME_OK.has(imagen.mimeType)) {
+        return fallo(res, 400, 'Formato no soportado. Usa jpg, png o webp');
+      }
+      if (imagen?.buffer?.length > MAX_BYTES) {
+        return fallo(res, 400, 'La imagen supera el límite de 8 MB');
+      }
+
+      const ahora = new Date().toISOString();
+      const producto = {
+        id: `prd_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+        proveedorId: perfil.id,
+        ...resultado.datos,
+        imagen: imagen ? (guardarImagenProducto(imagen) || '') : '',
+        estado: 'activo',
+        created_at: ahora,
+        updated_at: ahora,
+      };
+
+      guardarProductosPublicados([producto, ...todosLosProductosPublicados()]);
+      return res.status(201).json({ ok: true, producto });
+    } catch (error) {
+      console.error('[productos] Error al publicar:', error);
+      return fallo(res, 500, 'No se pudo publicar el producto');
+    }
+  });
+});
+
+app.put('/api/proveedor/productos/:id', (req, res) => {
+  subirImagen(req, res, async (errorMulter) => {
+    if (errorMulter) {
+      return fallo(res, 400, errorMulter.code === 'LIMIT_FILE_SIZE'
+        ? 'La imagen supera el límite de 8 MB'
+        : `No se pudo leer la imagen: ${errorMulter.message}`);
+    }
+
+    try {
+      const perfil = await perfilDeSesion(req);
+      if (!perfil || perfil.role !== 'proveedor') {
+        return fallo(res, 401, 'Sesión de proveedor requerida');
+      }
+
+      const resultados = todosLosProductosPublicados();
+      const indice = resultados.findIndex((p) => p.id === req.params.id && productoPertenece(p, perfil.id));
+      if (indice === -1) return fallo(res, 404, 'Producto no encontrado');
+
+      const validacion = datosProducto(req.body || {});
+      if (validacion.error) return fallo(res, 400, validacion.error);
+
+      const imagen = req.file
+        ? { buffer: req.file.buffer, mimeType: normalizarMime(req.file.mimetype) }
+        : leerImagenJson(req.body);
+      if (imagen && !MIME_OK.has(imagen.mimeType)) {
+        return fallo(res, 400, 'Formato no soportado. Usa jpg, png o webp');
+      }
+      if (imagen?.buffer?.length > MAX_BYTES) {
+        return fallo(res, 400, 'La imagen supera el límite de 8 MB');
+      }
+
+      const anterior = resultados[indice];
+      const imagenNueva = imagen ? guardarImagenProducto(imagen) : null;
+      if (imagenNueva) eliminarImagenProducto(anterior.imagen);
+
+      resultados[indice] = {
+        ...anterior,
+        ...validacion.datos,
+        imagen: imagenNueva || urlImagenSegura(req.body?.imagenActual),
+        updated_at: new Date().toISOString(),
+      };
+
+      guardarProductosPublicados(resultados);
+      return res.json({ ok: true, producto: resultados[indice] });
+    } catch (error) {
+      console.error('[productos] Error al actualizar:', error);
+      return fallo(res, 500, 'No se pudo actualizar el producto');
+    }
+  });
+});
+
+app.patch('/api/proveedor/productos/:id/estado', async (req, res) => {
+  try {
+    const perfil = await perfilDeSesion(req);
+    if (!perfil || perfil.role !== 'proveedor') {
+      return fallo(res, 401, 'Sesión de proveedor requerida');
+    }
+
+    const estado = String(req.body?.estado || '');
+    if (!['activo', 'pausado'].includes(estado)) {
+      return fallo(res, 400, 'Estado inválido. Usa activo o pausado.');
+    }
+
+    const productos = todosLosProductosPublicados();
+    const producto = productos.find((p) => p.id === req.params.id && productoPertenece(p, perfil.id));
+    if (!producto) return fallo(res, 404, 'Producto no encontrado');
+
+    producto.estado = estado;
+    producto.updated_at = new Date().toISOString();
+    guardarProductosPublicados(productos);
+    return res.json({ ok: true, producto });
+  } catch (error) {
+    console.error('[productos] Error al cambiar estado:', error);
+    return fallo(res, 500, 'No se pudo actualizar el producto');
+  }
+});
+
+app.delete('/api/proveedor/productos/:id', async (req, res) => {
+  try {
+    const perfil = await perfilDeSesion(req);
+    if (!perfil || perfil.role !== 'proveedor') {
+      return fallo(res, 401, 'Sesión de proveedor requerida');
+    }
+
+    const productos = todosLosProductosPublicados();
+    const producto = productos.find((p) => p.id === req.params.id && productoPertenece(p, perfil.id));
+    if (!producto) return fallo(res, 404, 'Producto no encontrado');
+
+    eliminarImagenProducto(producto.imagen);
+    guardarProductosPublicados(productos.filter((p) => p.id !== producto.id));
+    return res.json({ ok: true, producto });
+  } catch (error) {
+    console.error('[productos] Error al eliminar:', error);
+    return fallo(res, 500, 'No se pudo eliminar el producto');
+  }
 });
 
 // La interfaz NEX24 se sirve desde el mismo servidor que la API.

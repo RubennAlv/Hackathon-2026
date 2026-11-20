@@ -2029,6 +2029,69 @@ footer small {
   font-weight: var(--font-weight-bold);
 }
 
+/* Contadores inline dentro de las pestañas del panel */
+.nex-tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--nex-lime-soft);
+  color: var(--nex-forest);
+  font-size: 11px;
+  line-height: 1.4;
+  font-weight: 800;
+}
+
+.nex-tab-count.is-alert {
+  background: var(--nex-danger-bg);
+  color: var(--nex-danger);
+}
+
+/* Barra de herramientas de tablas del panel */
+.nex-panel-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 0 16px;
+}
+
+.nex-panel-toolbar label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--nex-text-secondary);
+}
+
+.nex-panel-toolbar input,
+.nex-panel-toolbar select {
+  border: 1px solid var(--nex-border);
+  border-radius: var(--radius-sm);
+  padding: 7px 10px;
+  background: var(--nex-surface);
+  color: var(--nex-forest);
+  font: inherit;
+  font-size: 12px;
+}
+
+.nex-panel-toolbar input {
+  min-width: 220px;
+}
+
+.nex-panel-toolbar .nex-toolbar-count {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--nex-text-muted);
+}
+
+.nex-alert[hidden] {
+  display: none;
+}
+
 /* Métricas del Dashboard */
 .nex-metrics-grid {
   display: grid;

@@ -132,8 +132,12 @@
               const waProducto = telefono
                 ? `https://wa.me/${telefono}?text=${encodeURIComponent('Hola ' + nombre + ', me interesa ' + producto.nombre + ' de tu catálogo en NEX24.')}`
                 : '';
+              const imagenHtml = producto.imagen
+                ? `<div class="nex-product-image nex-profile-product-image"><span class="nex-product-image-fallback" aria-hidden="true">${icon('package', 22)}</span><img src="${esc(producto.imagen)}" alt="Fotografía de ${esc(producto.nombre)}" loading="lazy" onerror="this.style.display='none'"></div>`
+                : `<div class="nex-product-image nex-profile-product-image nex-product-image-vacio" aria-hidden="true"><span class="nex-product-image-fallback">${icon('package', 22)}</span></div>`;
               return `
                 <article class="nex-profile-product">
+                  ${imagenHtml}
                   <div class="nex-profile-product-top">
                     <span class="nex-market-icon" aria-hidden="true">${icon('package', 22)}</span>
                     <span class="nex-badge nex-badge-lime">${esc(producto.categoria || categoria)}</span>

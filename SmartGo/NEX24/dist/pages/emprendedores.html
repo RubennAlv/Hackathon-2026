@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Panel Comercial | NEX24</title>
   <meta name="description" content="Panel de administración comercial para proveedores y negocios de Durango en NEX24.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="../css/styles.css">
   <link rel="stylesheet" href="../css/design.css">
   <link rel="stylesheet" href="../css/panel.css">
+  <link rel="stylesheet" href="../css/mobile.css">
 </head>
 <body>
 
@@ -84,6 +85,11 @@
             <p style="font-size:13px;line-height:1.6;color:var(--nex-text-secondary);">
               Tu negocio cuenta con el sello de <strong>Proveedor Verificado de Durango</strong>. Tus productos se muestran de forma prioritaria en el Marketplace B2B y en las búsquedas visuales de <strong>Lens IA</strong>.
             </p>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;">
+              <button type="button" class="nex-btn nex-btn-outline nex-btn-sm" data-go-tab="tabCatalog">Gestionar catálogo</button>
+              <button type="button" class="nex-btn nex-btn-outline nex-btn-sm" data-go-tab="tabOrders">Revisar pedidos (<span id="quickPendingOrders">0</span>)</button>
+              <button type="button" class="nex-btn nex-btn-outline nex-btn-sm" data-go-tab="tabInventory">Actualizar capacidad</button>
+            </div>
             <div style="background:var(--nex-bg);padding:14px;border-radius:var(--radius-md);font-size:12px;margin-top:14px;">
               <div>• <strong>Visibilidad:</strong> Pública en marketplace y Lens IA</div>
               <div>• <strong>Canal de contacto:</strong> WhatsApp directo y cotización formal</div>
@@ -116,6 +122,20 @@
             <button type="button" class="nex-btn nex-btn-primary nex-btn-sm" id="btnOpenNewProductModal">
               + Publicar Nuevo Producto
             </button>
+          </div>
+
+          <div class="nex-panel-toolbar">
+            <label for="providerCatalogSearch">Buscar
+              <input type="search" id="providerCatalogSearch" placeholder="Nombre, categoría o descripción" autocomplete="off">
+            </label>
+            <label for="providerCatalogStatus">Estado
+              <select id="providerCatalogStatus">
+                <option value="todos">Todos</option>
+                <option value="activo">Activos</option>
+                <option value="pausado">En pausa</option>
+              </select>
+            </label>
+            <span id="providerCatalogCount" class="nex-toolbar-count">0 productos</span>
           </div>
 
           <div class="tablebox" style="box-shadow:none;border-radius:var(--radius-md);">
@@ -188,6 +208,17 @@
               </p>
             </div>
             <span id="ordersCounter" class="nex-badge nex-badge-lime">0 solicitudes</span>
+          </div>
+
+          <div class="nex-panel-toolbar">
+            <label for="providerOrdersFilter">Filtrar por estado
+              <select id="providerOrdersFilter">
+                <option value="todos">Todas las solicitudes</option>
+                <option value="Pendiente">Pendientes</option>
+                <option value="Confirmado">Confirmadas</option>
+                <option value="Entregado">Entregadas</option>
+              </select>
+            </label>
           </div>
 
           <div class="tablebox" style="box-shadow:none;border-radius:var(--radius-md);">
