@@ -129,6 +129,7 @@ app.get('/emprendedores', (_req, res) => res.redirect('/pages/emprendedores.html
 app.use('/pages', express.static(path.join(RAIZ, 'pages')));
 app.use('/css', express.static(path.join(RAIZ, 'css')));
 app.use('/js', express.static(path.join(RAIZ, 'js')));
+app.get('/productores.json', (_req, res) => res.sendFile(path.join(RAIZ, 'productores.json')));
 
 app.use((error, _req, res, _next) => {
   if (error?.type === 'entity.too.large') {

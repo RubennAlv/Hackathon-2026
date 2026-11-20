@@ -21,6 +21,27 @@
     tortillas: "Tortillas",
   };
 
+  const FALLBACK_PRODUCTORES = [
+    ["p01","Café Sierra Madre Tostadores","cafe","Café tostado en grano","Café de altura tostado en lotes pequeños.",135,108,"bolsa 500g","Centro",24.0262,-104.6561,"5216180000001"],
+    ["p02","Quesos Menonitas Nuevo Ideal","queso","Queso menonita","Quesos madurados de leche de rancho.",190,160,"kg","Nuevo Ideal",24.8725,-105.0731,"5216180000002"],
+    ["p03","Miel Real del Mezquital","miel","Miel de abeja","Miel pura de flor silvestre.",150,120,"frasco 1kg","El Mezquital",23.4796,-104.3905,"5216180000003"],
+    ["p04","Mezcal Artesanal Nombre de Dios","mezcal","Mezcal joven","Mezcal artesanal destilado en palenque.",520,430,"botella 750ml","Nombre de Dios",23.8439,-104.2417,"5216180000004"],
+    ["p05","Panadería La Espiga Duranguense","panaderia","Pan de caja integral","Pan horneado a diario.",38,30,"pieza / paquete","Fracc. Guadalupe",24.0105,-104.6718,"5216180000005"],
+    ["p06","Salsas y Chiles Don Chuy","salsas","Salsa de chile de árbol","Salsas artesanales regionales.",75,58,"frasco 350ml","Zona Industrial",24.0451,-104.6389,"5216180000006"],
+    ["p07","Talabartería El Arriero","cuero","Cinturones de piel","Artículos de piel hechos a mano.",450,350,"pieza","Centro",24.0289,-104.6527,"5216180000007"],
+    ["p08","Sábila Viva Cosmética Natural","cosmetica","Crema de sábila","Cuidado personal con ingredientes naturales.",110,85,"pieza","Fracc. Guadalupe",24.0139,-104.6642,"5216180000008"],
+    ["p09","Dulces Típicos Doña Lupe","dulces","Dulce de leche","Dulces tradicionales regionales.",45,34,"bolsa 200g","Centro",24.0301,-104.6498,"5216180000009"],
+    ["p10","Nueces Selectas de la Laguna","botana","Nuez pecanera","Nuez seleccionada y empacada.",210,170,"bolsa 500g","Zona Industrial",24.0502,-104.6301,"5216180000010"],
+    ["p11","Sidra y Manzana de Canatlán","bebidas","Sidra de manzana","Bebidas elaboradas con manzana local.",65,50,"botella 1L","Canatlán",24.5249,-104.7766,"5216180000011"],
+    ["p12","Cecina y Carne Seca El Norteño","carnes","Carne seca","Carnes secas curadas al sol.",380,310,"kg","Santiago Papasquiaro",25.0436,-105.4208,"5216180000012"],
+    ["p13","Telar Durangueño Cobijas y Textiles","artesania","Cobijas de lana","Textiles tejidos en telar.",680,520,"pieza","Centro",24.0273,-104.6585,"5216180000013"],
+    ["p14","Tortillas de Harina La Abuela","tortillas","Tortillas de harina","Tortillas hechas a mano.",42,33,"paquete 1kg","Fracc. Guadalupe",24.0182,-104.6805,"5216180000014"],
+  ].map((p) => ({
+    id:p[0], nombre:p[1], categoria:p[2], productos:[p[3]], descripcion:p[4],
+    precio_menudeo:p[5], precio_mayoreo:p[6], unidad:p[7], zona_durango:p[8],
+    lat:p[9], lng:p[10], whatsapp:p[11], keywords_ia:[p[2],p[3]], verificado:true,
+  }));
+
   const $ = (selector, root = document) => root.querySelector(selector);
   const canvas = $("#map");
   if (!canvas) return;
@@ -218,10 +239,25 @@
   async function cargar() {
     errorBox.hidden = true;
     try {
-      const respuesta = await fetch(`${API_BASE}/api/productores`, { cache: "no-store" });
-      if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
-      const datos = await respuesta.json();
-      const arreglo = Array.isArray(datos) ? datos : datos?.productores;
+      let arreglo = null;
+      try {
+        const respuesta = await fetch(`${API_BASE}/api/productores`, { cache: "no-store" });
+        if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
+        const datos = await respuesta.json();
+        arreglo = Array.isArray(datos) ? datos : datos?.productores;
+      } catch {
+        try {
+          const url = API_BASE ? `${API_BASE}/productores.json` : "/productores.json";
+          const respuesta = await fetch(url, { cache: "no-store" });
+          if (respuesta.ok) {
+            const datos = await respuesta.json();
+            arreglo = Array.isArray(datos) ? datos : datos?.productores;
+          }
+        } catch {
+          arreglo = null;
+        }
+      }
+      if (!Array.isArray(arreglo) || !arreglo.length) arreglo = FALLBACK_PRODUCTORES;
       if (!Array.isArray(arreglo) || !arreglo.length) throw new Error("catálogo vacío");
 
       productores = arreglo;
@@ -292,10 +328,6 @@
 
   function initMapa() {
     mapa = L.map(canvas).setView([DEFAULT.lat, DEFAULT.lng], 12);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-    }).addTo(mapa);
     capa = L.layerGroup().addTo(mapa);
   }
 
@@ -379,9 +411,76 @@
   });
 
   if (typeof L === "undefined") {
-    errorBox.textContent = "No se pudo cargar Leaflet. Revisa tu conexión a internet.";
-    errorBox.hidden = false;
-    return;
+    canvas.classList.add("mapa-local");
+    canvas.innerHTML = '<div class="local-map-grid"></div><span class="local-map-road local-road-one"></span><span class="local-map-road local-road-two"></span><div class="local-marker-layer"></div><span class="local-map-label">DURANGO, DGO.</span>';
+    const markerLayer = canvas.querySelector(".local-marker-layer");
+    const latBounds = [23.45, 25.08];
+    const lngBounds = [-105.45, -104.22];
+    const proyectar = (lat, lng) => ({
+      x: 5 + ((lng - lngBounds[0]) / (lngBounds[1] - lngBounds[0])) * 90,
+      y: 8 + ((latBounds[1] - lat) / (latBounds[1] - latBounds[0])) * 84,
+    });
+    let popup = null;
+    window.L = {
+      divIcon: (opciones) => opciones,
+      map: () => ({
+        setView() { return this; },
+        flyTo() { return this; },
+        fitBounds() { return this; },
+        removeLayer(capaEl) { capaEl?.remove?.(); },
+      }),
+      layerGroup: () => ({
+        _els: [],
+        addTo(mapaLocal) { this._mapa = mapaLocal; return this; },
+        clearLayers() {
+          markerLayer.innerHTML = "";
+          this._els = [];
+          popup?.remove();
+          popup = null;
+        },
+        addLayer(el) { this._els.push(el); el.addToEl?.(markerLayer); },
+      }),
+      latLngBounds: (puntos) => ({ puntos }),
+      marker: (coords, opciones) => {
+        const el = document.createElement("button");
+        el.type = "button";
+        el.className = "pin-lens local-pin";
+        el.innerHTML = opciones.icon?.html || '<span>📍</span>';
+        el.title = opciones.icon?.title || "Productor";
+        let popupHtml = "";
+        const p = proyectar(coords[0], coords[1]);
+        el.style.left = `${p.x}%`;
+        el.style.top = `${p.y}%`;
+        el.addToEl = (parent) => parent.appendChild(el);
+        el.addTo = (mapaLocal) => { el.addToEl(markerLayer); return el; };
+        el.bindPopup = (html) => { popupHtml = html; return el; };
+        el.on = (nombre, fn) => { if (nombre === "click") el.addEventListener("click", fn); return el; };
+        el.openPopup = () => {
+          popup?.remove();
+          popup = document.createElement("div");
+          popup.className = "local-popup";
+          popup.innerHTML = popupHtml;
+          const left = Math.min(Math.max(p.x, 17), 83);
+          popup.style.left = `calc(${left}% - 140px)`;
+          popup.style.top = `${Math.max(p.y - 34, 8)}%`;
+          canvas.appendChild(popup);
+        };
+        el.bindPopup = (html) => { popupHtml = html; return el; };
+        return el;
+      },
+      circleMarker: (coords, opciones) => {
+        const el = document.createElement("span");
+        el.className = `pin-lens local-pin usuario${opciones.className === "lens-sugerencia" ? " sugerencia" : ""}`;
+        el.innerHTML = "<span></span>";
+        const p = proyectar(coords[0], coords[1]);
+        el.style.left = `${p.x}%`;
+        el.style.top = `${p.y}%`;
+        el.addTo = () => { markerLayer.appendChild(el); return el; };
+        el.bindPopup = () => el;
+        el.removeLayer = () => el.remove();
+        return el;
+      },
+    };
   }
 
   initMapa();

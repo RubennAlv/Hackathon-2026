@@ -35,26 +35,6 @@ function setupLocations(){
  input.addEventListener("input",()=>renderLocations(input.value));
  document.querySelectorAll(".map-pin").forEach(pin=>pin.addEventListener("click",()=>{input.value=pin.dataset.location;renderLocations(input.value);document.querySelector("#ubicaciones").scrollIntoView({behavior:"smooth"});}));
 }
-function setupSimulation(){
- const model=document.querySelector("#storeModel");
- if(!model)return;
- const toggle=document.querySelector("#toggleRotation");
- const output=document.querySelector("#rotationValue");
- let rotation=0;
- let spinning=true;
- let dragging=false;
- let startX=0;
- let startRotation=0;
- const update=()=>{model.style.setProperty("--rotation",`${rotation}deg`);output.value=`Vista 3D · ${Math.round((rotation%360+360)%360)}°`;};
- const frame=()=>{if(spinning&&!dragging){rotation=(rotation+.18)%360;update();}requestAnimationFrame(frame);};
- toggle.addEventListener("click",()=>{spinning=!spinning;toggle.textContent=spinning?"Pausar giro":"Reanudar giro";});
- model.addEventListener("pointerdown",event=>{dragging=true;startX=event.clientX;startRotation=rotation;model.setPointerCapture(event.pointerId);});
- model.addEventListener("pointermove",event=>{if(dragging){rotation=startRotation+(event.clientX-startX)*.65;update();}});
- model.addEventListener("pointerup",()=>{dragging=false;});
- model.addEventListener("pointercancel",()=>{dragging=false;});
- model.addEventListener("keydown",event=>{if(event.key==="ArrowLeft"||event.key==="ArrowRight"){event.preventDefault();rotation+=event.key==="ArrowRight"?12:-12;update();}});
- update();frame();
-}
 let cart=[];
 function renderStore(){
  const grid=document.querySelector("#storeItems");
@@ -89,4 +69,4 @@ function renderDashboard(){
  document.querySelector("#lastUpdate").textContent=state.orders?`${state.orders} compra${state.orders===1?"":"s"} registrada${state.orders===1?"":"s"}`:"Sin ventas aún";
  table.innerHTML=products.map(p=>{const stock=state.inventory[p.id];const isLow=stock<=5;return `<tr><td>${p.emoji} ${p.name}</td><td>${p.bulk?"A granel":"Empaquetado"}</td><td>${stock.toFixed(p.bulk?2:0)}</td><td>${p.unit}</td><td><span class="status-pill ${isLow?"warning":"available"}">${isLow?"Stock bajo":"Disponible"}</span></td></tr>`;}).join("");
 }
-renderLanding();setupLocations();setupSimulation();renderStore();renderDashboard();
+renderLanding();setupLocations();renderStore();renderDashboard();
