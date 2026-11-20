@@ -5,3 +5,16 @@
 nav a.active{color:var(--ink);position:relative}
 nav a.active::after{content:"";position:absolute;left:0;right:0;bottom:-8px;height:2px;border-radius:2px;background:var(--green)}
 .section h1,.wrap>h1{font-size:clamp(38px,5vw,56px);line-height:1.05;letter-spacing:-2px;margin:12px 0}
+
+/* Logo corporativo NEX24: tamaño consistente en TODO el sitio */
+.nex-logo{display:inline-flex;align-items:center;text-decoration:none;flex:none}
+.nex-logo img{display:block;width:auto;height:40px;max-width:150px;object-fit:contain}
+.nex-logo-footer img{height:44px}
+
+/* Navbar: el logo manda */
+.nav .nex-logo{position:relative;isolation:isolate;transition:transform .2s ease}
+.nav .nex-logo::before{content:"";position:absolute;inset:-6px -10px;z-index:-1;border-radius:16px;background:radial-gradient(ellipse at center,rgba(185,243,107,.32),rgba(185,243,107,0) 72%);opacity:.9;transition:opacity .2s ease,transform .2s ease}
+.nav .nex-logo img{height:56px;max-width:200px;filter:drop-shadow(0 3px 7px rgba(20,37,31,.18))}
+.nav .nex-logo:hover{transform:translateY(-1px)}
+.nav .nex-logo:hover::before{opacity:1;transform:scale(1.06)}
+@media(max-width:820px){.nex-logo img{height:34px;max-width:128px}.nex-logo-footer img{height:38px}.nav .nex-logo img{height:44px;max-width:160px}}

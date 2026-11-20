@@ -2295,4 +2295,4 @@ textarea:focus-visible,
 }
 
 /* NEX24 Logo corporativo */
-.nex-logo{display:inline-flex!important;align-items:center;text-decoration:none!important}.nex-logo img{display:block;width:auto;height:36px;max-width:140px;object-fit:contain}.nex-logo-footer img{height:44px}.nex-loader-logo{width:150px;max-width:55vw;height:auto;object-fit:contain}.nex-three-body+.nex-loader-logo{margin-top:4px}@media(max-width:820px){.nex-logo img{height:30px;max-width:112px}.nex-logo-footer img{height:38px}}
+.nex-logo{display:inline-flex!important;align-items:center;text-decoration:none!important;flex:none}.nex-logo img{display:block;width:auto;height:40px;max-width:150px;object-fit:contain}.nex-logo-footer img{height:44px}.nex-loader-logo{width:150px;max-width:55vw;height:auto;object-fit:contain}.nex-three-body+.nex-loader-logo{margin-top:4px}@media(max-width:820px){.nex-logo img{height:34px;max-width:128px}.nex-logo-footer img{height:38px}}
